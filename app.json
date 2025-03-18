@@ -35,8 +35,7 @@
         }
       ],
       "expo-localization",
-      "expo-secure-store",
-      "onesignal-expo-plugin"
+      "expo-secure-store"
     ],
     "experiments": {
       "typedRoutes": true

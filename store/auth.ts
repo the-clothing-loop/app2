@@ -1,12 +1,14 @@
-import { Chain } from "@/api/types";
-import { User } from "@/api/typex2";
+import { Chain, UID } from "@/api/types";
+import { Bag, User } from "@/api/typex2";
 import { IsChainAdmin, IsChainWarden } from "@/utils/chain";
+import IsPaused from "@/utils/user";
 import { Store, Derived } from "@tanstack/react-store";
 
 export const authStore = new Store({
   authUser: null as null | User,
   currentChain: null as null | Chain,
   currentChainUsers: null as null | User[],
+  currentBags: null as null | Bag[],
 });
 
 export const authStoreCurrentChainAdmin = new Derived({
@@ -18,6 +20,7 @@ export const authStoreCurrentChainAdmin = new Derived({
   },
 });
 authStoreCurrentChainAdmin.mount();
+
 export const authStoreCurrentChainWarden = new Derived({
   deps: [authStore],
   fn() {
@@ -27,3 +30,29 @@ export const authStoreCurrentChainWarden = new Derived({
   },
 });
 authStoreCurrentChainWarden.mount();
+
+export const authStoreCurrentBagsPerUser = new Derived({
+  deps: [authStore],
+  fn() {
+    const result: Record<UID, Bag[]> = {};
+    authStore.state.currentChainUsers?.forEach((u) => {
+      const arr: Bag[] =
+        authStore.state.currentBags?.filter((b) => b.user_uid === u.uid) || [];
+      result[u.uid] = arr;
+    });
+    return result;
+  },
+});
+authStoreCurrentBagsPerUser.mount();
+
+export const authStoreListPausedUsers = new Derived({
+  deps: [authStore],
+  fn() {
+    const authUserUid = authStore.state.authUser?.uid;
+    if (!authUserUid) return [];
+    return authStore.state.currentChainUsers?.filter((u) =>
+      IsPaused(u, authUserUid)
+    );
+  },
+});
+authStoreListPausedUsers.mount();

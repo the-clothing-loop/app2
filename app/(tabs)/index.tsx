@@ -1,17 +1,12 @@
-import { Image, StyleSheet, Platform, View } from "react-native";
+import { Image, StyleSheet, View } from "react-native";
 import ParallaxScrollView from "@/components/ParallaxScrollView";
-import { ThemedText } from "@/components/ThemedText";
-import { ThemedView } from "@/components/ThemedView";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { useTranslation } from "react-i18next";
 import {
-  Avatar,
   Button,
   Card,
   Layout,
   ListItem,
-  Menu,
-  MenuGroup,
   Text,
   ThemeType,
   useTheme,
@@ -21,7 +16,6 @@ import { authStore, authStoreCurrentChainAdmin } from "@/store/auth";
 import { TFunction, TOptionsBase } from "i18next";
 import { PropsWithChildren, useMemo, useState } from "react";
 import {
-  ArrowDown,
   ArrowDownIcon,
   ArrowUpIcon,
   FacebookIcon,
@@ -30,7 +24,6 @@ import {
   LucideIcon,
   MailIcon,
 } from "lucide-react-native";
-import { useThemeColor } from "@/hooks/useThemeColor";
 import { ExternalPathString, Link } from "expo-router";
 
 interface MediaIcon {
@@ -178,8 +171,7 @@ export default function HomeScreen(props: {}) {
 
         <Card
           appearance="outline"
-          className="border-blue-400"
-          // style={{ borderColor: theme["color-basic-500"] }}
+          style={{ borderColor: theme["color-basic-500"] }}
         >
           <Text style={{ textAlign: "center", marginBottom: 14 }} category="s2">
             {t("loopHost", { count: hosts?.length || 0 })}
@@ -204,31 +196,17 @@ export default function HomeScreen(props: {}) {
           appearance="outline"
           style={{ borderColor: theme["color-basic-500"] }}
         >
-          <Text style={{ textAlign: "center", marginBottom: 14 }} category="s2">
+          <Text className="text-center mb-3.5" category="s2">
             {t("organization")}
           </Text>
-          <View
-            style={{
-              flexDirection: "row",
-              flexWrap: "wrap",
-              marginBottom: 14,
-            }}
-          >
+          <View className="flex-row flex-wrap mb-3.5">
             {mediaIcons.map((m) => (
-              <View
-                style={{
-                  flexDirection: "column",
-                  width: 70,
-                  gap: 4,
-                  alignItems: "center",
-                }}
-              >
+              <View className="flex-col w-[70] gap-1 items-center">
                 <Link href={m.url as ExternalPathString} asChild>
                   <Button
+                    className="w-9 h-9"
                     style={{
                       borderRadius: "100%",
-                      width: 36,
-                      height: 36,
                     }}
                     status="basic"
                   >
@@ -289,12 +267,12 @@ function ListItemDetails(
             : undefined,
         }}
         onPress={props.setOpen}
-        accessoryRight={props.isOpen ? <ArrowDownIcon /> : <ArrowUpIcon />}
+        accessoryRight={props.isOpen ? <ArrowUpIcon /> : <ArrowDownIcon />}
       />
       <View
+        className="p-2"
         style={{
           display: props.isOpen ? undefined : "none",
-          padding: 8,
         }}
         key={props.keyPrefix + "details"}
       >

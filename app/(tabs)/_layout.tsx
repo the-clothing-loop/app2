@@ -36,11 +36,15 @@ import { Chain } from "@/api/types";
 import { useForm } from "@tanstack/react-form";
 import { userGetAllByChain } from "@/api/user";
 import { catchErrThrow401 } from "@/utils/handleRequests";
+import useTheme from "@/hooks/useTheme";
+import { getAnimatedStyle } from "react-native-reanimated";
+import { bagGetAllByChain } from "@/api/bag";
 // import { OneSignal } from "react-native-onesignal";
 
 export default function TabLayout() {
   const queryClient = useQueryClient();
   const colorScheme = useColorScheme();
+  const theme = useTheme();
   const { t } = useTranslation();
   const auth = useStore(authStore);
   const selectedChainUID = useStore(savedStore, (s) => s.chainUID);
@@ -48,8 +52,8 @@ export default function TabLayout() {
   const { error } = useQuery({
     queryKey: ["chain", selectedChainUID],
     async queryFn() {
-      if (!selectedChainUID) return null;
-      const [resChain, resChainUsers] = await Promise.all([
+      if (!selectedChainUID || !auth.authUser) return null;
+      const [resChain, resChainUsers, resBags] = await Promise.all([
         chainGet(selectedChainUID, {
           addHeaders: true,
           addIsAppDisabled: true,
@@ -63,13 +67,22 @@ export default function TabLayout() {
         userGetAllByChain(selectedChainUID)
           .then((res) => res.data)
           .catch(catchErrThrow401),
+        bagGetAllByChain(selectedChainUID, auth.authUser.uid)
+          .then((res) => res.data)
+          .catch(catchErrThrow401),
+        ,
       ]);
-      if (typeof resChain === "string" || typeof resChainUsers === "string")
+      if (
+        typeof resChain === "string" ||
+        typeof resChainUsers === "string" ||
+        typeof resBags === "string"
+      )
         return null;
       authStore.setState((s) => ({
         ...s,
         currentChain: resChain,
         currentChainUsers: resChainUsers,
+        currentBags: resBags,
       }));
 
       return [resChain, resChainUsers];
@@ -119,8 +132,7 @@ export default function TabLayout() {
     <>
       <Tabs
         screenOptions={{
-          tabBarActiveTintColor: Colors[colorScheme ?? "light"].tint,
-          headerShown: false,
+          tabBarActiveTintColor: theme["color-primary-700"],
           tabBarButton: HapticTab,
           tabBarBackground: TabBarBackground,
           tabBarStyle: Platform.select({

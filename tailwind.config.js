@@ -1,4 +1,5 @@
 import customEvaTheme from "./custom-theme.json";
+import { light } from "@eva-design/eva";
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
@@ -8,6 +9,17 @@ module.exports = {
   theme: {
     extend: {
       colors: {
+        basic: {
+          100: light["color-basic-100"],
+          200: light["color-basic-200"],
+          300: light["color-basic-300"],
+          400: light["color-basic-400"],
+          500: light["color-basic-500"],
+          600: light["color-basic-600"],
+          700: light["color-basic-700"],
+          800: light["color-basic-800"],
+          900: light["color-basic-900"],
+        },
         primary: {
           100: customEvaTheme["color-primary-100"],
           200: customEvaTheme["color-primary-200"],

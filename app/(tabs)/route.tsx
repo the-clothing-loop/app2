@@ -1,109 +1,123 @@
-import { StyleSheet, Image, Platform } from 'react-native';
+import { SafeAreaView, ScrollView, StyleSheet, View } from "react-native";
 
-import { Collapsible } from '@/components/Collapsible';
-import { ExternalLink } from '@/components/ExternalLink';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
-import { IconSymbol } from '@/components/ui/IconSymbol';
+import { useQuery } from "@tanstack/react-query";
+import { routeGetOrder } from "@/api/route";
+import { useStore } from "@tanstack/react-store";
+import {
+  authStore,
+  authStoreCurrentBagsPerUser,
+  authStoreCurrentChainAdmin,
+  authStoreCurrentChainWarden,
+  authStoreListPausedUsers,
+} from "@/store/auth";
+import { useMemo } from "react";
+import { Button, MenuItem, Text } from "@ui-kitten/components";
+import {
+  ChevronRightIcon,
+  FlagIcon,
+  MapIcon,
+  PauseIcon,
+  ShieldIcon,
+  ShoppingBagIcon,
+} from "lucide-react-native";
+import useTheme from "@/hooks/useTheme";
+import { useTranslation } from "react-i18next";
 
-export default function TabTwoScreen() {
+export default function Route() {
+  const { currentChain, currentChainUsers } = useStore(authStore);
+  const bagsPerUser = useStore(authStoreCurrentBagsPerUser);
+  const hosts = useStore(authStoreCurrentChainAdmin);
+  const wardens = useStore(authStoreCurrentChainWarden);
+  const theme = useTheme();
+  const pausedUsers = useStore(authStoreListPausedUsers);
+  const { t } = useTranslation();
+  const { data: routeOrder } = useQuery({
+    queryKey: ["route-order", currentChain?.uid],
+    async queryFn() {
+      if (!currentChain) return null;
+
+      const res = await routeGetOrder(currentChain.uid).then((res) => res.data);
+      if (!res) return null;
+
+      return res;
+    },
+  });
+
+  const orderedChainUsers = useMemo(() => {
+    return routeOrder
+      ?.map((uid) => currentChainUsers?.find((u) => u.uid == uid))
+      .filter((u) => !!u);
+  }, [currentChainUsers, routeOrder]);
+
+  const countActiveMembers = useMemo(
+    () =>
+      currentChainUsers?.filter(
+        (u) => !pausedUsers?.some((up) => up.uid === u.uid)
+      ).length || 0,
+    [currentChainUsers, pausedUsers]
+  );
+
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#D0D0D0', dark: '#353636' }}
-      headerImage={
-        <IconSymbol
-          size={310}
-          color="#808080"
-          name="chevron.left.forwardslash.chevron.right"
-          style={styles.headerImage}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Explore</ThemedText>
-      </ThemedView>
-      <ThemedText>This app includes example code to help you get started.</ThemedText>
-      <Collapsible title="File-based routing">
-        <ThemedText>
-          This app has two screens:{' '}
-          <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> and{' '}
-          <ThemedText type="defaultSemiBold">app/(tabs)/explore.tsx</ThemedText>
-        </ThemedText>
-        <ThemedText>
-          The layout file in <ThemedText type="defaultSemiBold">app/(tabs)/_layout.tsx</ThemedText>{' '}
-          sets up the tab navigator.
-        </ThemedText>
-        <ExternalLink href="https://docs.expo.dev/router/introduction">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Android, iOS, and web support">
-        <ThemedText>
-          You can open this project on Android, iOS, and the web. To open the web version, press{' '}
-          <ThemedText type="defaultSemiBold">w</ThemedText> in the terminal running this project.
-        </ThemedText>
-      </Collapsible>
-      <Collapsible title="Images">
-        <ThemedText>
-          For static images, you can use the <ThemedText type="defaultSemiBold">@2x</ThemedText> and{' '}
-          <ThemedText type="defaultSemiBold">@3x</ThemedText> suffixes to provide files for
-          different screen densities
-        </ThemedText>
-        <Image source={require('@/assets/images/react-logo.png')} style={{ alignSelf: 'center' }} />
-        <ExternalLink href="https://reactnative.dev/docs/images">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Custom fonts">
-        <ThemedText>
-          Open <ThemedText type="defaultSemiBold">app/_layout.tsx</ThemedText> to see how to load{' '}
-          <ThemedText style={{ fontFamily: 'SpaceMono' }}>
-            custom fonts such as this one.
-          </ThemedText>
-        </ThemedText>
-        <ExternalLink href="https://docs.expo.dev/versions/latest/sdk/font">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Light and dark mode components">
-        <ThemedText>
-          This template has light and dark mode support. The{' '}
-          <ThemedText type="defaultSemiBold">useColorScheme()</ThemedText> hook lets you inspect
-          what the user's current color scheme is, and so you can adjust UI colors accordingly.
-        </ThemedText>
-        <ExternalLink href="https://docs.expo.dev/develop/user-interface/color-themes/">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Animations">
-        <ThemedText>
-          This template includes an example of an animated component. The{' '}
-          <ThemedText type="defaultSemiBold">components/HelloWave.tsx</ThemedText> component uses
-          the powerful <ThemedText type="defaultSemiBold">react-native-reanimated</ThemedText>{' '}
-          library to create a waving hand animation.
-        </ThemedText>
-        {Platform.select({
-          ios: (
-            <ThemedText>
-              The <ThemedText type="defaultSemiBold">components/ParallaxScrollView.tsx</ThemedText>{' '}
-              component provides a parallax effect for the header image.
-            </ThemedText>
-          ),
+    <View className="inset-0">
+      <ScrollView className="h-full">
+        {orderedChainUsers?.map((u, i) => {
+          const isWarden = wardens?.some((v) => v.uid === u.uid);
+          const isHost = hosts?.some((v) => v.uid === u.uid);
+          const bagsOfUser = bagsPerUser[u.uid] || [];
+          const isPaused = pausedUsers?.some((uid) => u.uid);
+          return (
+            <MenuItem
+              key={u.uid}
+              title={`${i + 1} ${u.name}`}
+              accessoryLeft={
+                <View className="relative">
+                  {isHost ? (
+                    <ShieldIcon />
+                  ) : isWarden ? (
+                    <FlagIcon />
+                  ) : undefined}
+                  {isPaused ? (
+                    <PauseIcon size={16} color={theme["color-info-500"]} />
+                  ) : null}
+                </View>
+              }
+              accessoryRight={
+                <View className="flex-row-reverse">
+                  <ChevronRightIcon />
+                  <View className="grid-rows-2 grid-flow-row gap-1">
+                    {bagsOfUser.map((b) => (
+                      <ShoppingBagIcon key={b.id} color={b.color} size={12} />
+                    ))}
+                  </View>
+                </View>
+              }
+            ></MenuItem>
+          );
         })}
-      </Collapsible>
-    </ParallaxScrollView>
+        <View key="bottom" className="h-20 justify-center items-center">
+          <Text category="s2">
+            {t("activeMembers") + ": " + countActiveMembers}
+          </Text>
+        </View>
+      </ScrollView>
+      <View className="absolute bottom-safe-offset-16 right-2">
+        <Button style={{ borderRadius: "100%" }} className="h-12 w-12">
+          <MapIcon />
+        </Button>
+      </View>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   headerImage: {
-    color: '#808080',
+    color: "#808080",
     bottom: -90,
     left: -35,
-    position: 'absolute',
+    position: "absolute",
   },
   titleContainer: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: 8,
   },
 });

@@ -9,8 +9,8 @@ import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
 import "react-native-reanimated";
-
 import * as eva from "@eva-design/eva";
+import customEvaTheme from "@/custom-theme.json";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { ApplicationProvider } from "@ui-kitten/components";
 import AuthProvider from "@/providers/AuthProvider";
@@ -25,6 +25,10 @@ import InitI18n from "@/utils/i18n";
 import { onlineManager } from "@tanstack/react-query";
 import * as Network from "expo-network";
 import { AppState, AppStateStatus, Platform } from "react-native";
+import "@/global.css";
+
+const themeEvaDark = { ...eva.dark, ...customEvaTheme };
+const themeEvaLight = { ...eva.light, ...customEvaTheme };
 
 function onAppStateChange(status: AppStateStatus) {
   if (Platform.OS !== "web") {
@@ -69,7 +73,7 @@ export default function RootLayout() {
   return (
     <ApplicationProvider
       {...eva}
-      theme={colorScheme === "dark" ? eva.dark : eva.light}
+      theme={colorScheme === "dark" ? themeEvaDark : themeEvaLight}
     >
       <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
         <QueryClientProvider client={queryClient}>

@@ -1,4 +1,5 @@
 import axios from "@/api/axios";
+import { User } from "@/api/typex2";
 import { userGetByUID } from "@/api/user";
 import { authStore } from "@/store/auth";
 import { initSavedStore, savedStore } from "@/store/saved";
@@ -14,22 +15,23 @@ export default function AuthProvider(
 ) {
   const { userUID, token } = useStore(savedStore);
   const auth = useStore(authStore);
-  const { error, isPending } = useQuery({
+  const {
+    error,
+    data: authUser,
+    isPending,
+  } = useQuery({
     queryKey: ["auth-user"],
-    queryFn: async () => {
+    async queryFn(): Promise<User | null> {
       if (!userUID && !token) throw "Not logged in";
 
       axios.defaults.auth = "Bearer " + token;
-      return userGetByUID(undefined, userUID, {
+      return await userGetByUID(undefined, userUID, {
         addApprovedTOH: true,
         addNotification: true,
       })
-        .then((res) => {
-          authStore.setState((s) => ({ authUser: res.data }));
-        })
+        .then((res) => res.data)
         .catch((res: Response) => {
           if (res.status === 401) {
-            authStore.setState((s) => ({ authUser: null }));
             return null;
           }
           throw res;
@@ -37,6 +39,11 @@ export default function AuthProvider(
     },
   });
   useEffect(initSavedStore, []);
+  useEffect(() => {
+    if (authUser !== undefined) {
+      authStore.setState((s) => ({ ...s, authUser: authUser }));
+    }
+  }, [authUser]);
 
   if (auth.authUser) {
     return props.children;

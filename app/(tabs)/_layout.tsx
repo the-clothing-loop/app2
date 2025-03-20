@@ -1,6 +1,6 @@
 import { Tabs, Stack } from "expo-router";
 import React, { useEffect, useState } from "react";
-import { Platform, View } from "react-native";
+import { Platform, SafeAreaView, View } from "react-native";
 
 import { HapticTab } from "@/components/HapticTab";
 import { IconSymbol } from "@/components/ui/IconSymbol";
@@ -18,8 +18,8 @@ import { useTranslation } from "react-i18next";
 
 // import { LogLevel, OneSignal } from "react-native-onesignal";
 import { useStore } from "@tanstack/react-store";
-import { authStore } from "@/store/auth";
-import { useQueries, useQuery } from "@tanstack/react-query";
+import { authStore, authStoreCurrentChainAdmin } from "@/store/auth";
+import { useQueries, useQuery, useQueryClient } from "@tanstack/react-query";
 import { chainGet, chainGetAll } from "@/api/chain";
 import { savedStore } from "@/store/saved";
 import {
@@ -34,33 +34,50 @@ import {
 } from "@ui-kitten/components";
 import { Chain } from "@/api/types";
 import { useForm } from "@tanstack/react-form";
+import { userGetAllByChain } from "@/api/user";
+import { catchErrThrow401 } from "@/utils/handleRequests";
+// import { OneSignal } from "react-native-onesignal";
 
 export default function TabLayout() {
+  const queryClient = useQueryClient();
   const colorScheme = useColorScheme();
   const { t } = useTranslation();
   const auth = useStore(authStore);
   const selectedChainUID = useStore(savedStore, (s) => s.chainUID);
 
-  const {} = useQuery({
+  const { error } = useQuery({
     queryKey: ["chain", selectedChainUID],
     async queryFn() {
       if (!selectedChainUID) return null;
-      const res = await chainGet(selectedChainUID, {
-        addHeaders: true,
-        addIsAppDisabled: true,
-        addRoutePrivacy: true,
-        addRules: true,
-        addTheme: true,
-        addTotals: true,
-      });
+      const [resChain, resChainUsers] = await Promise.all([
+        chainGet(selectedChainUID, {
+          addHeaders: true,
+          addIsAppDisabled: true,
+          addRoutePrivacy: true,
+          addRules: true,
+          addTheme: true,
+          addTotals: true,
+        })
+          .then((res) => res.data)
+          .catch(catchErrThrow401),
+        userGetAllByChain(selectedChainUID)
+          .then((res) => res.data)
+          .catch(catchErrThrow401),
+      ]);
+      if (typeof resChain === "string" || typeof resChainUsers === "string")
+        return null;
       authStore.setState((s) => ({
         ...s,
-        currentChain: res.data,
+        currentChain: resChain,
+        currentChainUsers: resChainUsers,
       }));
 
-      return res.data;
+      return [resChain, resChainUsers];
     },
   });
+  useEffect(() => {
+    if (error) queryClient.clear();
+  }, [error]);
   const { data: listOfChains } = useQuery({
     queryKey: [
       "user-chains",
@@ -91,9 +108,11 @@ export default function TabLayout() {
   }
 
   // useEffect(() => {
-  //   OneSignal.initialize(process.env.EXPO_PUBLIC_ONESIGNAL_APP_ID!);
-  //   OneSignal.Notifications.requestPermission(true);
-  //   OneSignal.login(auth.authUser!.uid);
+  //   if (["ios", "android"].includes(Platform.OS)) {
+  //     OneSignal.initialize(process.env.EXPO_PUBLIC_ONESIGNAL_APP_ID!);
+  //     OneSignal.Notifications.requestPermission(true);
+  //     OneSignal.login(auth.authUser!.uid);
+  //   }
   // }, []);
 
   return (
@@ -175,7 +194,14 @@ function SelectChain(props: {
     },
   });
   return (
-    <Modal visible={true}>
+    <SafeAreaView
+      style={{
+        alignItems: "center",
+        justifyContent: "center",
+        inset: 0,
+        height: "100%",
+      }}
+    >
       <Card disabled={true} style={{ width: 300 }}>
         <View style={{ flexDirection: "column", gap: 8 }}>
           <Text category="s1">{t("selectALoop")}</Text>
@@ -198,6 +224,6 @@ function SelectChain(props: {
           </Button>
         </View>
       </Card>
-    </Modal>
+    </SafeAreaView>
   );
 }

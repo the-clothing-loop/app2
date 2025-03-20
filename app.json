@@ -24,6 +24,13 @@
       "favicon": "./assets/images/favicon.png"
     },
     "plugins": [
+      [
+        "onesignal-expo-plugin",
+        {
+          "mode": "development",
+          "iPhoneDeploymentTarget": "13"
+        }
+      ],
       "expo-router",
       [
         "expo-splash-screen",

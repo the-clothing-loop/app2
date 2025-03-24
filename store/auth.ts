@@ -9,6 +9,7 @@ export const authStore = new Store({
   currentChain: null as null | Chain,
   currentChainUsers: null as null | User[],
   currentBags: null as null | Bag[],
+  currentChainRoute: null as null | UID[],
 });
 
 export const authStoreCurrentChainAdmin = new Derived({

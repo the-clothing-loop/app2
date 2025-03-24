@@ -4,31 +4,29 @@ import {
   ThemeProvider,
 } from "@react-navigation/native";
 import { useFonts } from "expo-font";
-import { Redirect, Stack } from "expo-router";
+import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
-import "react-native-reanimated";
-import * as eva from "@eva-design/eva";
-import customEvaTheme from "@/custom-theme.json";
-import { useColorScheme } from "@/hooks/useColorScheme";
-import { ApplicationProvider } from "@ui-kitten/components";
 import AuthProvider from "@/providers/AuthProvider";
-import Loading from "./loading";
 import {
   focusManager,
   QueryClient,
   QueryClientProvider,
 } from "@tanstack/react-query";
-import Login from "./login";
 import InitI18n from "@/utils/i18n";
 import { onlineManager } from "@tanstack/react-query";
 import * as Network from "expo-network";
-import { AppState, AppStateStatus, Platform } from "react-native";
+import {
+  AppState,
+  AppStateStatus,
+  Platform,
+  useColorScheme,
+} from "react-native";
+import { useTranslation } from "react-i18next";
+import { GluestackUIProvider } from "@/components/ui/gluestack-ui-provider";
+import { Colors } from "@/constants/Colors";
 import "@/global.css";
-
-const themeEvaDark = { ...eva.dark, ...customEvaTheme };
-const themeEvaLight = { ...eva.light, ...customEvaTheme };
 
 function onAppStateChange(status: AppStateStatus) {
   if (Platform.OS !== "web") {
@@ -49,7 +47,8 @@ SplashScreen.preventAutoHideAsync();
 const queryClient = new QueryClient();
 
 export default function RootLayout() {
-  const colorScheme = useColorScheme();
+  const colorScheme = useColorScheme() ?? "light";
+  const { t } = useTranslation();
   const [loaded] = useFonts({
     SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
   });
@@ -66,29 +65,36 @@ export default function RootLayout() {
     }
   }, [loaded]);
 
-  if (!loaded) {
-    return null;
-  }
-
   return (
-    <ApplicationProvider
-      {...eva}
-      theme={colorScheme === "dark" ? themeEvaDark : themeEvaLight}
-    >
-      <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
+    <ThemeProvider value={colorScheme === "dark" ? Colors.dark : Colors.light}>
+      <GluestackUIProvider mode="light">
         <QueryClientProvider client={queryClient}>
-          <AuthProvider
-            renderLoading={Loading}
-            renderLoggedOut={() => <Login />}
-          >
-            <Stack>
-              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <AuthProvider>
+            <Stack
+              screenOptions={{
+                headerShown: false,
+              }}
+            >
+              <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+              <Stack.Screen
+                name="(onboarding)"
+                options={{
+                  headerShown: false,
+                }}
+              />
+              <Stack.Screen
+                name="loading"
+                options={{
+                  title: t("loading"),
+                  headerShown: true,
+                }}
+              />
               <Stack.Screen name="+not-found" />
             </Stack>
           </AuthProvider>
         </QueryClientProvider>
         <StatusBar style="auto" />
-      </ThemeProvider>
-    </ApplicationProvider>
+      </GluestackUIProvider>
+    </ThemeProvider>
   );
 }

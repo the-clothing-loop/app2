@@ -5,14 +5,16 @@ import { authStore } from "@/store/auth";
 import { initSavedStore, savedStore } from "@/store/saved";
 import { useQuery } from "@tanstack/react-query";
 import { useStore } from "@tanstack/react-store";
-import { FC, PropsWithChildren, useEffect } from "react";
+import { router } from "expo-router";
+import { useEffect, FC, useMemo, ReactElement, PropsWithChildren } from "react";
 
-export default function AuthProvider(
-  props: PropsWithChildren<{
-    renderLoading: FC;
-    renderLoggedOut: FC;
-  }>
-) {
+export enum AuthStatus {
+  LoggedIn,
+  LoggedOut,
+  Pending,
+}
+
+export default function AuthProvider(props: PropsWithChildren) {
   const { userUID, token } = useStore(savedStore);
   const auth = useStore(authStore);
   const {
@@ -45,11 +47,13 @@ export default function AuthProvider(
     }
   }, [authUser]);
 
-  if (auth.authUser) {
-    return props.children;
-  } else if (isPending) {
-    return <props.renderLoading />;
-  } else {
-    return <props.renderLoggedOut />;
-  }
+  useEffect(() => {
+    if (auth.authUser) {
+      router.replace("/(auth)/(tabs)/(rules)");
+    } else if (!isPending) {
+      router.replace("/(onboarding)/step1");
+    }
+  }, [auth.authUser, isPending]);
+
+  return props.children;
 }

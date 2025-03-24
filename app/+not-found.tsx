@@ -1,32 +1,15 @@
-import { Button, Text } from "@ui-kitten/components";
-import { Link, Stack } from "expo-router";
-import { StyleSheet, View } from "react-native";
+import { Box } from "@/components/ui/box";
+import { Button } from "@/components/ui/button";
+import { Text } from "@/components/ui/text";
+import { Link } from "expo-router";
 
 export default function NotFoundScreen() {
   return (
-    <>
-      <Stack.Screen options={{ title: "Oops!" }} />
-      <View style={styles.container}>
-        <Text category="h3">This screen doesn't exist.</Text>
-        <Link href="/" asChild>
-          <Button status="primary">
-            <Text>Go to home screen!</Text>
-          </Button>
-        </Link>
-      </View>
-    </>
+    <Box className="items-center justify-center gap-2">
+      <Text size="xl">This screen doesn't exist.</Text>
+      <Link href="/" asChild>
+        <Button>Go to home screen!</Button>
+      </Link>
+    </Box>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    padding: 20,
-  },
-  link: {
-    marginTop: 15,
-    paddingVertical: 15,
-  },
-});

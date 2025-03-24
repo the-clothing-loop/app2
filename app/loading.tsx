@@ -1,16 +1,15 @@
-import { Avatar, Layout, Spinner, Text } from "@ui-kitten/components";
-import { View } from "react-native";
+import { Avatar, AvatarImage } from "@/components/ui/avatar";
+import { Box } from "@/components/ui/box";
+import { Text } from "@/components/ui/text";
 
 export default function Loading() {
   return (
-    <Layout
-      style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
-      level="3"
-    >
-      <Avatar size="giant" source={require("../assets/images/logo512.png")} />
-      <Text style={{ marginTop: 20 }} category="s1">
-        The Clothing Loop
-      </Text>
-    </Layout>
+    <Box className="flex-col items-center justify-center gap-4 bg-background-0">
+      <Avatar>
+        <AvatarImage src={require("../assets/images/logo512.png")} />
+      </Avatar>
+
+      <Text>The Clothing Loop</Text>
+    </Box>
   );
 }

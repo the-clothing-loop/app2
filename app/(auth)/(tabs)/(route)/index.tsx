@@ -6,17 +6,18 @@ import {
   authStoreCurrentChainWarden,
   authStoreListPausedUsers,
 } from "@/store/auth";
-import { useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import {
   ChevronRight,
   Flag,
   Map,
   Pause,
+  PauseCircle,
   Shield,
   ShoppingBag,
 } from "lucide-react-native";
-import { ScrollView } from "react-native";
+import { Pressable, ScrollView } from "react-native";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 import { Box } from "@/components/ui/box";
 import { HStack } from "@/components/ui/hstack";
@@ -24,6 +25,8 @@ import { Fab, FabIcon } from "@/components/ui/fab";
 import { Icon } from "@/components/ui/icon";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
+import { User } from "@/api/typex2";
+import RouteItem from "@/components/custom/route/RouteItem";
 
 export default function Route() {
   const { currentChainUsers, currentChainRoute } = useStore(authStore);
@@ -50,51 +53,40 @@ export default function Route() {
   const tabBarHeight = useBottomTabBarHeight();
 
   return (
-    <Box style={{ paddingBlockEnd: tabBarHeight }}>
-      <ScrollView>
+    <>
+      <ScrollView
+        contentInsetAdjustmentBehavior="automatic"
+        style={{ paddingBottom: tabBarHeight }}
+      >
         {orderedChainUsers?.map((u, i) => {
-          const isWarden = wardens?.some((v) => v.uid === u.uid);
-          const isHost = hosts?.some((v) => v.uid === u.uid);
           const bagsOfUser = bagsPerUser[u.uid] || [];
-          const isPaused = pausedUsers?.some((v) => v.uid === u.uid);
+          const isWarden = wardens?.some((v) => v.uid === u.uid) || false;
+          const isHost = hosts?.some((v) => v.uid === u.uid) || false;
+          const isPaused = pausedUsers?.some((v) => v.uid === u.uid) || false;
+
           return (
-            <HStack key={u.uid} className="items-center gap-2 p-2">
-              <Box className="relative">
-                {isHost ? (
-                  <Icon as={Shield} size="lg" />
-                ) : isWarden ? (
-                  <Icon as={Flag} size="lg" />
-                ) : undefined}
-
-                <Box className="top- absolute bottom-0 right-0 z-10">
-                  {!isPaused ? <Icon as={Pause} size="sm" /> : null}
-                </Box>
-              </Box>
-
-              <Text className="grow">{`${i + 1} ${u.name}`}</Text>
-
-              <HStack reversed>
-                <Icon as={ChevronRight} className="ms-2 opacity-0" />
-                <VStack className="flex-wrap-reverse gap-0.5">
-                  {bagsOfUser.map((b) => (
-                    <Box key={b.id}>
-                      <Icon as={ShoppingBag} color={b.color} />
-                    </Box>
-                  ))}
-                </VStack>
-              </HStack>
-            </HStack>
+            <RouteItem
+              key={u.uid}
+              user={u}
+              index={i}
+              isWarden={isWarden}
+              isHost={isHost}
+              bags={bagsOfUser}
+              isPaused={isPaused}
+            />
           );
         })}
-        <Box key="bottom">
+        <Box key="bottom" className="p-2">
           <Text className="text-center font-bold">
             {t("activeMembers") + ": " + countActiveMembers}
           </Text>
         </Box>
       </ScrollView>
-      <Fab>
-        <FabIcon as={Map} />
-      </Fab>
-    </Box>
+      <Box className="fixed bottom-2 right-2">
+        <Fab size="lg">
+          <FabIcon as={Map} size="xl" />
+        </Fab>
+      </Box>
+    </>
   );
 }

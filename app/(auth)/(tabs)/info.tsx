@@ -18,7 +18,7 @@ export default function Info() {
 
   const { authUser, currentChain } = useStore(authStore);
   return (
-    <ScrollView>
+    <ScrollView contentInsetAdjustmentBehavior="automatic">
       <Box className="mb-3 flex-col bg-background-0">
         <Text className="m-3">{t("account")}</Text>
         <VStack className="items-start p-3">

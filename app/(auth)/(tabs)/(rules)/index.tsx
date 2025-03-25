@@ -118,13 +118,19 @@ export default function HomeScreen(props: {}) {
   const hosts = useStore(authStoreCurrentChainAdmin);
   const { t } = useTranslation();
   const rulesCustom = useFaqCustom();
-  const rules = rulesCustom || rulesDefault;
-  const [indexOpenRuleList, setIndexOpenRuleList] = useState<number>();
+  const rules = useMemo(() => {
+    return (rulesCustom || rulesDefault).map((r, i) => ({
+      ...r,
+      key: r.title + i,
+      content: r.content.split("\n"),
+    }));
+  }, [rulesCustom, rulesDefault]);
+
   return (
     <ScrollView contentInsetAdjustmentBehavior="automatic">
       <Accordion type="multiple" isCollapsible>
-        {rules.map((r, i) => (
-          <AccordionItem key={i} value={i + ""}>
+        {rules.map((r) => (
+          <AccordionItem key={r.key} value={r.key}>
             <AccordionHeader>
               <AccordionTrigger>
                 {({ isExpanded }) => {
@@ -142,8 +148,8 @@ export default function HomeScreen(props: {}) {
               </AccordionTrigger>
             </AccordionHeader>
             <AccordionContent>
-              {r.content.split("\n").map((p, ii) => (
-                <AccordionContentText key={ii + "" + i}>
+              {r.content.map((p, ii) => (
+                <AccordionContentText key={r.key + ii}>
                   {p}
                 </AccordionContentText>
               ))}

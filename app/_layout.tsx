@@ -7,7 +7,7 @@ import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
-import { useEffect } from "react";
+import React, { useEffect } from "react";
 import AuthProvider from "@/providers/AuthProvider";
 import {
   focusManager,
@@ -27,6 +27,9 @@ import { useTranslation } from "react-i18next";
 import { GluestackUIProvider } from "@/components/ui/gluestack-ui-provider";
 import { Colors } from "@/constants/Colors";
 import "@/global.css";
+import { SafeAreaProvider } from "react-native-safe-area-context";
+import { SheetProvider } from "react-native-actions-sheet";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 function onAppStateChange(status: AppStateStatus) {
   if (Platform.OS !== "web") {
@@ -70,27 +73,40 @@ export default function RootLayout() {
       <GluestackUIProvider mode="light">
         <QueryClientProvider client={queryClient}>
           <AuthProvider>
-            <Stack
-              screenOptions={{
-                headerShown: false,
-              }}
-            >
-              <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-              <Stack.Screen
-                name="(onboarding)"
-                options={{
-                  headerShown: false,
+            <SafeAreaProvider>
+              <GestureHandlerRootView
+                style={{
+                  flex: 1,
                 }}
-              />
-              <Stack.Screen
-                name="loading"
-                options={{
-                  title: t("loading"),
-                  headerShown: true,
-                }}
-              />
-              <Stack.Screen name="+not-found" />
-            </Stack>
+              >
+                <SheetProvider context="global">
+                  <Stack
+                    screenOptions={{
+                      headerShown: false,
+                    }}
+                  >
+                    <Stack.Screen
+                      name="(auth)"
+                      options={{ headerShown: false }}
+                    />
+                    <Stack.Screen
+                      name="(onboarding)"
+                      options={{
+                        headerShown: false,
+                      }}
+                    />
+                    <Stack.Screen
+                      name="loading"
+                      options={{
+                        title: t("loading"),
+                        headerShown: true,
+                      }}
+                    />
+                    <Stack.Screen name="+not-found" />
+                  </Stack>
+                </SheetProvider>
+              </GestureHandlerRootView>
+            </SafeAreaProvider>
           </AuthProvider>
         </QueryClientProvider>
         <StatusBar style="auto" />

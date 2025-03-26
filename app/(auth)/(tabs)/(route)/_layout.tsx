@@ -4,7 +4,11 @@ import { useTranslation } from "react-i18next";
 export default function RulesStackLayout() {
   const { t } = useTranslation();
   return (
-    <Stack>
+    <Stack
+      screenOptions={{
+        headerBackVisible: true,
+      }}
+    >
       <Stack.Screen
         name="index"
         options={{

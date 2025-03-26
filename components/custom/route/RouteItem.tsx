@@ -13,7 +13,6 @@ import {
   Shield,
   ShoppingBag,
 } from "lucide-react-native";
-import { Pressable } from "react-native";
 
 interface Props {
   user: User;
@@ -22,7 +21,6 @@ interface Props {
   isHost: boolean;
   isPaused: boolean;
   bags: Bag[];
-  onPress: () => void;
 }
 
 export default function RouteItem(props: Props) {
@@ -30,7 +28,7 @@ export default function RouteItem(props: Props) {
     <Link
       key={props.user.uid}
       href={{
-        pathname: "./[user]",
+        pathname: "../[user]",
         params: {
           user: props.user.uid,
         },

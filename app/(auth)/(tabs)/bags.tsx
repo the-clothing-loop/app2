@@ -10,10 +10,16 @@ import { Text } from "@/components/ui/text";
 import { Box } from "@/components/ui/box";
 import { VStack } from "@/components/ui/vstack";
 import { Icon } from "@/components/ui/icon";
+import { Link, router } from "expo-router";
+import { SheetManager } from "react-native-actions-sheet";
 
-export default function TabTwoScreen() {
+export default function Bags() {
   const { currentBags, currentChainUsers } = useStore(authStore);
-
+  const handleBagPress = (bagId: number, userUid: string) => {
+    SheetManager.show("bags", {
+      payload: { bagId, userUid },
+    });
+  };
   return (
     <ScrollView>
       <Box className="flex w-full flex-row flex-wrap">
@@ -27,17 +33,33 @@ export default function TabTwoScreen() {
                 <Button
                   className="h-20 w-20 rounded-full"
                   size="xl"
-                  onPress={() => {}}
+                  onPress={() => handleBagPress(bag.id, bag.user_uid)}
                   style={{ backgroundColor: bag.color }}
                 >
-                  <Icon as={ShoppingBag} size="3xl" color="white" />
+                  <Icon
+                    as={ShoppingBag}
+                    //@ts-ignore
+                    size="3xl"
+                    color="white"
+                  />
                 </Button>
                 <Text numberOfLines={1} className="text-sm font-bold">
                   {bag.number}
                 </Text>
               </VStack>
-              <Pressable onPress={() => {}}>
-                <HStack className="border-1 justify-between rounded-b-md border-background-200 bg-background-50 p-2">
+              <Pressable
+                // onPress={() => {
+                //   router.replace(
+                //     `/(auth)/(tabs)/(route)/${bagUser?.uid || 0}`,
+                //     {},
+                //   );
+                // }}
+                onPress={() => {
+                  router.replace(`/(auth)/(tabs)/(route)/`);
+                  router.push(`/(auth)/(tabs)/(route)/${bagUser?.uid || 0}`);
+                }}
+              >
+                <HStack className="border-1 w-full justify-between rounded-b-md border-background-200 bg-background-50 p-2">
                   {bagUser ? (
                     <>
                       <Text numberOfLines={1}>{bagUser.name}</Text>

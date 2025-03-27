@@ -5,6 +5,7 @@ import {
   authStoreCurrentChainAdmin,
   authStoreCurrentChainWarden,
   authStoreListPausedUsers,
+  authStoreListRouteUsers,
 } from "@/store/auth";
 import { useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
@@ -27,27 +28,22 @@ import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
 import { User } from "@/api/typex2";
 import RouteItem from "@/components/custom/route/RouteItem";
+import RefreshControl from "@/components/custom/RefreshControl";
 
 export default function Route() {
-  const { currentChainUsers, currentChainRoute } = useStore(authStore);
+  const routeUsers = useStore(authStoreListRouteUsers);
   const bagsPerUser = useStore(authStoreCurrentBagsPerUser);
   const hosts = useStore(authStoreCurrentChainAdmin);
-  const wardens = useStore(authStoreCurrentChainWarden);
-  const pausedUsers = useStore(authStoreListPausedUsers);
+  const wardenUids = useStore(authStoreCurrentChainWarden);
+  const pausedUserUids = useStore(authStoreListPausedUsers);
   const { t } = useTranslation();
-
-  const orderedChainUsers = useMemo(() => {
-    return currentChainRoute
-      ?.map((uid) => currentChainUsers?.find((u) => u.uid == uid))
-      .filter((u) => !!u);
-  }, [currentChainUsers, currentChainRoute]);
 
   const countActiveMembers = useMemo(
     () =>
-      currentChainUsers?.filter(
-        (u) => !pausedUsers?.some((up) => up.uid === u.uid),
+      routeUsers?.filter(
+        ({ user }) => !pausedUserUids?.some((up) => up === user.uid),
       ).length || 0,
-    [currentChainUsers, pausedUsers],
+    [routeUsers, pausedUserUids],
   );
 
   const tabBarHeight = useBottomTabBarHeight();
@@ -57,17 +53,18 @@ export default function Route() {
       <ScrollView
         contentInsetAdjustmentBehavior="automatic"
         style={{ paddingBottom: tabBarHeight }}
+        refreshControl={<RefreshControl />}
       >
-        {orderedChainUsers?.map((u, i) => {
-          const bagsOfUser = bagsPerUser[u.uid] || [];
-          const isWarden = wardens?.some((v) => v.uid === u.uid) || false;
-          const isHost = hosts?.some((v) => v.uid === u.uid) || false;
-          const isPaused = pausedUsers?.some((v) => v.uid === u.uid) || false;
+        {routeUsers?.map(({ user }, i) => {
+          const bagsOfUser = bagsPerUser[user.uid] || [];
+          const isWarden = wardenUids.some((uid) => uid === user.uid);
+          const isHost = hosts.some((u) => u.uid === u.uid);
+          const isPaused = pausedUserUids.some((uid) => uid === user.uid);
 
           return (
             <RouteItem
-              key={u.uid}
-              user={u}
+              key={user.uid}
+              user={user}
               index={i}
               isWarden={isWarden}
               isHost={isHost}

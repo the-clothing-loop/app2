@@ -15,8 +15,8 @@ export const authStore = new Store({
 export const authStoreCurrentChainAdmin = new Derived({
   deps: [authStore],
   fn() {
-    return authStore.state.currentChainUsers?.filter((c) =>
-      IsChainAdmin(c, authStore.state.currentChain?.uid)
+    return (authStore.state.currentChainUsers || []).filter((c) =>
+      IsChainAdmin(c, authStore.state.currentChain?.uid),
     );
   },
 });
@@ -25,9 +25,9 @@ authStoreCurrentChainAdmin.mount();
 export const authStoreCurrentChainWarden = new Derived({
   deps: [authStore],
   fn() {
-    return authStore.state.currentChainUsers?.filter((c) =>
-      IsChainWarden(c, authStore.state.currentChain?.uid)
-    );
+    return (authStore.state.currentChainUsers || [])
+      .filter((c) => IsChainWarden(c, authStore.state.currentChain?.uid))
+      .map((u) => u.uid);
   },
 });
 authStoreCurrentChainWarden.mount();
@@ -51,9 +51,71 @@ export const authStoreListPausedUsers = new Derived({
   fn() {
     const authUserUid = authStore.state.authUser?.uid;
     if (!authUserUid) return [];
-    return authStore.state.currentChainUsers?.filter((u) =>
-      IsPaused(u, authUserUid)
-    );
+    return (authStore.state.currentChainUsers || [])
+      .filter((u) => IsPaused(u, authUserUid))
+      .map((u) => u.uid);
   },
 });
 authStoreListPausedUsers.mount();
+
+export const authStoreAuthUserRoles = new Derived({
+  deps: [
+    authStoreCurrentChainAdmin,
+    authStoreCurrentChainWarden,
+    authStoreListPausedUsers,
+    authStore,
+  ],
+  fn() {
+    const authUserUid = authStore.state.authUser?.uid;
+    if (!authUserUid)
+      return { isHost: false, isChainWarden: false, isPaused: false };
+    let isHost = Boolean(
+      authStoreCurrentChainAdmin.state.find((u) => u.uid === authUserUid),
+    );
+    let isPaused = Boolean(
+      authStoreListPausedUsers.state.find((v) => v === authUserUid),
+    );
+    let isChainWarden = Boolean(
+      authStoreCurrentChainWarden.state.find((uid) => uid === authUserUid),
+    );
+    return { isHost, isPaused, isChainWarden };
+  },
+});
+authStoreAuthUserRoles.mount();
+
+export const authStoreListRouteUsers = new Derived({
+  deps: [
+    authStore,
+    authStoreCurrentChainAdmin,
+    authStoreCurrentChainWarden,
+    authStoreListPausedUsers,
+  ],
+  fn() {
+    const currentChainRoute = authStore.state.currentChainRoute;
+    const currentChainUsers = authStore.state.currentChainUsers;
+    if (!currentChainRoute || !currentChainUsers) return [];
+    return currentChainRoute
+      .map((uid, i) => {
+        const user = currentChainUsers.find((u) => u.uid == uid) as User;
+
+        let isHost = Boolean(
+          authStoreCurrentChainAdmin.state.find((u) => u.uid === uid),
+        );
+        let isPaused = Boolean(
+          authStoreListPausedUsers.state.find((v) => v === uid),
+        );
+        let isWarden = Boolean(
+          authStoreCurrentChainWarden.state.find((v) => v === uid),
+        );
+        return {
+          user,
+          isHost,
+          isWarden,
+          isPaused,
+          routeIndex: i,
+        };
+      })
+      .filter(({ user }) => !!user);
+  },
+});
+authStoreListRouteUsers.mount();

@@ -134,6 +134,8 @@
   "openSource": "Open Source",
   "stayTuned": "Stay tuned",
   "organization": "Organization",
+  "loopRole": "Loop Role",
+  "host": "Host",
   "loopHost_one": "Loop Host",
   "loopHost_other": "Loop Hosts",
   "wereWorkingOnIt": "We're working on it",

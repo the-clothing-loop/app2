@@ -26,7 +26,7 @@ export default function TabLayout() {
   const auth = useStore(authStore);
   const selectedChainUID = useStore(savedStore, (s) => s.chainUID);
 
-  const { error } = useQuery({
+  const queryChain = useQuery({
     queryKey: ["chain", selectedChainUID],
     async queryFn() {
       if (!selectedChainUID || !auth.authUser) return null;
@@ -41,11 +41,8 @@ export default function TabLayout() {
       })
         .then((res) => res.data)
         .catch(catchErrThrow401);
-      const [resChainUsers, resBags, resChainRoute] = await Promise.all([
+      const [resChainUsers, resChainRoute] = await Promise.all([
         userGetAllByChain(selectedChainUID)
-          .then((res) => res.data)
-          .catch(catchErrThrow401),
-        bagGetAllByChain(selectedChainUID, auth.authUser.uid)
           .then((res) => res.data)
           .catch(catchErrThrow401),
         routeGetOrder(selectedChainUID)
@@ -55,7 +52,6 @@ export default function TabLayout() {
       if (
         typeof resChain === "string" ||
         typeof resChainUsers === "string" ||
-        typeof resBags === "string" ||
         typeof resChainRoute === "string"
       )
         return null;
@@ -63,16 +59,35 @@ export default function TabLayout() {
         ...s,
         currentChain: resChain,
         currentChainUsers: resChainUsers,
-        currentBags: resBags,
         currentChainRoute: resChainRoute,
       }));
 
-      return [resChain, resChainUsers];
+      return { resChain, resChainUsers };
     },
   });
+  const queryBags = useQuery({
+    queryKey: ["chain-bags", selectedChainUID],
+    async queryFn() {
+      // test with one request before asking for the rest
+      const resBags = await bagGetAllByChain(
+        selectedChainUID,
+        auth.authUser!.uid,
+      )
+        .then((res) => res.data)
+        .catch(catchErrThrow401);
+      if (typeof resBags === "string") return null;
+      authStore.setState((s) => ({
+        ...s,
+        currentBags: resBags,
+      }));
+
+      return resBags;
+    },
+    enabled: Boolean(selectedChainUID && auth.authUser),
+  });
   useEffect(() => {
-    if (error) queryClient.clear();
-  }, [error]);
+    if (queryChain.error) queryClient.clear();
+  }, [queryChain.error]);
 
   // useEffect(() => {
   //   if (["ios", "android"].includes(Platform.OS)) {
@@ -83,18 +98,25 @@ export default function TabLayout() {
   // }, []);
 
   return (
-    <Stack screenOptions={{ headerShown: false }}>
+    <Stack screenOptions={{}}>
       {auth.currentChain ? (
         <Stack.Screen
           name="(tabs)"
           options={{
             headerShown: false,
+            headerTitle: queryChain.data?.resChain?.name,
+            title: queryChain.data?.resChain?.name,
           }}
         />
       ) : (
         <Stack.Screen
           name="select-chain"
-          options={{ title: t("selectALoop") }}
+          options={{
+            headerTitle: t("selectLoop"),
+            headerBackButtonDisplayMode: "generic",
+            headerBackTitle: t("back"),
+            headerShown: true,
+          }}
         />
       )}
     </Stack>

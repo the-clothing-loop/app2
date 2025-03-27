@@ -7,6 +7,7 @@ export default function RulesStackLayout() {
     <Stack
       screenOptions={{
         headerBackVisible: true,
+        headerBackTitle: t("addresses"),
       }}
     >
       <Stack.Screen
@@ -19,6 +20,7 @@ export default function RulesStackLayout() {
       <Stack.Screen
         name="[user]"
         options={{
+          headerLargeTitle: true,
           title: t("loading"),
         }}
       />

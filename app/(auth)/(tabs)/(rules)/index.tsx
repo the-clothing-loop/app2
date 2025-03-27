@@ -30,6 +30,7 @@ import { VStack } from "@/components/ui/vstack";
 import { Text } from "@/components/ui/text";
 import { HStack } from "@/components/ui/hstack";
 import { Button, ButtonIcon, ButtonText } from "@/components/ui/button";
+import RefreshControl from "@/components/custom/RefreshControl";
 
 interface MediaIcon {
   icon: LucideIcon;
@@ -114,9 +115,9 @@ function useFaqCustom(): undefined | FaqListItem[] {
 export default function HomeScreen(props: {}) {
   const isDarkTheme = useColorScheme() == "dark";
   const { t: tFaq } = useTranslation("faq");
-  const rulesDefault = useFaqDefault(tFaq);
   const hosts = useStore(authStoreCurrentChainAdmin);
   const { t } = useTranslation();
+  const rulesDefault = useFaqDefault(tFaq);
   const rulesCustom = useFaqCustom();
   const rules = useMemo(() => {
     return (rulesCustom || rulesDefault).map((r, i) => ({
@@ -127,7 +128,10 @@ export default function HomeScreen(props: {}) {
   }, [rulesCustom, rulesDefault]);
 
   return (
-    <ScrollView contentInsetAdjustmentBehavior="automatic">
+    <ScrollView
+      contentInsetAdjustmentBehavior="automatic"
+      refreshControl={<RefreshControl />}
+    >
       <Accordion type="multiple" isCollapsible>
         {rules.map((r) => (
           <AccordionItem key={r.key} value={r.key}>
@@ -170,9 +174,11 @@ export default function HomeScreen(props: {}) {
               <Text key="empty">{t("empty")}</Text>
             ) : (
               hosts.map((u) => (
-                <Button key={u.uid} action="secondary">
-                  <ButtonText>{u.name}</ButtonText>
-                </Button>
+                <Link key={u.uid} href={`../(route)/${u.uid}`} asChild>
+                  <Button key={u.uid} action="secondary">
+                    <ButtonText>{u.name}</ButtonText>
+                  </Button>
+                </Link>
               ))
             )}
           </HStack>

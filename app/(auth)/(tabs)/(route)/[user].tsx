@@ -1,3 +1,4 @@
+import NoteEdit from "@/components/custom/route/NoteEdit";
 import UserCard from "@/components/custom/route/UserCard";
 import { Box } from "@/components/ui/box";
 import { Text } from "@/components/ui/text";
@@ -5,9 +6,6 @@ import { VStack } from "@/components/ui/vstack";
 import {
   authStore,
   authStoreAuthUserRoles,
-  authStoreCurrentChainAdmin,
-  authStoreCurrentChainWarden,
-  authStoreListPausedUsers,
   authStoreListRouteUsers,
 } from "@/store/auth";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
@@ -19,13 +17,18 @@ import { ScrollView } from "react-native";
 
 export default function RouteUser() {
   const { user: uid }: { user: string } = useLocalSearchParams();
+  const { currentChain, authUser } = useStore(authStore);
   const listRouteUsers = useStore(authStoreListRouteUsers);
+  const authUserRoles = useStore(authStoreAuthUserRoles);
 
   const { t } = useTranslation();
   const routeItem = useMemo(
     () => listRouteUsers?.find(({ user }) => user.uid == uid),
     [uid, listRouteUsers],
   );
+  const isMe = routeItem?.user.uid == authUser?.uid;
+  const isNoteEditable = isMe || authUserRoles.isHost;
+
   const navigation = useNavigation();
   useEffect(() => {
     if (routeItem) {
@@ -34,6 +37,7 @@ export default function RouteUser() {
   }, [routeItem]);
 
   const tabBarHeight = useBottomTabBarHeight();
+
   return (
     <ScrollView
       contentInsetAdjustmentBehavior="automatic"
@@ -47,6 +51,11 @@ export default function RouteUser() {
             isUserHost={routeItem.isHost}
             isUserWarden={routeItem.isWarden}
             showMessengers
+          />
+          <NoteEdit
+            currentChainUid={currentChain?.uid}
+            thisUserUid={routeItem.user?.uid}
+            isNoteEditable={isNoteEditable}
           />
         </VStack>
       ) : (

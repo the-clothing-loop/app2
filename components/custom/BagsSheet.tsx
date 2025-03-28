@@ -27,6 +27,7 @@ import { catchErrThrow401 } from "@/utils/handleRequests";
 import { Icon } from "../ui/icon";
 import { Box } from "../ui/box";
 import DatePickerSingleItem from "./DatePicker";
+import { ScrollView } from "react-native";
 
 declare module "react-native-actions-sheet" {
   export interface Sheets {
@@ -89,7 +90,6 @@ export default function BagsSheet() {
       snapPoints={[50, 100]}
       gestureEnabled
       ref={actionSheetRef}
-      containerStyle={{ minHeight: "80%" }}
       drawUnderStatusBar={false}
     >
       <HStack className="items-center justify-between gap-3 px-3">
@@ -109,7 +109,7 @@ export default function BagsSheet() {
           <ButtonText className="text-primary-600">{t("change")}</ButtonText>
         </Button>
       </HStack>
-      <VStack className="py-2">
+      <ScrollView className="py-2" style={{ minHeight: "80%" }}>
         <form.Field name="date">
           {(field) => (
             <DatePickerSingleItem
@@ -172,7 +172,16 @@ export default function BagsSheet() {
                           >
                             {user.name}
                           </RadioLabel>
-                          <Text size="xs">{user.address}</Text>
+                          <Text
+                            size="xs"
+                            className="break-words"
+                            style={{ width: 300 }}
+                            numberOfLines={2}
+                            ellipsizeMode="tail"
+                            // lineBreakMode="tail"
+                          >
+                            {user.address}
+                          </Text>
                         </VStack>
                       </HStack>
                       <RadioIndicator>
@@ -185,7 +194,7 @@ export default function BagsSheet() {
             </RadioGroup>
           )}
         </form.Field>
-      </VStack>
+      </ScrollView>
     </ActionSheet>
   );
 }

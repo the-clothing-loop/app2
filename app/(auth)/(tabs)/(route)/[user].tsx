@@ -14,7 +14,7 @@ import {
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 import { useStore } from "@tanstack/react-store";
 import { router, useLocalSearchParams, useNavigation } from "expo-router";
-import { useEffect, useMemo } from "react";
+import { useEffect, useLayoutEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { ScrollView } from "react-native";
 
@@ -27,7 +27,7 @@ export default function RouteUser() {
   const { t } = useTranslation();
   const routeItem = useMemo(
     () => listRouteUsers?.find(({ user }) => user.uid == uid),
-    [uid, listRouteUsers],
+    [uid, listRouteUsers, currentChain],
   );
   const myBags = useStore(authStoreListBags, (s) =>
     s.filter((v) => v.routeUser?.user.uid == uid),
@@ -36,11 +36,17 @@ export default function RouteUser() {
   const isNoteEditable = isMe || authUserRoles.isHost;
 
   const navigation = useNavigation();
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (routeItem) {
       navigation.setOptions({ headerTitle: routeItem.user.name });
     }
   }, [routeItem]);
+
+  useEffect(() => {
+    if (!routeItem && uid) {
+      router.replace("/(auth)/(tabs)/");
+    }
+  }, [listRouteUsers, currentChain?.uid, uid]);
 
   const tabBarHeight = useBottomTabBarHeight();
   function onPressBag(item: ListBag) {

@@ -19,7 +19,9 @@ import {
   ShoppingBag,
   UserCircle2,
 } from "lucide-react-native";
-import { useColorScheme } from "react-native";
+import { useColorScheme, View } from "react-native";
+import { Box } from "@/components/ui/box";
+import { Text } from "@/components/ui/text";
 // import { OneSignal } from "react-native-onesignal";
 
 export default function TabLayout() {
@@ -105,18 +107,25 @@ export default function TabLayout() {
 
   return (
     <Tabs
-      screenOptions={
-        {
-          // tabBarActiveTintColor: ,
-          // tabBarStyle: Platform.select({
-          //   ios: {
-          //     // Use a transparent background on iOS to show the blur effect
-          //     position: "absolute",
-          //   },
-          //   default: {},
-          // }),
-        }
-      }
+      backBehavior="initialRoute"
+      screenOptions={{
+        tabBarBackground: () =>
+          auth.currentChain ? (
+            <Box className="absolute inset-0 pt-4 opacity-25">
+              <Text size="xs" className="text-center">
+                {auth.currentChain.name}
+              </Text>
+            </Box>
+          ) : undefined,
+        // tabBarActiveTintColor: ,
+        // tabBarStyle: Platform.select({
+        //   ios: {
+        //     // Use a transparent background on iOS to show the blur effect
+        //     position: "absolute",
+        //   },
+        //   default: {},
+        // }),
+      }}
     >
       <Tabs.Screen
         name="(rules)"

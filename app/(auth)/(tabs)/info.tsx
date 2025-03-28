@@ -14,6 +14,10 @@ import { useRef } from "react";
 import { Icon } from "@/components/ui/icon";
 import UserCard from "@/components/custom/route/UserCard";
 import FormattedText from "@/components/custom/FormattedText";
+import InterestedSizes, {
+  Categories,
+  Sizes,
+} from "@/components/custom/InterestedSizes";
 
 export default function Info() {
   const { t } = useTranslation();
@@ -72,6 +76,12 @@ export default function Info() {
           <Icon as={EyeOff} className="me-2" />
           <Text className="me-3">{t("locked")}</Text>
         </Box>
+        {currentChain ? (
+          <InterestedSizes
+            categories={currentChain.genders as Categories[]}
+            sizes={currentChain.sizes as Sizes[]}
+          />
+        ) : null}
         {currentChain?.description ? (
           <Box className="p-3">
             <FormattedText content={currentChain.description} />

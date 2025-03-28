@@ -1,5 +1,6 @@
 import { useStore } from "@tanstack/react-store";
 import {
+  authStore,
   authStoreCurrentBagsPerUser,
   authStoreListPausedUsers,
   authStoreListRouteUsers,
@@ -19,6 +20,7 @@ import { useNavigation } from "expo-router";
 import { SearchBar, SearchBarProps } from "react-native-screens";
 
 export default function Route() {
+  const { currentChain } = useStore(authStore);
   const routeUsers = useStore(authStoreListRouteUsers);
   const bagsPerUser = useStore(authStoreCurrentBagsPerUser);
 
@@ -45,7 +47,7 @@ export default function Route() {
       const filterName = item.user.name.toLowerCase().includes(searchLower);
       return filterName;
     });
-  }, [debounceSearch]);
+  }, [debounceSearch, routeUsers]);
   const countActiveMembers = useMemo(
     () =>
       routeUsers?.filter(
@@ -70,7 +72,7 @@ export default function Route() {
 
             return (
               <RouteItem
-                key={user.uid}
+                key={user.uid + currentChain?.uid}
                 user={user}
                 index={routeIndex}
                 isWarden={isWarden}

@@ -1,15 +1,12 @@
 import { chainGet } from "@/api/chain";
-import { Chain } from "@/api/types";
-import { Box } from "@/components/ui/box";
-import { Button, ButtonText } from "@/components/ui/button";
 import { authStore } from "@/store/auth";
 import { savedStore } from "@/store/saved";
 import { useForm } from "@tanstack/react-form";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useStore } from "@tanstack/react-store";
-import { useEffect, useMemo } from "react";
+import { useLayoutEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { SafeAreaView, ScrollView } from "react-native";
+import { Pressable, SafeAreaView, ScrollView } from "react-native";
 import {
   Radio,
   RadioGroup,
@@ -18,13 +15,19 @@ import {
   RadioLabel,
 } from "@/components/ui/radio";
 import { CircleIcon } from "lucide-react-native";
-import { VStack } from "@/components/ui/vstack";
-import { useNavigation } from "expo-router";
+import { router, useNavigation } from "expo-router";
+import { NativeStackNavigationOptions } from "react-native-screens/lib/typescript/native-stack/types";
+import { Text } from "@/components/ui/text";
+import { Button, ButtonText } from "@/components/ui/button";
+import { Box } from "@/components/ui/box";
+import { HStack } from "@/components/ui/hstack";
+import { Accordion } from "@/components/ui/accordion";
 
 export default function SelectChain() {
   const { t } = useTranslation();
   const auth = useStore(authStore);
   const navigation = useNavigation();
+  const queryClient = useQueryClient();
 
   const { data: listOfChains } = useQuery({
     queryKey: [
@@ -50,46 +53,63 @@ export default function SelectChain() {
     async onSubmit({ value }) {
       if (!value.chainUid) throw "Please select a Loop";
       savedStore.setState((s) => ({ ...s, chainUID: value.chainUid }));
+      router.back();
     },
   });
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (auth.currentChain) {
+      form.setFieldValue("chainUid", auth.currentChain.uid);
       navigation.setOptions({
         headerBackTitle: auth.currentChain.name.slice(0, 8) + "...",
-      });
+        title: t("selectALoop"),
+      } satisfies NativeStackNavigationOptions);
     }
-  }, [auth]);
+  }, [auth.currentChain?.uid, navigation, t]);
 
   return (
-    <ScrollView
-      contentInsetAdjustmentBehavior="automatic"
-      className="bg-background-0"
-    >
-      <form.Field name="chainUid">
-        {(field) => (
-          <RadioGroup
-            aria-labelledby="Select one item"
-            value={field.state.value}
-            onChange={field.setValue}
-          >
-            {listOfChains?.map((c) => {
-              return (
-                <Radio
-                  value={c.uid}
-                  key={c.uid}
-                  size="md"
-                  className="items-center justify-between px-4 py-2"
-                >
-                  <RadioLabel className="text-lg">{c.name}</RadioLabel>
-                  <RadioIndicator>
-                    <RadioIcon as={CircleIcon} />
-                  </RadioIndicator>
-                </Radio>
-              );
-            })}
-          </RadioGroup>
-        )}
-      </form.Field>
-    </ScrollView>
+    <SafeAreaView className="flex-1 bg-background-0">
+      <Accordion></Accordion>
+      <HStack className="p-6">
+        <Button size="xl" action="negative" className="grow">
+          <ButtonText>{t("logout")}</ButtonText>
+        </Button>
+      </HStack>
+      <ScrollView
+        contentInsetAdjustmentBehavior="automatic"
+        className="flex flex-1 flex-col-reverse"
+      >
+        <form.Field name="chainUid">
+          {(field) => (
+            <RadioGroup
+              aria-labelledby="Select one item"
+              value={field.state.value}
+              onChange={(e) => {
+                console.log("select", e);
+                field.setValue(e);
+              }}
+            >
+              {listOfChains?.map((c) => {
+                return (
+                  <Radio
+                    value={c.uid}
+                    key={c.uid}
+                    size="md"
+                    className="items-center justify-between px-4 py-2"
+                  >
+                    <RadioLabel className="text-lg">{c.name}</RadioLabel>
+                    <RadioIndicator>
+                      <RadioIcon as={CircleIcon} />
+                    </RadioIndicator>
+                  </Radio>
+                );
+              })}
+            </RadioGroup>
+          )}
+        </form.Field>
+      </ScrollView>
+      <Button onPress={form.handleSubmit} size="xl" className="m-6">
+        <ButtonText>{t("select")}</ButtonText>
+      </Button>
+    </SafeAreaView>
   );
 }

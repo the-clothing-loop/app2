@@ -66,17 +66,22 @@ export default function RouteItem(props: Props) {
 
         <VStack className="grow">
           <Text className="font-semibold">{props.user.name}</Text>
-          <Text size="sm" className="text-typography-600">
+          <Text
+            size="sm"
+            className="text-typography-600"
+            style={{ width: 200 }}
+            numberOfLines={2}
+          >
             {props.user.address}
           </Text>
         </VStack>
 
-        <HStack reversed>
+        <HStack reversed className="items-center">
           <Icon
             as={ChevronRight}
             className={"ms-2".concat(props.isPaused ? "opacity-0" : "")}
           />
-          <VStack className="flex-wrap-reverse gap-0.5">
+          <VStack className="max-h-12 flex-wrap-reverse gap-0.5">
             {props.bags.map((b) => (
               <Box key={b.id}>
                 <Icon as={ShoppingBag} color={b.color} />

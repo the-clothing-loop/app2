@@ -14,13 +14,13 @@ export default function RulesStackLayout() {
         options={{
           headerLargeTitle: true,
           title: t("howDoesItWork"),
-          headerRight: isHost
-            ? () => (
-                <Link asChild href="./change">
-                  <Button title={t("change")}></Button>
-                </Link>
-              )
-            : undefined,
+          // headerRight: isHost
+          //   ? () => (
+          //       <Link asChild href="./change">
+          //         <Button title={t("change")}></Button>
+          //       </Link>
+          //     )
+          //   : undefined,
         }}
       />
       {/* <Stack.Screen name="Profile" /> */}

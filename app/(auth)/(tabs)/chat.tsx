@@ -5,6 +5,7 @@ import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
 import { messagingApps } from "@/constants/MessagingApps";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
+import { Link } from "expo-router";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import colors from "tailwindcss/colors";
@@ -13,7 +14,7 @@ export default function Chat() {
   const { t } = useTranslation();
 
   const tabBarHeight = useBottomTabBarHeight();
-  const [currentChatApp] = useState(messagingApps[1]);
+  const [currentChatApp] = useState(messagingApps[0]);
 
   return (
     <Box className="flex-1 items-center justify-center bg-background-0">
@@ -26,15 +27,17 @@ export default function Chat() {
         <Text className="text-center">
           Go to your Loop {currentChatApp.title} chat group
         </Text>
-        <Button
-          style={{ backgroundColor: currentChatApp.bgColor }}
-          className="rounded-pill"
-          size="xl"
-        >
-          <ButtonText style={{ color: currentChatApp.fgColor }}>
-            {t("join")}
-          </ButtonText>
-        </Button>
+        <Link href="https://signal.org" asChild>
+          <Button
+            style={{ backgroundColor: currentChatApp.bgColor }}
+            className="rounded-pill"
+            size="xl"
+          >
+            <ButtonText style={{ color: currentChatApp.fgColor }}>
+              {t("join")}
+            </ButtonText>
+          </Button>
+        </Link>
       </VStack>
     </Box>
   );

@@ -77,8 +77,8 @@ export default function Step2() {
     Linking.openURL(url);
   }
   return (
-    <VStack>
-      <ScrollView className="flex justify-center">
+    <VStack className="flex justify-center">
+      <ScrollView>
         {theme == "light" ? (
           <Image
             source={require("@/assets/images/v2_logo_black.png")}
@@ -151,7 +151,7 @@ export default function Step2() {
           </VStack>
         </VStack>
       </ScrollView>
-      <OnboardingArrows onPressPrev={() => router.dismissTo("./step1")} />
+      <OnboardingArrows onPressPrev={() => router.dismissTo("./step2")} />
     </VStack>
   );
 }

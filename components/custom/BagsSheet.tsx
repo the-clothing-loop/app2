@@ -1,4 +1,4 @@
-import { authStore, authStoreListRouteUsers } from "@/store/auth";
+import { authStore, authStoreListRouteUsers, RouteUser } from "@/store/auth";
 import { useStore } from "@tanstack/react-store";
 import ActionSheet, {
   ActionSheetRef,
@@ -17,7 +17,7 @@ import {
   RadioIndicator,
   RadioLabel,
 } from "../ui/radio";
-import { useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { CircleIcon, Flag, Pause, Shield } from "lucide-react-native";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { bagPut } from "@/api/bag";
@@ -81,6 +81,24 @@ export default function BagsSheet() {
     form.setFieldValue("userUid", payload.userUid);
   }, [payload]);
 
+  const sortedListRouteUsers = useMemo(() => {
+    if (!authUser || !listRouteUsers.length) return listRouteUsers;
+    const routeIndexOfMe =
+      listRouteUsers.find((item) => item.user.uid == authUser?.uid)
+        ?.routeIndex || 0;
+    let routeIndexStarter = routeIndexOfMe - 2;
+    if (routeIndexStarter < 0) {
+      routeIndexStarter = listRouteUsers.length + routeIndexStarter;
+    }
+
+    const result: RouteUser[] = [
+      ...listRouteUsers.slice(routeIndexStarter),
+      ...listRouteUsers.slice(0, routeIndexStarter - 1),
+    ];
+
+    return result;
+  }, [listRouteUsers, authUser?.uid]);
+
   function handleClose() {
     actionSheetRef.current?.hide();
   }
@@ -126,7 +144,7 @@ export default function BagsSheet() {
               value={field.state.value}
               onChange={field.setValue}
             >
-              {listRouteUsers.map(
+              {sortedListRouteUsers.map(
                 ({ user, isPaused, isHost, isWarden, routeIndex }) => {
                   const isMe = user.uid == authUser?.uid;
                   return (

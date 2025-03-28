@@ -22,6 +22,7 @@ import { Button, ButtonText } from "@/components/ui/button";
 import { Box } from "@/components/ui/box";
 import { HStack } from "@/components/ui/hstack";
 import { Accordion } from "@/components/ui/accordion";
+import LegalAndLogout from "@/components/custom/Legal";
 
 export default function SelectChain() {
   const { t } = useTranslation();
@@ -69,11 +70,7 @@ export default function SelectChain() {
   return (
     <SafeAreaView className="flex-1 bg-background-0">
       <Accordion></Accordion>
-      <HStack className="p-6">
-        <Button size="xl" action="negative" className="grow">
-          <ButtonText>{t("logout")}</ButtonText>
-        </Button>
-      </HStack>
+      <LegalAndLogout />
       <ScrollView
         contentInsetAdjustmentBehavior="automatic"
         className="flex flex-1 flex-col-reverse"

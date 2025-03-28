@@ -18,6 +18,7 @@ import InterestedSizes, {
   Categories,
   Sizes,
 } from "@/components/custom/InterestedSizes";
+import LegalAndLogout from "@/components/custom/Legal";
 
 export default function Info() {
   const { t } = useTranslation();
@@ -42,7 +43,7 @@ export default function Info() {
           />
         ) : null}
 
-        <HStack className="items-start gap-3 px-4 py-2">
+        {/* <HStack className="items-start gap-3 px-4 py-2">
           <VStack className="flex-grow">
             <Text bold size="sm">
               {t("pauseTitle")}
@@ -50,7 +51,7 @@ export default function Info() {
             <Text>{t("pauseBody")}</Text>
           </VStack>
           <Switch></Switch>
-        </HStack>
+        </HStack> */}
       </Box>
 
       <Box className="flex-col bg-background-0">
@@ -84,6 +85,9 @@ export default function Info() {
         ) : null}
         {currentChain?.description ? (
           <Box className="p-3">
+            <Text size="sm" bold>
+              {t("description")}
+            </Text>
             <FormattedText content={currentChain.description} />
           </Box>
         ) : null}
@@ -98,6 +102,7 @@ export default function Info() {
           </Link>
         ) : null}
       </Box>
+      <LegalAndLogout />
     </ScrollView>
   );
 }

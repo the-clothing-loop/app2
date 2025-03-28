@@ -130,6 +130,7 @@ export default function InterestedSizes(props: {
             className="gap-1 self-end rounded-full bg-background-100 px-3 py-1"
           >
             <Image
+              alt={"icon" + st.category}
               source={categoriesIcons[st.category]}
               className="h-6 w-6"
               key={st.category}

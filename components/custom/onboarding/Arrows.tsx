@@ -8,27 +8,35 @@ export default function OnboardingArrows(props: {
   onPressNext?: () => void;
 }) {
   return (
-    <HStack className="justify-between self-end">
+    <HStack className="justify-between p-4">
       <Box>
         {props.onPressPrev ? (
           <Button
-            className="rounded-full"
+            className="h-20 w-20 rounded-full"
             variant="outline"
             onPress={props.onPressPrev}
             size="xl"
           >
-            <ButtonIcon as={ArrowLeft} />
+            <ButtonIcon
+              //@ts-expect-error
+              size="2xl"
+              as={ArrowLeft}
+            />
           </Button>
         ) : null}
       </Box>
       <Box>
         {props.onPressNext ? (
           <Button
-            className="rounded-full"
+            className="h-20 w-20 rounded-full"
             onPress={props.onPressNext}
             size="xl"
           >
-            <ButtonIcon as={ArrowRight} />
+            <ButtonIcon
+              //@ts-expect-error
+              size="2xl"
+              as={ArrowRight}
+            />
           </Button>
         ) : null}
       </Box>

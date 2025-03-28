@@ -83,17 +83,17 @@ export default function Route() {
             );
           },
         )}
-        <Box key="bottom" className="p-2">
+        <Box key="bottom" className="p-2 pb-6">
           <Text className="text-center font-bold">
             {t("activeMembers") + ": " + countActiveMembers}
           </Text>
         </Box>
       </ScrollView>
-      <Box className="fixed bottom-2 right-2">
+      {/* <Box className="fixed bottom-2 right-2">
         <Fab size="lg">
           <FabIcon as={Map} size="xl" />
         </Fab>
-      </Box>
+      </Box> */}
     </>
   );
 }

@@ -1,6 +1,8 @@
 import { Chain, UID } from "@/api/types";
 import { Bag, User } from "@/api/typex2";
 import { IsChainAdmin, IsChainWarden } from "@/utils/chain";
+import isBagTooOld, { IsBagTooOld } from "@/utils/is_bag_too_old";
+import IsPrivate from "@/utils/is_private";
 import IsPaused from "@/utils/user";
 import { Store, Derived } from "@tanstack/react-store";
 
@@ -78,11 +80,19 @@ export const authStoreAuthUserRoles = new Derived({
     let isChainWarden = Boolean(
       authStoreCurrentChainWarden.state.find((uid) => uid === authUserUid),
     );
+
     return { isHost, isPaused, isChainWarden };
   },
 });
 authStoreAuthUserRoles.mount();
 
+export interface RouteUser {
+  user: User;
+  isHost: boolean;
+  isWarden: boolean;
+  isPaused: boolean;
+  routeIndex: number;
+}
 export const authStoreListRouteUsers = new Derived({
   deps: [
     authStore,
@@ -113,9 +123,42 @@ export const authStoreListRouteUsers = new Derived({
           isWarden,
           isPaused,
           routeIndex: i,
-        };
+        } satisfies RouteUser;
       })
       .filter(({ user }) => !!user);
   },
 });
 authStoreListRouteUsers.mount();
+
+export type ListBag = {
+  bag: Bag;
+  isTooOld: IsBagTooOld;
+  routeUser: RouteUser | undefined;
+  localeDate: string;
+};
+export const authStoreListBags = new Derived({
+  deps: [authStore, authStoreListRouteUsers, authStoreAuthUserRoles],
+  fn() {
+    const authUser = authStore.state.authUser;
+    const { isHost: isAuthUserHost } = authStoreAuthUserRoles.state;
+    return (
+      authStore.state.currentBags?.map((bag) => {
+        const routeUser = authStoreListRouteUsers.state?.find(
+          (item) => item.user.uid === bag.user_uid,
+        );
+        const isMe =
+          authUser && routeUser ? routeUser.user.uid === authUser.uid : false;
+
+        const isTooOld = isBagTooOld(bag, isAuthUserHost, isMe);
+
+        return {
+          bag,
+          isTooOld,
+          routeUser,
+          localeDate: isTooOld.bagUpdatedAt.toDate().toLocaleDateString(),
+        } satisfies ListBag;
+      }) || []
+    );
+  },
+});
+authStoreListBags.mount();

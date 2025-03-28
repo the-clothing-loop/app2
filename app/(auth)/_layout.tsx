@@ -65,7 +65,7 @@ export default function TabLayout() {
       return { resChain, resChainUsers };
     },
   });
-  const queryBags = useQuery({
+  useQuery({
     queryKey: ["chain-bags", selectedChainUID],
     async queryFn() {
       // test with one request before asking for the rest
@@ -112,7 +112,7 @@ export default function TabLayout() {
         <Stack.Screen
           name="select-chain"
           options={{
-            headerTitle: t("selectLoop"),
+            headerTitle: t("selectALoop"),
             headerBackButtonDisplayMode: "generic",
             headerBackTitle: t("back"),
             headerShown: true,

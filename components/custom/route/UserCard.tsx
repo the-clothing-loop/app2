@@ -103,7 +103,7 @@ export default function UserCard(props: {
           <Text>{props.user.email}</Text>
         </VStack>
       </Pressable>
-      <Pressable onPress={handleShareAddress}>
+      <Pressable onLongPress={handleShareAddress}>
         <VStack className="items-start px-4 py-2">
           <Text bold size="sm">
             {t("address")}

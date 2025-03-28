@@ -1,43 +1,51 @@
 import { useStore } from "@tanstack/react-store";
 import {
-  authStore,
   authStoreCurrentBagsPerUser,
-  authStoreCurrentChainAdmin,
-  authStoreCurrentChainWarden,
   authStoreListPausedUsers,
   authStoreListRouteUsers,
 } from "@/store/auth";
-import { useCallback, useMemo } from "react";
+import { useDebounce } from "@uidotdev/usehooks";
+import { useLayoutEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import {
-  ChevronRight,
-  Flag,
-  Map,
-  Pause,
-  PauseCircle,
-  Shield,
-  ShoppingBag,
-} from "lucide-react-native";
-import { Pressable, ScrollView } from "react-native";
+import { Map } from "lucide-react-native";
+import { ScrollView } from "react-native";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 import { Box } from "@/components/ui/box";
-import { HStack } from "@/components/ui/hstack";
 import { Fab, FabIcon } from "@/components/ui/fab";
-import { Icon } from "@/components/ui/icon";
 import { Text } from "@/components/ui/text";
-import { VStack } from "@/components/ui/vstack";
-import { User } from "@/api/typex2";
 import RouteItem from "@/components/custom/route/RouteItem";
 import RefreshControl from "@/components/custom/RefreshControl";
+import { useNavigation } from "expo-router";
+import { SearchBar, SearchBarProps } from "react-native-screens";
 
 export default function Route() {
   const routeUsers = useStore(authStoreListRouteUsers);
   const bagsPerUser = useStore(authStoreCurrentBagsPerUser);
-  const hosts = useStore(authStoreCurrentChainAdmin);
-  const wardenUids = useStore(authStoreCurrentChainWarden);
+
+  const [search, setSearch] = useState("");
   const pausedUserUids = useStore(authStoreListPausedUsers);
   const { t } = useTranslation();
+  const navigation = useNavigation();
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerSearchBarOptions: {
+        hideNavigationBar: false,
+        hideWhenScrolling: true,
+        placeholder: t("search"),
+        onChangeText: (e) => setSearch(e.nativeEvent.text),
+      } satisfies SearchBarProps,
+    });
+  }, [navigation, t]);
 
+  const debounceSearch = useDebounce(search, 500);
+  const filteredRouteUsers = useMemo(() => {
+    if (!debounceSearch) return routeUsers;
+    const searchLower = debounceSearch.toLowerCase();
+    return routeUsers.filter((item) => {
+      const filterName = item.user.name.toLowerCase().includes(searchLower);
+      return filterName;
+    });
+  }, [debounceSearch]);
   const countActiveMembers = useMemo(
     () =>
       routeUsers?.filter(
@@ -50,29 +58,29 @@ export default function Route() {
 
   return (
     <>
+      <SearchBar></SearchBar>
       <ScrollView
         contentInsetAdjustmentBehavior="automatic"
         style={{ paddingBottom: tabBarHeight }}
         refreshControl={<RefreshControl />}
       >
-        {routeUsers?.map(({ user }, i) => {
-          const bagsOfUser = bagsPerUser[user.uid] || [];
-          const isWarden = wardenUids.some((uid) => uid === user.uid);
-          const isHost = hosts.some((u) => u.uid === u.uid);
-          const isPaused = pausedUserUids.some((uid) => uid === user.uid);
+        {filteredRouteUsers?.map(
+          ({ user, isHost, routeIndex, isWarden, isPaused }, i) => {
+            const bagsOfUser = bagsPerUser[user.uid] || [];
 
-          return (
-            <RouteItem
-              key={user.uid}
-              user={user}
-              index={i}
-              isWarden={isWarden}
-              isHost={isHost}
-              bags={bagsOfUser}
-              isPaused={isPaused}
-            />
-          );
-        })}
+            return (
+              <RouteItem
+                key={user.uid}
+                user={user}
+                index={routeIndex}
+                isWarden={isWarden}
+                isHost={isHost}
+                bags={bagsOfUser}
+                isPaused={isPaused}
+              />
+            );
+          },
+        )}
         <Box key="bottom" className="p-2">
           <Text className="text-center font-bold">
             {t("activeMembers") + ": " + countActiveMembers}

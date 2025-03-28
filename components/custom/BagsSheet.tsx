@@ -17,7 +17,7 @@ import {
   RadioIndicator,
   RadioLabel,
 } from "../ui/radio";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { CircleIcon, Flag, Pause, Shield } from "lucide-react-native";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { bagPut } from "@/api/bag";
@@ -26,6 +26,7 @@ import { useForm } from "@tanstack/react-form";
 import { catchErrThrow401 } from "@/utils/handleRequests";
 import { Icon } from "../ui/icon";
 import { Box } from "../ui/box";
+import DatePickerSingleItem from "./DatePicker";
 
 declare module "react-native-actions-sheet" {
   export interface Sheets {
@@ -44,15 +45,16 @@ export default function BagsSheet() {
   const queryClient = useQueryClient();
   const { currentChain, authUser } = useStore(authStore);
   const listRouteUsers = useStore(authStoreListRouteUsers);
+
   const payload = useSheetPayload("bags");
   const mutateBags = useMutation({
-    async mutationFn(holder_uid: UID) {
-      console.log("this is run", holder_uid);
+    async mutationFn(value: { userUid: UID; date: Date }) {
       return bagPut({
         chain_uid: currentChain!.uid,
         user_uid: authUser!.uid,
         bag_id: payload.bagId,
-        holder_uid,
+        holder_uid: value.userUid,
+        updated_at: value.date.toISOString(),
       })
         .then((res) => res.data)
         .catch(catchErrThrow401);
@@ -60,7 +62,7 @@ export default function BagsSheet() {
     onSuccess(data) {
       queryClient.invalidateQueries({
         queryKey: ["chain-bags", currentChain!.uid],
-        refetchType: "active",
+        refetchType: "all",
       });
     },
     onError(error) {
@@ -68,10 +70,10 @@ export default function BagsSheet() {
     },
   });
   const form = useForm({
-    defaultValues: { userUid: payload.userUid },
+    defaultValues: { userUid: payload.userUid, date: new Date() },
     async onSubmit({ value }) {
       actionSheetRef.current?.hide();
-      await mutateBags.mutateAsync(value.userUid);
+      await mutateBags.mutateAsync(value);
     },
   });
   useEffect(() => {
@@ -83,7 +85,13 @@ export default function BagsSheet() {
   }
 
   return (
-    <ActionSheet gestureEnabled ref={actionSheetRef}>
+    <ActionSheet
+      snapPoints={[50, 100]}
+      gestureEnabled
+      ref={actionSheetRef}
+      containerStyle={{ minHeight: "80%" }}
+      drawUnderStatusBar={false}
+    >
       <HStack className="items-center justify-between gap-3 px-3">
         <Button
           action="negative"
@@ -102,6 +110,15 @@ export default function BagsSheet() {
         </Button>
       </HStack>
       <VStack className="py-2">
+        <form.Field name="date">
+          {(field) => (
+            <DatePickerSingleItem
+              title={t("dateOfDelivery")}
+              value={field.state.value}
+              setValue={field.setValue}
+            />
+          )}
+        </form.Field>
         <form.Field name="userUid">
           {(field) => (
             <RadioGroup
@@ -111,6 +128,7 @@ export default function BagsSheet() {
             >
               {listRouteUsers.map(
                 ({ user, isPaused, isHost, isWarden, routeIndex }) => {
+                  const isMe = user.uid == authUser?.uid;
                   return (
                     <Radio
                       value={user.uid}
@@ -149,7 +167,9 @@ export default function BagsSheet() {
                           </Box>
                         </Box>
                         <VStack>
-                          <RadioLabel className="font-bold">
+                          <RadioLabel
+                            className={`font-bold ${isMe ? "!text-primary-500" : ""}`}
+                          >
                             {user.name}
                           </RadioLabel>
                           <Text size="xs">{user.address}</Text>

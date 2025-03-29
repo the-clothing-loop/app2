@@ -6,11 +6,7 @@ import { useTranslation } from "react-i18next";
 import { Pressable, ScrollView } from "react-native";
 import { Box } from "@/components/ui/box";
 import { Text } from "@/components/ui/text";
-import { VStack } from "@/components/ui/vstack";
-import ActionSheet, { ActionSheetRef } from "react-native-actions-sheet";
 import { HStack } from "@/components/ui/hstack";
-import { Switch } from "@/components/ui/switch";
-import { useRef } from "react";
 import { Icon } from "@/components/ui/icon";
 import UserCard from "@/components/custom/route/UserCard";
 import FormattedText from "@/components/custom/FormattedText";
@@ -18,7 +14,8 @@ import InterestedSizes, {
   Categories,
   Sizes,
 } from "@/components/custom/InterestedSizes";
-import LegalAndLogout from "@/components/custom/Legal";
+import LogoutLink from "@/components/custom/LogoutLink";
+import LegalLinks from "@/components/custom/LegalLinks";
 
 export default function Info() {
   const { t } = useTranslation();
@@ -102,7 +99,8 @@ export default function Info() {
           </Link>
         ) : null}
       </Box>
-      <LegalAndLogout />
+      <LogoutLink />
+      <LegalLinks />
     </ScrollView>
   );
 }

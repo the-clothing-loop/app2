@@ -13,23 +13,28 @@ export default function Step2() {
   return (
     <SafeAreaView className="flex-1 flex-col">
       <VStack className="grow items-center justify-center">
-        <VStack className="items-center justify-center gap-6">
-          <VStack>
-            <Text className="text-center text-lg">You'll need an account</Text>
-            <Text className="text-center text-lg">to use this app</Text>
+        <VStack className="items-center justify-center gap-5">
+          <VStack className="mt-5">
+            <Text className="text-center text-2xl" bold>
+              You'll need an account
+            </Text>
+            <Text className="text-center text-2xl" bold>
+              to use this app
+            </Text>
           </VStack>
           <Image
-            style={{
-              width: 200,
-              height: 200,
-            }}
+            resizeMode="contain"
+            alt="map"
+            className="h-64 w-64"
             source={{
-              uri: "https://images.clothingloop.org/600x,jpeg/map_image_5.jpg",
+              uri: "https://images.clothingloop.org/1024x,jpeg/map_image_5.jpg",
             }}
           />
           <VStack>
-            <Text className="text-center text-lg">If you haven't already,</Text>
-            <Text className="text-center text-lg">find a loop first!</Text>
+            <Text className="text-center text-2xl">
+              If you haven't already,
+            </Text>
+            <Text className="text-center text-2xl">find a loop first!</Text>
           </VStack>
           <Link asChild href="https://www.clothingloop.org/loops/find">
             <Button>

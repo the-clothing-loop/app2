@@ -27,7 +27,7 @@ export default function TabLayout() {
   const selectedChainUID = useStore(savedStore, (s) => s.chainUID);
 
   const queryChain = useQuery({
-    queryKey: ["chain", selectedChainUID],
+    queryKey: ["auth", "chain", selectedChainUID],
     async queryFn() {
       if (!selectedChainUID || !auth.authUser) return null;
       // test with one request before asking for the rest
@@ -66,7 +66,7 @@ export default function TabLayout() {
     },
   });
   useQuery({
-    queryKey: ["chain-bags", selectedChainUID],
+    queryKey: ["auth", "chain-bags", selectedChainUID],
     async queryFn() {
       // test with one request before asking for the rest
       const resBags = await bagGetAllByChain(
@@ -99,7 +99,7 @@ export default function TabLayout() {
 
   return (
     <Stack screenOptions={{}}>
-      {auth.currentChain ? (
+      {auth.currentChain !== null ? (
         <Stack.Screen
           name="(tabs)"
           options={{

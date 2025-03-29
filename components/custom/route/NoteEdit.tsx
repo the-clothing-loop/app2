@@ -27,7 +27,12 @@ export default function NoteEdit(props: {
   const { t } = useTranslation();
   const [showNoteEdit, setShowNoteEdit] = useState(false);
   const queryNote = useQuery({
-    queryKey: ["chain-user-note", props.currentChainUid, props.thisUserUid],
+    queryKey: [
+      "auth",
+      "chain-user-note",
+      props.currentChainUid,
+      props.thisUserUid,
+    ],
     queryFn() {
       return chainGetUserNote(props.currentChainUid!, props.thisUserUid!);
     },

@@ -102,6 +102,22 @@ export default function RootLayout() {
                         headerShown: true,
                       }}
                     />
+                    <Stack.Screen
+                      name="open-source"
+                      options={{
+                        title: t("openSource"),
+                        headerShown: true,
+                        headerBackTitle: t("back"),
+                      }}
+                    />
+                    <Stack.Screen
+                      name="privacy-policy"
+                      options={{
+                        title: t("privacyPolicy"),
+                        headerShown: true,
+                        headerBackTitle: t("back"),
+                      }}
+                    />
                     <Stack.Screen name="+not-found" />
                   </Stack>
                 </SheetProvider>

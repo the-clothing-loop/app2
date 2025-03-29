@@ -16,14 +16,16 @@ export default function Step1() {
               key="logo-light"
               source={require("@/assets/images/v2_logo_black.png")}
               alt="logo"
-              className="h-36 w-36 object-cover"
+              resizeMode="contain"
+              className="h-36 w-44"
             />
           ) : (
             <Image
               key="logo-dark"
               source={require("@/assets/images/v2_logo_white.png")}
               alt="logo"
-              className="h-36 w-36 object-contain"
+              resizeMode="contain"
+              className="h-36 w-44"
             />
           )}
 

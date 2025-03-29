@@ -6,7 +6,14 @@ import { initSavedStore, savedStore } from "@/store/saved";
 import { useQuery } from "@tanstack/react-query";
 import { useStore } from "@tanstack/react-store";
 import { router } from "expo-router";
-import { useEffect, FC, useMemo, ReactElement, PropsWithChildren } from "react";
+import {
+  useEffect,
+  FC,
+  useMemo,
+  ReactElement,
+  PropsWithChildren,
+  useLayoutEffect,
+} from "react";
 
 export enum AuthStatus {
   LoggedIn,
@@ -22,7 +29,7 @@ export default function AuthProvider(props: PropsWithChildren) {
     data: authUser,
     isPending,
   } = useQuery({
-    queryKey: ["auth-user"],
+    queryKey: ["auth", "user"],
     async queryFn(): Promise<User | null> {
       if (!userUID && !token) throw "Not logged in";
 
@@ -40,14 +47,14 @@ export default function AuthProvider(props: PropsWithChildren) {
         });
     },
   });
-  useEffect(initSavedStore, []);
-  useEffect(() => {
+  useLayoutEffect(initSavedStore, []);
+  useLayoutEffect(() => {
     if (authUser !== undefined) {
       authStore.setState((s) => ({ ...s, authUser: authUser }));
     }
   }, [authUser]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (auth.authUser) {
       router.replace("/(auth)/(tabs)/(rules)");
     } else if (!isPending) {

@@ -6,7 +6,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useStore } from "@tanstack/react-store";
 import { useLayoutEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { Pressable, SafeAreaView, ScrollView } from "react-native";
+import { SafeAreaView, ScrollView } from "react-native";
 import {
   Radio,
   RadioGroup,
@@ -16,23 +16,20 @@ import {
 } from "@/components/ui/radio";
 import { CircleIcon } from "lucide-react-native";
 import { router, useNavigation } from "expo-router";
-import { NativeStackNavigationOptions } from "react-native-screens/lib/typescript/native-stack/types";
-import { Text } from "@/components/ui/text";
+import { NativeStackNavigationOptions } from "@react-navigation/native-stack/src/types";
 import { Button, ButtonText } from "@/components/ui/button";
-import { Box } from "@/components/ui/box";
-import { HStack } from "@/components/ui/hstack";
 import { Accordion } from "@/components/ui/accordion";
-import LegalAndLogout from "@/components/custom/Legal";
+import LogoutLink from "@/components/custom/LogoutLink";
+import LegalLinks from "@/components/custom/LegalLinks";
 
 export default function SelectChain() {
   const { t } = useTranslation();
   const auth = useStore(authStore);
   const navigation = useNavigation();
-  const queryClient = useQueryClient();
 
   const { data: listOfChains } = useQuery({
     queryKey: [
-      "user-chains",
+"auth",       "user-chains",
       auth.authUser?.uid,
       auth.authUser?.chains?.join(","),
     ],
@@ -70,7 +67,8 @@ export default function SelectChain() {
   return (
     <SafeAreaView className="flex-1 bg-background-0">
       <Accordion></Accordion>
-      <LegalAndLogout />
+      <LogoutLink />
+      <LegalLinks />
       <ScrollView
         contentInsetAdjustmentBehavior="automatic"
         className="flex flex-1 flex-col-reverse"

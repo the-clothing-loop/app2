@@ -11,9 +11,18 @@ import { savedStore } from "@/store/saved";
 import { useForm } from "@tanstack/react-form";
 import { useQueryClient, useMutation } from "@tanstack/react-query";
 import { router } from "expo-router";
+import { Response } from "redaxios";
 import { useTranslation } from "react-i18next";
-import { Linking, Platform, ScrollView, useColorScheme } from "react-native";
+import {
+  Linking,
+  Platform,
+  SafeAreaView,
+  ScrollView,
+  useColorScheme,
+} from "react-native";
 import { Input, InputField } from "@/components/ui/input";
+import { Box } from "@/components/ui/box";
+import LegalLinks from "@/components/custom/LegalLinks";
 
 export default function Step2() {
   const theme = useColorScheme() ?? "light";
@@ -38,7 +47,7 @@ export default function Step2() {
       }));
 
       axios.defaults.auth = "Bearer " + data.token;
-      queryClient.invalidateQueries({ queryKey: ["auth-user"] });
+      queryClient.invalidateQueries({ queryKey: ["auth"] });
     },
   });
 
@@ -76,25 +85,38 @@ export default function Step2() {
 
     Linking.openURL(url);
   }
+  const mutateLoginEmailErr = (
+    mutateLoginEmail.error as any as Response<string> | undefined
+  )?.data;
+  const mutateLoginPasscodeErr = (
+    mutateLoginPasscode.error as any as Response<string> | undefined
+  )?.data;
   return (
-    <VStack className="flex justify-center">
-      <ScrollView>
-        {theme == "light" ? (
-          <Image
-            source={require("@/assets/images/v2_logo_black.png")}
-            className="object-contain"
-            style={{ width: 140, height: 140 }}
-          />
-        ) : (
-          <Image
-            src={require("@/assets/images/v2_logo_white.png")}
-            className="object-contain"
-            style={{ width: 140, height: 140 }}
-          />
-        )}
-        <VStack className="my-10 gap-4">
+    <SafeAreaView className="flex-1 justify-center">
+      <ScrollView className="flex-grow">
+        <Box className="flex items-center pt-12">
+          {theme == "light" ? (
+            <Image
+              source={require("@/assets/images/v2_logo_black.png")}
+              resizeMode="contain"
+              className="h-44 w-44"
+              alt="logo"
+            />
+          ) : (
+            <Image
+              src={require("@/assets/images/v2_logo_white.png")}
+              resizeMode="contain"
+              alt="logo"
+              className="h-44 w-44"
+            />
+          )}
+        </Box>
+        <VStack className="mx-4 my-10 gap-4 bg-background-0 p-4">
           <Text className="text-xl">{t("login")}</Text>
-          <FormLabel label={t("pleaseEnterYourEmailAddress")}>
+          <FormLabel
+            label={t("pleaseEnterYourEmailAddress")}
+            error={mutateLoginEmailErr}
+          >
             <formLogin.Field name="email">
               {(field) => (
                 <Input id="email" key="email-address">
@@ -129,8 +151,18 @@ export default function Step2() {
           </HStack>
 
           <VStack className="gap-4">
-            <Text>{t("enterThePasscodeYouReceivedInYourEmail")}</Text>
-            <FormLabel label={t("passcode")}>
+            <Text
+              className={
+                mutateLoginEmail.isSuccess ? "" : "text-typography-400"
+              }
+            >
+              {t("enterThePasscodeYouReceivedInYourEmail")}
+            </Text>
+            <FormLabel
+              label={t("passcode")}
+              error={mutateLoginPasscodeErr}
+              isDisabled={!mutateLoginEmail.isSuccess}
+            >
               <formPasscode.Field name="passcode">
                 {(field) => (
                   <Input>
@@ -145,13 +177,18 @@ export default function Step2() {
                 )}
               </formPasscode.Field>
             </FormLabel>
-            <Button onPress={formPasscode.handleSubmit} className="self-end">
+            <Button
+              onPress={formPasscode.handleSubmit}
+              isDisabled={!mutateLoginEmail.isSuccess}
+              className="self-end"
+            >
               <ButtonText>{t("login")}</ButtonText>
             </Button>
           </VStack>
         </VStack>
+        <LegalLinks />
       </ScrollView>
       <OnboardingArrows onPressPrev={() => router.dismissTo("./step2")} />
-    </VStack>
+    </SafeAreaView>
   );
 }

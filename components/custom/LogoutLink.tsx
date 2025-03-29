@@ -1,14 +1,12 @@
 import { useTranslation } from "react-i18next";
 import { Button, ButtonText } from "../ui/button";
-import { HStack } from "../ui/hstack";
-import { useStore } from "@tanstack/react-store";
 import { savedStore } from "@/store/saved";
 import axios from "@/api/axios";
 import { logout } from "@/api/login";
-import { router } from "expo-router";
 import { authStore } from "@/store/auth";
+import { Box } from "../ui/box";
 
-export default function LegalAndLogout() {
+export default function LogoutLink() {
   const { t } = useTranslation();
   function onLogout() {
     logout().finally(() => {
@@ -27,11 +25,12 @@ export default function LegalAndLogout() {
       }));
     });
   }
+
   return (
-    <HStack className="p-6">
+    <Box className="p-6">
       <Button onPress={onLogout} size="xl" action="negative" className="grow">
         <ButtonText>{t("logout")}</ButtonText>
       </Button>
-    </HStack>
+    </Box>
   );
 }

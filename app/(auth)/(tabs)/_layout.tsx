@@ -32,7 +32,7 @@ export default function TabLayout() {
   const colorScheme = useColorScheme() ?? "light";
 
   const { error } = useQuery({
-    queryKey: ["chain", selectedChainUID],
+    queryKey: ["auth", "chain", selectedChainUID],
     async queryFn() {
       if (!selectedChainUID || !auth.authUser) return null;
       // test with one request before asking for the rest
@@ -80,6 +80,7 @@ export default function TabLayout() {
   }, [error]);
   const { data: listOfChains } = useQuery({
     queryKey: [
+      "auth",
       "user-chains",
       auth.authUser?.uid,
       auth.authUser?.chains?.join(","),

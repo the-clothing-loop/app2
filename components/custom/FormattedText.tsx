@@ -17,10 +17,10 @@ export default function FormattedText(props: {
         {content.map((c, i) =>
           props.allowLinks ? (
             <Hyperlink linkDefault key={i}>
-              <Text>{content}</Text>
+              <Text>{c}</Text>
             </Hyperlink>
           ) : (
-            <Text key={i}>{content}</Text>
+            <Text key={i}>{c}</Text>
           ),
         )}
       </VStack>

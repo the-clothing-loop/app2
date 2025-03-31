@@ -9,14 +9,18 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "bundleIdentifier": "org.clothingloop.app.onesignal",
-      "supportsTablet": true
+      "bundleIdentifier": "org.clothingloop.app2",
+      "supportsTablet": true,
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "org.clothingloop.app2"
     },
     "web": {
       "bundler": "metro",
@@ -27,8 +31,7 @@
       [
         "onesignal-expo-plugin",
         {
-          "mode": "development",
-          "iPhoneDeploymentTarget": "13"
+          "mode": "development"
         }
       ],
       "expo-router",
@@ -42,7 +45,20 @@
         }
       ],
       "expo-localization",
-      "expo-secure-store"
+      "expo-secure-store",
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "compileSdkVersion": 35,
+            "targetSdkVersion": 35,
+            "buildToolsVersion": "35.0.0"
+          },
+          "ios": {
+            "deploymentTarget": "16.0"
+          }
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true
@@ -52,23 +68,7 @@
         "origin": false
       },
       "eas": {
-        "build": {
-          "experimental": {
-            "ios": {
-              "appExtensions": [
-                {
-                  "targetName": "OneSignalNotificationServiceExtension",
-                  "bundleIdentifier": "org.clothingloop.app.onesignal.OneSignalNotificationServiceExtension",
-                  "entitlements": {
-                    "com.apple.security.application-groups": [
-                      "group.org.clothingloop.app.onesignal.onesignal"
-                    ]
-                  }
-                }
-              ]
-            }
-          }
-        },
+        "build": {},
         "projectId": "64b2f899-5f2e-404f-a0a0-7a829425989b"
       }
     },

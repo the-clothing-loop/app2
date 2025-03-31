@@ -39,7 +39,6 @@ export default function AuthProvider(props: PropsWithChildren) {
           throw res;
         });
     },
-    enabled: Boolean(userUID && token),
   });
   useLayoutEffect(initSavedStore, []);
   useLayoutEffect(() => {

@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import { useStore } from "@tanstack/react-store";
 import { authStore, authStoreCurrentChainAdmin } from "@/store/auth";
 import { TFunction, TOptionsBase } from "i18next";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { ExternalPathString, Link } from "expo-router";
 import {
   ChevronDownIcon,
@@ -31,6 +31,7 @@ import { Text } from "@/components/ui/text";
 import { HStack } from "@/components/ui/hstack";
 import { Button, ButtonIcon, ButtonText } from "@/components/ui/button";
 import RefreshControl from "@/components/custom/RefreshControl";
+import Donate from "@/components/custom/Donate";
 
 interface MediaIcon {
   icon: LucideIcon;
@@ -209,6 +210,7 @@ export default function HomeScreen(props: {}) {
           </Link>
         </VStack>
       </Box>
+      <Donate />
     </ScrollView>
   );
 }

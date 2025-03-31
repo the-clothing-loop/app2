@@ -127,6 +127,15 @@ export default function TabLayout() {
           }}
         />
       )}
+      <Stack.Screen
+        name="bag"
+        options={{
+          headerShown: true,
+          headerTitle: t("createBag"),
+          headerBackButtonDisplayMode: "generic",
+          headerBackTitle: t("back"),
+        }}
+      />
     </Stack>
   );
 }

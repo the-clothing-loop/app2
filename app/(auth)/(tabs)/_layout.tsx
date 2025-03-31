@@ -2,7 +2,6 @@ import { Tabs } from "expo-router";
 import React, { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 
-// import { LogLevel, OneSignal } from "react-native-onesignal";
 import { useStore } from "@tanstack/react-store";
 import { authStore } from "@/store/auth";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -22,7 +21,6 @@ import {
 import { useColorScheme, View } from "react-native";
 import { Box } from "@/components/ui/box";
 import { Text } from "@/components/ui/text";
-// import { OneSignal } from "react-native-onesignal";
 
 export default function TabLayout() {
   const queryClient = useQueryClient();

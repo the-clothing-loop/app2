@@ -17,7 +17,7 @@ import { routeGetOrder } from "@/api/route";
 import { registerSheet } from "react-native-actions-sheet";
 import BagsSheet from "@/components/custom/BagsSheet";
 import { Platform } from "react-native";
-import { OneSignal } from "react-native-onesignal";
+// import { OneSignal } from "react-native-onesignal";
 
 const isPlatformMobile = ["ios", "android"].includes(Platform.OS);
 const oneSignalKey = process.env.EXPO_PUBLIC_ONESIGNAL_APP_ID;
@@ -94,14 +94,14 @@ export default function TabLayout() {
   }, [queryChain.error]);
 
   useLayoutEffect(() => {
-    if (oneSignalKey && isPlatformMobile) {
-      OneSignal.initialize(oneSignalKey);
-      OneSignal.Notifications.requestPermission(true);
-    }
+    // if (oneSignalKey && isPlatformMobile) {
+    //   OneSignal.initialize(oneSignalKey);
+    //   OneSignal.Notifications.requestPermission(true);
+    // }
   }, []);
   useLayoutEffect(() => {
     if (oneSignalKey && auth.authUser && isPlatformMobile) {
-      OneSignal.login(auth.authUser!.uid);
+      // OneSignal.login(auth.authUser!.uid);
     }
   }, [auth.authUser]);
 

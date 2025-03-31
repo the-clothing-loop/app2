@@ -66,9 +66,9 @@ export default function BagsList(props: {
             {props.showUser ? (
               <Pressable
                 onPress={() => {
-                  router.replace(`/(auth)/(tabs)/(route)/`);
+                  router.replace(`/(auth)/(tabs)/route/`);
                   router.push(
-                    `/(auth)/(tabs)/(route)/${item.routeUser?.user?.uid || 0}`,
+                    `/(auth)/(tabs)/route/${item.routeUser?.user?.uid || 0}`,
                   );
                 }}
               >

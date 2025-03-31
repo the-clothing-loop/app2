@@ -31,10 +31,11 @@ export default function useFilteredRouteUsers(
           }
         }
 
-        result = [
-          ...result.slice(routeIndexStarter),
-          ...result.slice(0, routeIndexStarter - 1),
-        ];
+        if (routeIndexStarter !== 0)
+          result = [
+            ...result.slice(routeIndexStarter),
+            ...result.slice(0, routeIndexStarter - 1),
+          ];
       } else if (sort == "aToZ") {
         result.sort((a, b) => a.user.name.localeCompare(b.user.name));
       }

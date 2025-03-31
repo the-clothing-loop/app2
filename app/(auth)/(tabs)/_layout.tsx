@@ -127,7 +127,7 @@ export default function TabLayout() {
       }}
     >
       <Tabs.Screen
-        name="(rules)"
+        name="rules"
         options={{
           headerShown: false,
           title: t("rules"),
@@ -137,7 +137,7 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="(route)"
+        name="route"
         options={{
           lazy: false,
           headerShown: false,

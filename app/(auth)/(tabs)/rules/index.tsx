@@ -175,7 +175,7 @@ export default function HomeScreen(props: {}) {
               <Text key="empty">{t("empty")}</Text>
             ) : (
               hosts.map((u) => (
-                <Link key={u.uid} href={`../(route)/${u.uid}`} asChild>
+                <Link key={u.uid} href={`../route/${u.uid}`} asChild>
                   <Button key={u.uid} action="secondary">
                     <ButtonText>{u.name}</ButtonText>
                   </Button>

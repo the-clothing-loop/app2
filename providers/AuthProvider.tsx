@@ -50,12 +50,12 @@ export default function AuthProvider(props: PropsWithChildren) {
   useEffect(() => {
     if (auth.authUser) {
       if (chainUID) {
-        router.replace("/(auth)/(tabs)/(rules)");
+        router.replace("/(auth)/(tabs)/route");
       } else {
         router.replace("/(auth)/select-chain");
       }
     } else if (!isPending) {
-      router.replace("/(onboarding)/step1");
+      router.replace("/onboarding/step1");
     } else {
       router.replace("/loading");
     }

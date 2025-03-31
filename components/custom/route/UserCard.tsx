@@ -11,7 +11,7 @@ import IsPrivate from "@/utils/is_private";
 import { Flag, Shield } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
 import { Linking, Pressable, Share } from "react-native";
-import InterestedSizes, { Sizes } from "../InterestedSizes";
+import InterestedSizes, { Categories, Sizes } from "../InterestedSizes";
 
 export default function UserCard(props: {
   user: User;
@@ -113,8 +113,7 @@ export default function UserCard(props: {
         </VStack>
       </Pressable>
       <InterestedSizes
-        categories={[]}
-        title={t("interestedSizes")}
+        categories={[] as Categories[]}
         sizes={props.user.sizes as Sizes[]}
       />
     </VStack>

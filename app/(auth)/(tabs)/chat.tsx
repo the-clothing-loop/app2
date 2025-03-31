@@ -28,7 +28,7 @@ import {
   ClipboardIcon,
   MessageCircleQuestionIcon,
 } from "lucide-react-native";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useForm } from "@tanstack/react-form";
 import { useMutation, useQuery } from "@tanstack/react-query";
@@ -178,7 +178,7 @@ export default function Chat() {
                     <SelectItem label={t("disabled")} value="off" />
                     <SelectItem label="Signal" value="signal" />
                     <SelectItem label="WhatsApp" value="whatsapp" />
-                    <SelectItem label="Discord" value="discord" />
+                    <SelectItem label="Discord" isDisabled value="discord" />
                     <SelectItem label="Telegram" value="telegram" />
                   </SelectContent>
                 </SelectPortal>

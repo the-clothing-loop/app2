@@ -92,103 +92,107 @@ export default function Step2() {
     mutateLoginPasscode.error as any as Response<string> | undefined
   )?.data;
   return (
-    <SafeAreaView className="flex-1 justify-center">
-      <ScrollView className="flex-grow">
-        <Box className="flex items-center pt-12">
-          {theme == "light" ? (
-            <Image
-              source={require("@/assets/images/v2_logo_black.png")}
-              resizeMode="contain"
-              className="h-44 w-44"
-              alt="logo"
-            />
-          ) : (
-            <Image
-              src={require("@/assets/images/v2_logo_white.png")}
-              resizeMode="contain"
-              alt="logo"
-              className="h-44 w-44"
-            />
-          )}
-        </Box>
-        <VStack className="mx-4 my-10 gap-4 bg-background-0 p-4">
-          <Text className="text-xl">{t("login")}</Text>
-          <FormLabel
-            label={t("pleaseEnterYourEmailAddress")}
-            error={mutateLoginEmailErr}
-          >
-            <formLogin.Field name="email">
-              {(field) => (
-                <Input id="email" key="email-address">
-                  <InputField
-                    onSubmitEditing={formLogin.handleSubmit}
-                    value={field.state.value}
-                    autoCapitalize="none"
-                    onChangeText={field.setValue}
-                    onBlur={field.handleBlur}
-                    inputMode="email"
-                    keyboardType="email-address"
-                    returnKeyType="send"
-                    placeholder={t("yourEmailAddress")}
-                    type="text"
-                  ></InputField>
-                </Input>
-              )}
-            </formLogin.Field>
-          </FormLabel>
-          <HStack reversed className="gap-3">
-            <Button
-              action={mutateLoginEmail.isError ? "negative" : "primary"}
-              onPress={formLogin.handleSubmit}
-            >
-              <ButtonText>{t("send")}</ButtonText>
-            </Button>
-            {mutateLoginEmail.isSuccess ? (
-              <Button variant="outline" onPress={handleOpenMailApp}>
-                <ButtonText>{t("openMailApp")}</ButtonText>
-              </Button>
-            ) : null}
-          </HStack>
-
-          <VStack className="gap-4">
-            <Text
-              className={
-                mutateLoginEmail.isSuccess ? "" : "text-typography-400"
-              }
-            >
-              {t("enterThePasscodeYouReceivedInYourEmail")}
-            </Text>
+    <SafeAreaView className="flex-1">
+      <Box className="relative flex-1">
+        <ScrollView className="flex-grow">
+          <Box className="flex items-center pt-12">
+            {theme == "light" ? (
+              <Image
+                source={require("@/assets/images/v2_logo_black.png")}
+                resizeMode="contain"
+                className="h-44 w-44"
+                alt="logo"
+              />
+            ) : (
+              <Image
+                src={require("@/assets/images/v2_logo_white.png")}
+                resizeMode="contain"
+                alt="logo"
+                className="h-44 w-44"
+              />
+            )}
+          </Box>
+          <VStack className="mx-4 my-10 gap-4 bg-background-0 p-4">
+            <Text className="text-xl">{t("login")}</Text>
             <FormLabel
-              label={t("passcode")}
-              error={mutateLoginPasscodeErr}
-              isDisabled={!mutateLoginEmail.isSuccess}
+              label={t("pleaseEnterYourEmailAddress")}
+              error={mutateLoginEmailErr}
             >
-              <formPasscode.Field name="passcode">
+              <formLogin.Field name="email">
                 {(field) => (
-                  <Input>
+                  <Input id="email" key="email-address">
                     <InputField
-                      keyboardType="numeric"
-                      placeholder="••••••"
+                      onSubmitEditing={formLogin.handleSubmit}
                       value={field.state.value}
+                      autoCapitalize="none"
                       onChangeText={field.setValue}
                       onBlur={field.handleBlur}
-                    />
+                      inputMode="email"
+                      keyboardType="email-address"
+                      returnKeyType="send"
+                      placeholder={t("yourEmailAddress")}
+                      type="text"
+                    ></InputField>
                   </Input>
                 )}
-              </formPasscode.Field>
+              </formLogin.Field>
             </FormLabel>
-            <Button
-              onPress={formPasscode.handleSubmit}
-              isDisabled={!mutateLoginEmail.isSuccess}
-              className="self-end"
-            >
-              <ButtonText>{t("login")}</ButtonText>
-            </Button>
+            <HStack reversed className="gap-3">
+              <Button
+                action={mutateLoginEmail.isError ? "negative" : "primary"}
+                onPress={formLogin.handleSubmit}
+              >
+                <ButtonText>{t("send")}</ButtonText>
+              </Button>
+              {mutateLoginEmail.isSuccess ? (
+                <Button variant="outline" onPress={handleOpenMailApp}>
+                  <ButtonText>{t("openMailApp")}</ButtonText>
+                </Button>
+              ) : null}
+            </HStack>
+
+            <VStack className="gap-4">
+              <Text
+                className={
+                  mutateLoginEmail.isSuccess ? "" : "text-typography-400"
+                }
+              >
+                {t("enterThePasscodeYouReceivedInYourEmail")}
+              </Text>
+              <FormLabel
+                label={t("passcode")}
+                error={mutateLoginPasscodeErr}
+                isDisabled={!mutateLoginEmail.isSuccess}
+              >
+                <formPasscode.Field name="passcode">
+                  {(field) => (
+                    <Input>
+                      <InputField
+                        keyboardType="numeric"
+                        placeholder="••••••"
+                        value={field.state.value}
+                        onChangeText={field.setValue}
+                        onBlur={field.handleBlur}
+                      />
+                    </Input>
+                  )}
+                </formPasscode.Field>
+              </FormLabel>
+              <Button
+                onPress={formPasscode.handleSubmit}
+                isDisabled={!mutateLoginEmail.isSuccess}
+                className="self-end"
+              >
+                <ButtonText>{t("login")}</ButtonText>
+              </Button>
+            </VStack>
           </VStack>
-        </VStack>
-        <LegalLinks />
-      </ScrollView>
-      <OnboardingArrows onPressPrev={() => router.dismissTo("./step2")} />
+          <LegalLinks />
+          <Box className="h-32" />
+        </ScrollView>
+        <Box className="absolute bottom-0 left-0 right-0 h-32" />
+        <OnboardingArrows onPressPrev={() => router.dismissTo("./step2")} />
+      </Box>
     </SafeAreaView>
   );
 }

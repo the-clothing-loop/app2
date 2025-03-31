@@ -9,7 +9,7 @@ export default function Step1() {
   const theme = useColorScheme() ?? "light";
   return (
     <SafeAreaView className="flex-1 flex-col">
-      <VStack className="flex-grow items-center justify-center">
+      <VStack className="relative flex-grow items-center justify-center">
         <VStack className="items-center justify-center gap-6">
           {theme == "light" ? (
             <Image
@@ -38,8 +38,8 @@ export default function Step1() {
             </Text>
           </VStack>
         </VStack>
+        <OnboardingArrows onPressNext={() => router.push("./step2")} />
       </VStack>
-      <OnboardingArrows onPressNext={() => router.push("./step2")} />
     </SafeAreaView>
   );
 }

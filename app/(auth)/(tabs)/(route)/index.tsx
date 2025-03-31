@@ -18,6 +18,9 @@ import RouteItem from "@/components/custom/route/RouteItem";
 import RefreshControl from "@/components/custom/RefreshControl";
 import { useNavigation } from "expo-router";
 import { SearchBar, SearchBarProps } from "react-native-screens";
+import useFilteredRouteUsers, {
+  FilteredRouteUsersSort,
+} from "@/hooks/useFilteredRouteUsers";
 
 export default function Route() {
   const { currentChain } = useStore(authStore);
@@ -40,14 +43,13 @@ export default function Route() {
   }, [navigation, t]);
 
   const debounceSearch = useDebounce(search, 500);
-  const filteredRouteUsers = useMemo(() => {
-    if (!debounceSearch) return routeUsers;
-    const searchLower = debounceSearch.toLowerCase();
-    return routeUsers.filter((item) => {
-      const filterName = item.user.name.toLowerCase().includes(searchLower);
-      return filterName;
-    });
-  }, [debounceSearch, routeUsers]);
+  const [sort, setSort] = useState<FilteredRouteUsersSort>("isMe3rd");
+  const sortedListRouteUsers = useFilteredRouteUsers(
+    routeUsers,
+    sort,
+    debounceSearch,
+  );
+
   const countActiveMembers = useMemo(
     () =>
       routeUsers?.filter(
@@ -66,8 +68,8 @@ export default function Route() {
         style={{ paddingBottom: tabBarHeight }}
         refreshControl={<RefreshControl />}
       >
-        {filteredRouteUsers?.map(
-          ({ user, isHost, routeIndex, isWarden, isPaused }, i) => {
+        {sortedListRouteUsers?.map(
+          ({ user, isHost, isMe, routeIndex, isWarden, isPaused }, i) => {
             const bagsOfUser = bagsPerUser[user.uid] || [];
 
             return (
@@ -77,6 +79,7 @@ export default function Route() {
                 index={routeIndex}
                 isWarden={isWarden}
                 isHost={isHost}
+                isMe={isMe}
                 bags={bagsOfUser}
                 isPaused={isPaused}
               />

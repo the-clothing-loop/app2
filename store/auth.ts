@@ -87,6 +87,7 @@ authStoreAuthUserRoles.mount();
 
 export interface RouteUser {
   user: User;
+  isMe: boolean;
   isHost: boolean;
   isWarden: boolean;
   isPaused: boolean;
@@ -110,6 +111,7 @@ export const authStoreListRouteUsers = new Derived({
         let isHost = Boolean(
           authStoreCurrentChainAdmin.state.find((u) => u.uid === uid),
         );
+        const isMe = uid === authStore.state.authUser?.uid;
         let isPaused = Boolean(
           authStoreListPausedUsers.state.find((v) => v === uid),
         );
@@ -118,6 +120,7 @@ export const authStoreListRouteUsers = new Derived({
         );
         return {
           user,
+          isMe,
           isHost,
           isWarden,
           isPaused,

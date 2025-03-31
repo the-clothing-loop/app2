@@ -8,11 +8,11 @@ export default function OnboardingArrows(props: {
   onPressNext?: () => void;
 }) {
   return (
-    <HStack className="justify-between p-4">
+    <HStack className="absolute bottom-0 left-0 right-0 justify-between p-4">
       <Box>
         {props.onPressPrev ? (
           <Button
-            className="h-20 w-20 rounded-full"
+            className="h-20 w-20 rounded-full bg-background-100 data-[active=true]:bg-background-200"
             variant="outline"
             onPress={props.onPressPrev}
             size="xl"

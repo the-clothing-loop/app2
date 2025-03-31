@@ -5,13 +5,9 @@ import { SafeAreaView, ScrollView } from "react-native";
 
 export default function PrivacyPolicy() {
   return (
-    <ScrollView>
+    <ScrollView className="bg-background-0">
       <SafeAreaView>
         <VStack className="gap-2 p-5">
-          <Text className="tw-mt-0 tw-text-3xl tw-font-bold">
-            Privacy Policy
-          </Text>
-
           <Text>Version dated 2022, February 9th</Text>
           <Text>
             The Clothing Loop is part of the foundation Slow Fashion Movement,

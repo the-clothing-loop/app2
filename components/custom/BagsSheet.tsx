@@ -28,6 +28,7 @@ import { Icon } from "../ui/icon";
 import { Box } from "../ui/box";
 import DatePickerSingleItem from "./DatePicker";
 import { ScrollView } from "react-native";
+import useFilteredRouteUsers from "@/hooks/useFilteredRouteUsers";
 
 declare module "react-native-actions-sheet" {
   export interface Sheets {
@@ -81,23 +82,11 @@ export default function BagsSheet() {
     form.setFieldValue("userUid", payload.userUid);
   }, [payload]);
 
-  const sortedListRouteUsers = useMemo(() => {
-    if (!authUser || !listRouteUsers.length) return listRouteUsers;
-    const routeIndexOfMe =
-      listRouteUsers.find((item) => item.user.uid == authUser?.uid)
-        ?.routeIndex || 0;
-    let routeIndexStarter = routeIndexOfMe - 2;
-    if (routeIndexStarter < 0) {
-      routeIndexStarter = listRouteUsers.length + routeIndexStarter;
-    }
-
-    const result: RouteUser[] = [
-      ...listRouteUsers.slice(routeIndexStarter),
-      ...listRouteUsers.slice(0, routeIndexStarter - 1),
-    ];
-
-    return result;
-  }, [listRouteUsers, authUser?.uid]);
+  const sortedListRouteUsers = useFilteredRouteUsers(
+    listRouteUsers,
+    "isMe3rd",
+    "",
+  );
 
   function handleClose() {
     actionSheetRef.current?.hide();

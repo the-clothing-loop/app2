@@ -19,6 +19,7 @@ interface Props {
   index: number;
   isWarden: boolean;
   isHost: boolean;
+  isMe: boolean;
   isPaused: boolean;
   bags: Bag[];
 }
@@ -65,7 +66,11 @@ export default function RouteItem(props: Props) {
         </Box>
 
         <VStack className="grow">
-          <Text className="font-semibold">{props.user.name}</Text>
+          <Text
+            className={`font-semibold ${props.isMe ? "text-info-700" : ""}`}
+          >
+            {props.user.name}
+          </Text>
           <Text
             size="sm"
             className="text-typography-600"

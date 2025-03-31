@@ -29,7 +29,8 @@ export default function SelectChain() {
 
   const { data: listOfChains } = useQuery({
     queryKey: [
-"auth",       "user-chains",
+      "auth",
+      "user-chains",
       auth.authUser?.uid,
       auth.authUser?.chains?.join(","),
     ],
@@ -51,7 +52,6 @@ export default function SelectChain() {
     async onSubmit({ value }) {
       if (!value.chainUid) throw "Please select a Loop";
       savedStore.setState((s) => ({ ...s, chainUID: value.chainUid }));
-      router.back();
     },
   });
   useLayoutEffect(() => {
@@ -66,9 +66,12 @@ export default function SelectChain() {
 
   return (
     <SafeAreaView className="flex-1 bg-background-0">
-      <Accordion></Accordion>
-      <LogoutLink />
-      <LegalLinks />
+      {auth.currentChain ? null : (
+        <>
+          <LogoutLink />
+          <LegalLinks />
+        </>
+      )}
       <ScrollView
         contentInsetAdjustmentBehavior="automatic"
         className="flex flex-1 flex-col-reverse"
@@ -79,7 +82,6 @@ export default function SelectChain() {
               aria-labelledby="Select one item"
               value={field.state.value}
               onChange={(e) => {
-                console.log("select", e);
                 field.setValue(e);
               }}
             >

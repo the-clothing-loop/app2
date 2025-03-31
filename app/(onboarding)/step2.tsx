@@ -44,11 +44,11 @@ export default function Step2() {
             </Button>
           </Link>
         </VStack>
+        <OnboardingArrows
+          onPressPrev={() => router.dismissTo("./step1")}
+          onPressNext={() => router.push("./login")}
+        />
       </VStack>
-      <OnboardingArrows
-        onPressPrev={() => router.dismissTo("./step1")}
-        onPressNext={() => router.push("./login")}
-      />
     </SafeAreaView>
   );
 }

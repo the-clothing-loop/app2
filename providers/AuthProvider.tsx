@@ -6,14 +6,7 @@ import { initSavedStore, savedStore } from "@/store/saved";
 import { useQuery } from "@tanstack/react-query";
 import { useStore } from "@tanstack/react-store";
 import { router } from "expo-router";
-import {
-  useEffect,
-  FC,
-  useMemo,
-  ReactElement,
-  PropsWithChildren,
-  useLayoutEffect,
-} from "react";
+import { PropsWithChildren, useEffect, useLayoutEffect } from "react";
 
 export enum AuthStatus {
   LoggedIn,
@@ -22,7 +15,7 @@ export enum AuthStatus {
 }
 
 export default function AuthProvider(props: PropsWithChildren) {
-  const { userUID, token } = useStore(savedStore);
+  const { userUID, token, chainUID } = useStore(savedStore);
   const auth = useStore(authStore);
   const {
     error,
@@ -46,6 +39,7 @@ export default function AuthProvider(props: PropsWithChildren) {
           throw res;
         });
     },
+    enabled: Boolean(userUID && token),
   });
   useLayoutEffect(initSavedStore, []);
   useLayoutEffect(() => {
@@ -54,13 +48,19 @@ export default function AuthProvider(props: PropsWithChildren) {
     }
   }, [authUser]);
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     if (auth.authUser) {
-      router.replace("/(auth)/(tabs)/(rules)");
+      if (chainUID) {
+        router.replace("/(auth)/(tabs)/(rules)");
+      } else {
+        router.replace("/(auth)/select-chain");
+      }
     } else if (!isPending) {
       router.replace("/(onboarding)/step1");
+    } else {
+      router.replace("/loading");
     }
-  }, [auth.authUser, isPending]);
+  }, [auth.authUser, isPending, chainUID]);
 
   return props.children;
 }

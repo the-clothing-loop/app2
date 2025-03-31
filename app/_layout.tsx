@@ -99,7 +99,7 @@ export default function RootLayout() {
                       name="loading"
                       options={{
                         title: t("loading"),
-                        headerShown: true,
+                        headerShown: false,
                       }}
                     />
                     <Stack.Screen

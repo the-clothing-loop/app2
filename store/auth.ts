@@ -2,6 +2,7 @@ import { Chain, UID } from "@/api/types";
 import { Bag, User } from "@/api/typex2";
 import { IsChainAdmin, IsChainWarden } from "@/utils/chain";
 import isBagTooOld, { IsBagTooOld } from "@/utils/is_bag_too_old";
+import IsPrivate from "@/utils/is_private";
 import IsPaused from "@/utils/user";
 import { Store, Derived } from "@tanstack/react-store";
 
@@ -91,6 +92,7 @@ export interface RouteUser {
   isHost: boolean;
   isWarden: boolean;
   isPaused: boolean;
+  isPrivate: boolean;
   routeIndex: number;
 }
 export const authStoreListRouteUsers = new Derived({
@@ -106,7 +108,7 @@ export const authStoreListRouteUsers = new Derived({
     if (!currentChainRoute || !currentChainUsers) return [];
     return currentChainRoute
       .map((uid, i) => {
-        const user = currentChainUsers.find((u) => u.uid == uid) as User;
+        const user = currentChainUsers.find((u) => u.uid == uid);
 
         let isHost = Boolean(
           authStoreCurrentChainAdmin.state.find((u) => u.uid === uid),
@@ -118,12 +120,15 @@ export const authStoreListRouteUsers = new Derived({
         let isWarden = Boolean(
           authStoreCurrentChainWarden.state.find((v) => v === uid),
         );
+
+        let isPrivate = IsPrivate(user?.address || "");
         return {
-          user,
+          user: user as User,
           isMe,
           isHost,
           isWarden,
           isPaused,
+          isPrivate,
           routeIndex: i,
         } satisfies RouteUser;
       })

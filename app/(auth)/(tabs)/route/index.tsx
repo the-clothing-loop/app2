@@ -69,7 +69,10 @@ export default function Route() {
         refreshControl={<RefreshControl />}
       >
         {sortedListRouteUsers?.map(
-          ({ user, isHost, isMe, routeIndex, isWarden, isPaused }, i) => {
+          (
+            { user, isHost, isMe, routeIndex, isWarden, isPaused, isPrivate },
+            i,
+          ) => {
             const bagsOfUser = bagsPerUser[user.uid] || [];
 
             return (
@@ -82,6 +85,7 @@ export default function Route() {
                 isMe={isMe}
                 bags={bagsOfUser}
                 isPaused={isPaused}
+                isPrivate={isPrivate}
               />
             );
           },

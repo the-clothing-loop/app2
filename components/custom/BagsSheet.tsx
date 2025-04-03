@@ -134,7 +134,14 @@ export default function BagsSheet() {
               onChange={field.setValue}
             >
               {sortedListRouteUsers.map(
-                ({ user, isPaused, isHost, isWarden, routeIndex }) => {
+                ({
+                  user,
+                  isPaused,
+                  isHost,
+                  isWarden,
+                  routeIndex,
+                  isPrivate,
+                }) => {
                   const isMe = user.uid == authUser?.uid;
                   return (
                     <Radio
@@ -185,9 +192,8 @@ export default function BagsSheet() {
                             style={{ width: 300 }}
                             numberOfLines={2}
                             ellipsizeMode="tail"
-                            // lineBreakMode="tail"
                           >
-                            {user.address}
+                            {isPrivate ? "" : user.address}
                           </Text>
                         </VStack>
                       </HStack>

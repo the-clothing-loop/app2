@@ -21,6 +21,7 @@ interface Props {
   isHost: boolean;
   isMe: boolean;
   isPaused: boolean;
+  isPrivate: boolean;
   bags: Bag[];
 }
 
@@ -77,15 +78,16 @@ export default function RouteItem(props: Props) {
             style={{ width: 200 }}
             numberOfLines={2}
           >
-            {props.user.address}
+            {props.isPrivate ? "" : props.user.address}
           </Text>
         </VStack>
 
         <HStack reversed className="items-center">
-          <Icon
-            as={ChevronRight}
-            className={"ms-2".concat(props.isPaused ? "opacity-0" : "")}
-          />
+          {props.isPaused || props.isPrivate ? (
+            <Box className="ms-2 w-4" />
+          ) : (
+            <Icon as={ChevronRight} className="ms-2" />
+          )}
           <VStack className="max-h-12 flex-wrap-reverse gap-0.5">
             {props.bags.map((b) => (
               <Box key={b.id}>

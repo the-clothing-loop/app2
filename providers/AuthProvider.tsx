@@ -2,7 +2,7 @@ import axios from "@/api/axios";
 import { User } from "@/api/typex2";
 import { userGetByUID } from "@/api/user";
 import { authStore } from "@/store/auth";
-import { initSavedStore, savedStore } from "@/store/saved";
+import { savedStore } from "@/store/saved";
 import { useQuery } from "@tanstack/react-query";
 import { useStore } from "@tanstack/react-store";
 import { router } from "expo-router";
@@ -15,16 +15,14 @@ export enum AuthStatus {
 }
 
 export default function AuthProvider(props: PropsWithChildren) {
-  const { userUID, token, chainUID } = useStore(savedStore);
+  const { chainUID } = useStore(savedStore);
   const auth = useStore(authStore);
-  const {
-    error,
-    data: authUser,
-    isPending,
-  } = useQuery({
+  const queryUser = useQuery({
     queryKey: ["auth", "user"],
     async queryFn(): Promise<User | null> {
-      if (!userUID && !token) throw "Not logged in";
+      const { userUID, token } = savedStore.state;
+      console.log("query user", { userUID, token });
+      if (!userUID && !token) return null;
 
       axios.defaults.auth = "Bearer " + token;
       return await userGetByUID(undefined, userUID, {
@@ -40,12 +38,11 @@ export default function AuthProvider(props: PropsWithChildren) {
         });
     },
   });
-  useLayoutEffect(initSavedStore, []);
-  useLayoutEffect(() => {
-    if (authUser !== undefined) {
-      authStore.setState((s) => ({ ...s, authUser: authUser }));
+  useEffect(() => {
+    if (queryUser.data !== undefined) {
+      authStore.setState((s) => ({ ...s, authUser: queryUser.data }));
     }
-  }, [authUser]);
+  }, [queryUser.dataUpdatedAt]);
 
   useEffect(() => {
     if (auth.authUser) {
@@ -54,12 +51,12 @@ export default function AuthProvider(props: PropsWithChildren) {
       } else {
         router.replace("/(auth)/select-chain");
       }
-    } else if (!isPending) {
+    } else if (!queryUser.isPending) {
       router.replace("/onboarding/step1");
     } else {
       router.replace("/loading");
     }
-  }, [auth.authUser, isPending, chainUID]);
+  }, [auth.authUser, queryUser.isPending, chainUID]);
 
   return props.children;
 }

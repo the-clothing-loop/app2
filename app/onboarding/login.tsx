@@ -23,10 +23,12 @@ import {
 import { Input, InputField } from "@/components/ui/input";
 import { Box } from "@/components/ui/box";
 import LegalLinks from "@/components/custom/LegalLinks";
+import { useState } from "react";
 
 export default function Step2() {
   const theme = useColorScheme() ?? "light";
 
+  const [tokenSent, setTokenSent] = useState(false);
   const { t } = useTranslation();
   const queryClient = useQueryClient();
   const mutateLoginEmail = useMutation({
@@ -47,8 +49,14 @@ export default function Step2() {
       }));
 
       axios.defaults.auth = "Bearer " + data.token;
-      queryClient.invalidateQueries({ queryKey: ["auth"] });
+      console.log("invalidateQueries auth");
+      queryClient.invalidateQueries({
+        queryKey: ["auth"],
+        refetchType: "all",
+        exact: false,
+      });
     },
+    retry: false,
   });
 
   const formPasscode = useForm({
@@ -57,6 +65,7 @@ export default function Step2() {
       passcode: "",
     },
     onSubmit({ value }) {
+      setTokenSent(true);
       return mutateLoginPasscode.mutateAsync({
         email: value.email,
         passcode: value.passcode,
@@ -69,6 +78,7 @@ export default function Step2() {
     },
     async onSubmit({ value }) {
       await mutateLoginEmail.mutateAsync(value.email);
+      setTokenSent(false);
       formPasscode.setFieldValue("email", value.email);
     },
   });
@@ -180,7 +190,7 @@ export default function Step2() {
               </FormLabel>
               <Button
                 onPress={formPasscode.handleSubmit}
-                isDisabled={!mutateLoginEmail.isSuccess}
+                isDisabled={!mutateLoginEmail.isSuccess || tokenSent}
                 className="self-end"
               >
                 <ButtonText>{t("login")}</ButtonText>

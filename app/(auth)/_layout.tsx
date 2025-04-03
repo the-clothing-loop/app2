@@ -1,4 +1,4 @@
-import { router, Stack } from "expo-router";
+import { Redirect, router, Stack } from "expo-router";
 import React, { useEffect, useLayoutEffect } from "react";
 
 import { useColorScheme } from "@/hooks/useColorScheme";
@@ -28,7 +28,8 @@ export default function TabLayout() {
   const queryClient = useQueryClient();
   const { t } = useTranslation();
   const auth = useStore(authStore);
-  const selectedChainUID = useStore(savedStore, (s) => s.chainUID);
+  const saved = useStore(savedStore);
+  const selectedChainUID = saved.chainUID;
 
   const queryChain = useQuery({
     queryKey: ["auth", "chain", selectedChainUID],
@@ -89,7 +90,7 @@ export default function TabLayout() {
     },
     enabled: Boolean(selectedChainUID && auth.authUser),
   });
-  useLayoutEffect(() => {
+  useEffect(() => {
     if (queryChain.error) queryClient.clear();
   }, [queryChain.error]);
 
@@ -127,15 +128,6 @@ export default function TabLayout() {
           }}
         />
       )}
-      <Stack.Screen
-        name="bag"
-        options={{
-          headerShown: true,
-          headerTitle: t("createBag"),
-          headerBackButtonDisplayMode: "generic",
-          headerBackTitle: t("back"),
-        }}
-      />
     </Stack>
   );
 }

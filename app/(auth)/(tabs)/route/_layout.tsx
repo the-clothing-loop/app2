@@ -29,7 +29,6 @@ export default function RulesStackLayout() {
           title: t("loading"),
         }}
       />
-      {/* <Stack.Screen name="Profile" /> */}
     </Stack>
   );
 }

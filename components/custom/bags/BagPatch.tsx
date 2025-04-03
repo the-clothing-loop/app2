@@ -17,6 +17,7 @@ import { CheckIcon } from "lucide-react-native";
 import { bagPut } from "@/api/bag";
 import { savedStore } from "@/store/saved";
 import { useQueryClient } from "@tanstack/react-query";
+import { Bag } from "@/api/typex2";
 
 const bagColors = [
   "#C9843E",
@@ -38,7 +39,7 @@ const bagColors = [
   "#3C3C3B",
 ];
 
-export default function CreateBag() {
+export default function BagPatch(props: { bag: Bag | null }) {
   const { t } = useTranslation();
   const authUser = useStore(authStore, (s) => s.authUser);
   const chainUid = useStore(savedStore, (s) => s.chainUID);
@@ -47,14 +48,14 @@ export default function CreateBag() {
   const navigation = useNavigation();
   const form = useForm({
     defaultValues: {
-      number: "",
-      color: bagColors[9],
+      number: props.bag?.number || "",
+      color: props.bag?.color || bagColors[9],
     },
     async onSubmit({ value }) {
       await bagPut({
         chain_uid: chainUid,
         user_uid: authUser!.uid,
-        //     bag_id?: number,
+        bag_id: props.bag?.id,
         number: value.number,
         holder_uid: authUser!.uid,
         color: value.color,

@@ -29,7 +29,7 @@ export default function RouteItem(props: Props) {
     <Link
       key={props.user.uid}
       href={{
-        pathname: "../[user]",
+        pathname: "/(auth)/(tabs)/route/[user]",
         params: {
           user: props.user.uid,
         },

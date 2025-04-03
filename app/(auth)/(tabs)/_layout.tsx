@@ -148,6 +148,8 @@ export default function TabLayout() {
       <Tabs.Screen
         name="bags"
         options={{
+          lazy: false,
+          headerShown: false,
           title: t("bags"),
           tabBarIcon: ({ color }) => (
             <ShoppingBag size={28} color={color as any} />

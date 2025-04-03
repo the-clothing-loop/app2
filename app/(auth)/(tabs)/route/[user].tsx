@@ -44,13 +44,13 @@ export default function RouteUser() {
 
   useEffect(() => {
     if (!routeItem && uid) {
-      router.replace("/(auth)/(tabs)/");
+      router.replace("/(auth)/(tabs)/rules");
     }
   }, [listRouteUsers, currentChain?.uid, uid]);
 
   const tabBarHeight = useBottomTabBarHeight();
   function onPressBag(item: ListBag) {
-    router.push(`/(auth)/(tabs)/bags#${item.bag.id}`);
+    router.push(`/(auth)/(tabs)/bags/edit/${item.bag.id}`);
   }
 
   return (

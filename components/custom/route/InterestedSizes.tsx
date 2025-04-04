@@ -1,12 +1,10 @@
 import { useTranslation } from "react-i18next";
-import { Text } from "../ui/text";
-import { VStack } from "../ui/vstack";
+import { Text } from "@/components/ui/text";
+import { VStack } from "@/components/ui/vstack";
 import { TFunction } from "i18next";
-import { HStack } from "../ui/hstack";
-import { useCallback, useMemo } from "react";
-import { LucideIcon } from "lucide-react-native";
-import { Image } from "../ui/image";
-import { Box } from "../ui/box";
+import { HStack } from "@/components/ui/hstack";
+import { useMemo } from "react";
+import { Image } from "@/components/ui/image";
 import { ImageSourcePropType } from "react-native";
 export enum Sizes {
   baby = "1",

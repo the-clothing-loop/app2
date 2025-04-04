@@ -2,7 +2,7 @@ import { chainGet } from "@/api/chain";
 import { authStore } from "@/store/auth";
 import { savedStore } from "@/store/saved";
 import { useForm } from "@tanstack/react-form";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { useStore } from "@tanstack/react-store";
 import { useLayoutEffect } from "react";
 import { useTranslation } from "react-i18next";
@@ -18,7 +18,6 @@ import { CircleIcon } from "lucide-react-native";
 import { router, useNavigation } from "expo-router";
 import { NativeStackNavigationOptions } from "@react-navigation/native-stack/src/types";
 import { Button, ButtonText } from "@/components/ui/button";
-import { Accordion } from "@/components/ui/accordion";
 import LogoutLink from "@/components/custom/LogoutLink";
 import LegalLinks from "@/components/custom/LegalLinks";
 
@@ -52,6 +51,7 @@ export default function SelectChain() {
     async onSubmit({ value }) {
       if (!value.chainUid) throw "Please select a Loop";
       savedStore.setState((s) => ({ ...s, chainUID: value.chainUid }));
+      router.replace("/(auth)/(tabs)/rules");
     },
   });
   useLayoutEffect(() => {

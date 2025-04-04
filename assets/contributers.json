@@ -1,0 +1,42 @@
+[
+  {
+    "name": "Nichon",
+    "role": "Founder"
+  },
+  {
+    "name": "Paloeka",
+    "role": "Product manager & support"
+  },
+  {
+    "name": "Lucian",
+    "link": "https://github.com/lil5",
+    "icon": "github",
+    "role": "Lead developer"
+  },
+  {
+    "name": "Natalie",
+    "link": "https://github.com/NatalieWilson19",
+    "icon": "github",
+    "role": "Developer"
+  },
+  {
+    "name": "jnorlando",
+    "icon": "github",
+    "role": "Developer"
+  },
+  {
+    "name": "Gabriel",
+    "icon": "github",
+    "role": "Developer"
+  },
+  {
+    "name": "Alex",
+    "icon": "github",
+    "role": "Developer"
+  },
+  {
+    "name": "Marina",
+    "icon": "languages",
+    "role": "Translator"
+  }
+]

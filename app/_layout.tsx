@@ -1,8 +1,5 @@
-import {
-  DarkTheme,
-  DefaultTheme,
-  ThemeProvider,
-} from "@react-navigation/native";
+import { ThemeProvider } from "@react-navigation/native";
+import { ActionSheetProvider } from "@expo/react-native-action-sheet";
 import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
@@ -70,63 +67,66 @@ export default function RootLayout() {
 
   return (
     <ThemeProvider value={colorScheme === "dark" ? Colors.dark : Colors.light}>
-      <GluestackUIProvider mode="light">
-        <QueryClientProvider client={queryClient}>
-          <AuthProvider>
-            <SafeAreaProvider>
-              <GestureHandlerRootView
-                style={{
-                  flex: 1,
-                }}
-              >
-                <SheetProvider context="global">
-                  <Stack
-                    screenOptions={{
-                      headerShown: false,
-                    }}
-                  >
-                    <Stack.Screen
-                      name="(auth)"
-                      options={{ headerShown: false }}
-                    />
-                    <Stack.Screen
-                      name="onboarding"
-                      options={{
+      <ActionSheetProvider>
+        <GluestackUIProvider mode="light">
+          <QueryClientProvider client={queryClient}>
+            <AuthProvider>
+              <SafeAreaProvider>
+                <GestureHandlerRootView
+                  style={{
+                    flex: 1,
+                  }}
+                >
+                  <SheetProvider context="global">
+                    <Stack
+                      screenOptions={{
                         headerShown: false,
                       }}
-                    />
-                    <Stack.Screen
-                      name="loading"
-                      options={{
-                        title: t("loading"),
-                        headerShown: false,
-                      }}
-                    />
-                    <Stack.Screen
-                      name="open-source"
-                      options={{
-                        title: t("openSource"),
-                        headerShown: true,
-                        headerBackTitle: t("back"),
-                      }}
-                    />
-                    <Stack.Screen
-                      name="privacy-policy"
-                      options={{
-                        title: t("privacyPolicy"),
-                        headerShown: true,
-                        headerBackTitle: t("back"),
-                      }}
-                    />
-                    <Stack.Screen name="+not-found" />
-                  </Stack>
-                </SheetProvider>
-              </GestureHandlerRootView>
-            </SafeAreaProvider>
-          </AuthProvider>
-        </QueryClientProvider>
-        <StatusBar style="auto" />
-      </GluestackUIProvider>
+                    >
+                      <Stack.Screen
+                        name="(auth)"
+                        options={{ headerShown: false }}
+                      />
+                      <Stack.Screen
+                        name="onboarding"
+                        options={{
+                          headerShown: false,
+                        }}
+                      />
+                      <Stack.Screen
+                        name="loading"
+                        options={{
+                          title: t("loading"),
+                          headerShown: false,
+                        }}
+                      />
+                      <Stack.Screen
+                        name="open-source"
+                        options={{
+                          title: t("openSource"),
+                          headerShown: true,
+                          headerBackTitle: t("back"),
+                        }}
+                      />
+                      <Stack.Screen
+                        name="privacy-policy"
+                        options={{
+                          title: t("privacyPolicy"),
+                          headerShown: true,
+                          headerLargeTitle: true,
+                          headerBackTitle: t("back"),
+                        }}
+                      />
+                      <Stack.Screen name="+not-found" />
+                    </Stack>
+                  </SheetProvider>
+                </GestureHandlerRootView>
+              </SafeAreaProvider>
+            </AuthProvider>
+          </QueryClientProvider>
+          <StatusBar style="auto" />
+        </GluestackUIProvider>
+      </ActionSheetProvider>
     </ThemeProvider>
   );
 }

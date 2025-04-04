@@ -1,5 +1,5 @@
-import { Tabs } from "expo-router";
-import React, { useEffect } from "react";
+import { router, Tabs } from "expo-router";
+import React, { useEffect, useLayoutEffect } from "react";
 import { useTranslation } from "react-i18next";
 
 import { useStore } from "@tanstack/react-store";
@@ -28,6 +28,12 @@ export default function TabLayout() {
   const auth = useStore(authStore);
   const selectedChainUID = useStore(savedStore, (s) => s.chainUID);
   const colorScheme = useColorScheme() ?? "light";
+
+  useLayoutEffect(() => {
+    if (!selectedChainUID) {
+      router.replace("/(auth)/select-chain");
+    }
+  }, [selectedChainUID]);
 
   const { error } = useQuery({
     queryKey: ["auth", "chain", selectedChainUID],

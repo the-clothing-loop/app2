@@ -1,21 +1,9 @@
 import FormLabel from "@/components/custom/FormLabel";
 import { Box } from "@/components/ui/box";
-import { Button, ButtonText } from "@/components/ui/button";
+import { Button, ButtonIcon, ButtonText } from "@/components/ui/button";
 import { HStack } from "@/components/ui/hstack";
 import { Icon } from "@/components/ui/icon";
 import { Input, InputField } from "@/components/ui/input";
-import {
-  Select,
-  SelectBackdrop,
-  SelectContent,
-  SelectDragIndicator,
-  SelectDragIndicatorWrapper,
-  SelectIcon,
-  SelectInput,
-  SelectItem,
-  SelectPortal,
-  SelectTrigger,
-} from "@/components/ui/select";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
 import { messagingApps } from "@/constants/MessagingApps";
@@ -37,20 +25,15 @@ import {
   chatTypeGet,
   chatTypePatch,
 } from "@/api/chat_type";
+import { useActionSheet } from "@expo/react-native-action-sheet";
 
-type AppType =
-  | "off"
-  | "clothingloop"
-  | "signal"
-  | "whatsapp"
-  | "whatsapp"
-  | "discord"
-  | "telegram";
+type AppType = "off" | "clothingloop" | "signal" | "whatsapp" | "telegram";
 
 export default function Chat() {
   const { t } = useTranslation();
   const currentChain = useStore(authStore, (s) => s.currentChain);
   const authUserRoles = useStore(authStoreAuthUserRoles);
+  const { showActionSheetWithOptions } = useActionSheet();
 
   const queryChatType = useQuery({
     queryKey: ["auth", "chat-type", currentChain?.uid],
@@ -100,6 +83,36 @@ export default function Chat() {
     form.setFieldValue("appUrl", queryChatType.data?.chat_url || "");
   }
 
+  function openChatAppDialogOptions() {
+    showActionSheetWithOptions(
+      {
+        title: t("imSelectChatApp"),
+        options: [t("disabled"), "Signal", "WhatsApp", "Telegram", t("cancel")],
+        cancelButtonIndex: 4,
+      },
+      (selectedIndex) => {
+        let value: string;
+        switch (selectedIndex) {
+          case 0:
+            value = "off";
+            break;
+          case 1:
+            value = "signal";
+            break;
+          case 2:
+            value = "whatsapp";
+            break;
+          case 3:
+            value = "telegram";
+            break;
+          default:
+            return;
+        }
+        form.setFieldValue("appType", value as any);
+      },
+    );
+  }
+
   const currentChatApp = useMemo(() => {
     if (!queryChatType.data?.chat_url) return null;
     switch (queryChatType.data?.chat_type) {
@@ -113,6 +126,21 @@ export default function Chat() {
         return null;
     }
   }, [queryChatType]);
+
+  function appTypesValueToLabel(value: AppType) {
+    switch (value) {
+      case "signal":
+        return "Signal";
+      case "whatsapp":
+        return "WhatsApp";
+      case "telegram":
+        return "Telegram";
+      // case "off":
+      default:
+        return t("disabled");
+    }
+  }
+
   return (
     <Box className="flex-1 items-center justify-center bg-background-0">
       {!currentChatApp ? (
@@ -123,8 +151,8 @@ export default function Chat() {
           />
           <Text className="text-center text-xl">
             {authUserRoles.isHost
-              ? "Select a different chat app"
-              : "Ask your host to select a chat app"}
+              ? t("imChatRoomDisabled")
+              : t("imAskHostToSelectAChatApp")}
           </Text>
         </VStack>
       ) : (
@@ -135,7 +163,7 @@ export default function Chat() {
             color={currentChatApp.bgColor}
           />
           <Text className="text-center">
-            Go to your Loop {currentChatApp.title} chat group
+            {t("imChatMessage", { chat: currentChatApp.title })}
           </Text>
           <Link
             href={queryChatType.data!.chat_url as ExternalPathString}
@@ -157,37 +185,23 @@ export default function Chat() {
         <VStack className="absolute left-0 right-0 top-0 gap-3 bg-background-100 p-3">
           <form.Field name="appType">
             {(field) => (
-              <Select
-                onValueChange={field.setValue as any}
-                selectedValue={field.state.value}
-              >
-                <SelectTrigger
+              <FormLabel label={t("imSelectChatApp")}>
+                <Button
                   variant="outline"
-                  size="md"
                   className="justify-between"
+                  onPress={openChatAppDialogOptions}
                 >
-                  <SelectInput placeholder="Select option" />
-                  <SelectIcon className="mr-3" as={ChevronDownIcon} />
-                </SelectTrigger>
-                <SelectPortal>
-                  <SelectBackdrop />
-                  <SelectContent>
-                    <SelectDragIndicatorWrapper>
-                      <SelectDragIndicator />
-                    </SelectDragIndicatorWrapper>
-                    <SelectItem label={t("disabled")} value="off" />
-                    <SelectItem label="Signal" value="signal" />
-                    <SelectItem label="WhatsApp" value="whatsapp" />
-                    <SelectItem label="Discord" isDisabled value="discord" />
-                    <SelectItem label="Telegram" value="telegram" />
-                  </SelectContent>
-                </SelectPortal>
-              </Select>
+                  <ButtonText>
+                    {appTypesValueToLabel(field.state.value)}
+                  </ButtonText>
+                  <ButtonIcon as={ChevronDownIcon}></ButtonIcon>
+                </Button>
+              </FormLabel>
             )}
           </form.Field>
           <form.Field name="appUrl">
             {(field) => (
-              <FormLabel label={t("chatPasteInRoomUrl")}>
+              <FormLabel label={t("imChatRoomUrl")}>
                 <HStack className="gap-3">
                   <Input className="flex-grow">
                     <InputField
@@ -217,7 +231,7 @@ export default function Chat() {
               <ButtonText>{t("reset")}</ButtonText>
             </Button>
             <Button onPress={form.handleSubmit} className="flex-grow">
-              <ButtonText>{t("updateChatRoom")}</ButtonText>
+              <ButtonText>{t("imUpdateChatRoom")}</ButtonText>
             </Button>
           </HStack>
         </VStack>

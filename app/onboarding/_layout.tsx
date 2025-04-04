@@ -1,6 +1,16 @@
-import { Stack } from "expo-router";
+import { authStore } from "@/store/auth";
+import { useStore } from "@tanstack/react-store";
+import { router, Stack } from "expo-router";
+import { useLayoutEffect } from "react";
 
 export default function OnboardingStackLayout() {
+  const authUser = useStore(authStore, (s) => s.authUser);
+  useLayoutEffect(() => {
+    if (authUser) {
+      console.log("baack to onbording");
+      router.replace("/(auth)/select-chain");
+    }
+  }, [authUser]);
   return (
     <Stack
       screenOptions={{

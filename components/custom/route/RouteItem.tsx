@@ -4,7 +4,6 @@ import { HStack } from "@/components/ui/hstack";
 import { Icon } from "@/components/ui/icon";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
-import IsPaused from "@/utils/user";
 import { Link, router } from "expo-router";
 import {
   ChevronRight,
@@ -26,6 +25,9 @@ interface Props {
 }
 
 export default function RouteItem(props: Props) {
+  const hideLink =
+    (props.isPaused || props.isPrivate) && !props.isHost && !props.isMe;
+
   return (
     <Link
       key={props.user.uid}
@@ -35,6 +37,7 @@ export default function RouteItem(props: Props) {
           user: props.user.uid,
         },
       }}
+      disabled={hideLink}
     >
       <HStack className="items-center gap-3 border-b border-b-outline-200 bg-background-0 p-2">
         <Box className="relative h-10 w-10 items-end justify-center">
@@ -83,7 +86,7 @@ export default function RouteItem(props: Props) {
         </VStack>
 
         <HStack reversed className="items-center">
-          {props.isPaused || props.isPrivate ? (
+          {hideLink ? (
             <Box className="ms-2 w-4" />
           ) : (
             <Icon as={ChevronRight} className="ms-2" />

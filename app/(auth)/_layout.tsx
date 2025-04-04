@@ -15,7 +15,7 @@ import { catchErrThrow401 } from "@/utils/handleRequests";
 import { bagGetAllByChain } from "@/api/bag";
 import { routeGetOrder } from "@/api/route";
 import { registerSheet } from "react-native-actions-sheet";
-import BagsSheet from "@/components/custom/BagsSheet";
+import BagsSheet from "@/components/custom/bags/BagsSheet";
 import { Platform } from "react-native";
 // import { OneSignal } from "react-native-onesignal";
 
@@ -103,6 +103,11 @@ export default function TabLayout() {
   useLayoutEffect(() => {
     if (oneSignalKey && auth.authUser && isPlatformMobile) {
       // OneSignal.login(auth.authUser!.uid);
+    }
+  }, [auth.authUser]);
+  useEffect(() => {
+    if (!auth.authUser) {
+      router.replace("/onboarding/step1");
     }
   }, [auth.authUser]);
 

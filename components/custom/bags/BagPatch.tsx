@@ -2,7 +2,7 @@ import FormLabel from "@/components/custom/FormLabel";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
 import { Link, useNavigation } from "expo-router";
-import { useLayoutEffect } from "react";
+import { useEffect, useLayoutEffect } from "react";
 import { useTranslation } from "react-i18next";
 
 import { NativeStackNavigationOptions } from "@react-navigation/native-stack/src/types";
@@ -68,18 +68,28 @@ export default function BagPatch(props: { bag: Bag | null }) {
     },
   });
 
-  useLayoutEffect(() => {
+  useEffect(() => {
+    if (props.bag) {
+      form.setFieldValue("number", props.bag.number);
+      form.setFieldValue("color", props.bag.color);
+    } else {
+      form.setFieldValue("number", "");
+      form.setFieldValue("color", bagColors[9]);
+    }
+  }, [props.bag]);
+
+  useEffect(() => {
     navigation.setOptions({
       title: t("bags"),
       headerRight: () => (
         <Pressable onPress={form.handleSubmit} className="px-2">
           <Text size="xl" className="text-primary-500">
-            {t("create")}
+            {props.bag ? t("save") : t("create")}
           </Text>
         </Pressable>
       ),
     } satisfies NativeStackNavigationOptions);
-  }, [navigation, t]);
+  }, [navigation, t, props.bag]);
   return (
     <ScrollView className="bg-background-0">
       <VStack className="gap-3 p-3">

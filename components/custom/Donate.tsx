@@ -18,7 +18,8 @@ export default function Donate() {
         </Text>
         <Text size="sm">Hi 👋, I'm Lucian, this app's main developer</Text>
         <Text size="sm">
-          With a donation you support the development of the Clothing Loop
+          With a donation you support the development of
+          My&nbsp;Clothing&nbsp;Loop
         </Text>
       </VStack>
       <Box className="shrink-0">

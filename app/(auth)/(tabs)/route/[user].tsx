@@ -50,7 +50,7 @@ export default function RouteUser() {
 
   const tabBarHeight = useBottomTabBarHeight();
   function onPressBag(item: ListBag) {
-    router.push(`/(auth)/(tabs)/bags/edit/${item.bag.id}`);
+    router.push(`/(auth)/(tabs)/bags#${item.bag.id}`);
   }
 
   return (

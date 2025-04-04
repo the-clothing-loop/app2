@@ -1,9 +1,7 @@
 import { User } from "@/api/typex2";
 import { Box } from "@/components/ui/box";
-import { Button, ButtonIcon } from "@/components/ui/button";
 import { HStack } from "@/components/ui/hstack";
 import { Icon } from "@/components/ui/icon";
-import { Image } from "@/components/ui/image";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
 import { messagingApps } from "@/constants/MessagingApps";
@@ -11,7 +9,7 @@ import IsPrivate from "@/utils/is_private";
 import { Flag, Shield } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
 import { Linking, Pressable, Share } from "react-native";
-import InterestedSizes, { Categories, Sizes } from "../InterestedSizes";
+import InterestedSizes, { Categories, Sizes } from "./InterestedSizes";
 
 export default function UserCard(props: {
   user: User;
@@ -104,14 +102,16 @@ export default function UserCard(props: {
           <Text>{props.user.email}</Text>
         </VStack>
       </Pressable>
-      <Pressable onLongPress={handleShareAddress}>
-        <VStack className="items-start px-4 py-2">
-          <Text bold size="sm">
-            {t("address")}
-          </Text>
-          <Text>{props.user.address}</Text>
-        </VStack>
-      </Pressable>
+      {isAddressPrivate ? (
+        <Pressable onLongPress={handleShareAddress}>
+          <VStack className="items-start px-4 py-2">
+            <Text bold size="sm">
+              {t("address")}
+            </Text>
+            <Text>{props.user.address}</Text>
+          </VStack>
+        </Pressable>
+      ) : null}
       <InterestedSizes
         categories={[] as Categories[]}
         sizes={props.user.sizes as Sizes[]}

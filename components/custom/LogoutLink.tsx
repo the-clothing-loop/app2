@@ -5,9 +5,27 @@ import axios from "@/api/axios";
 import { logout } from "@/api/login";
 import { authStore } from "@/store/auth";
 import { Box } from "../ui/box";
+import { Alert } from "react-native";
 
 export default function LogoutLink() {
   const { t } = useTranslation();
+
+  function openLogoutDialog() {
+    Alert.alert(t("logout"), t("areYouSureYouWantToLogout"), [
+      {
+        text: t("logout"),
+        style: "destructive",
+        onPress() {
+          onLogout();
+        },
+      },
+      {
+        text: t("cancel"),
+        style: "cancel",
+      },
+    ]);
+  }
+
   function onLogout() {
     logout().finally(() => {
       axios.defaults.auth = undefined;
@@ -28,7 +46,12 @@ export default function LogoutLink() {
 
   return (
     <Box className="p-6">
-      <Button onPress={onLogout} size="xl" action="negative" className="grow">
+      <Button
+        onPress={openLogoutDialog}
+        size="xl"
+        action="negative"
+        className="grow"
+      >
         <ButtonText>{t("logout")}</ButtonText>
       </Button>
     </Box>

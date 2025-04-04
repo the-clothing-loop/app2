@@ -14,20 +14,25 @@ import { router } from "expo-router";
 import { Response } from "redaxios";
 import { useTranslation } from "react-i18next";
 import {
+  Alert,
   Linking,
   Platform,
   SafeAreaView,
   ScrollView,
+  TextInput,
   useColorScheme,
 } from "react-native";
 import { Input, InputField } from "@/components/ui/input";
 import { Box } from "@/components/ui/box";
 import LegalLinks from "@/components/custom/LegalLinks";
-import { useState } from "react";
+import { createRef, LegacyRef, RefAttributes, useRef, useState } from "react";
+import Sleep from "@/utils/sleep";
 
 export default function Step2() {
   const theme = useColorScheme() ?? "light";
 
+  const refInputFieldPasscode = createRef<any>();
+  const [emailSent, setEmailSent] = useState(false);
   const [tokenSent, setTokenSent] = useState(false);
   const { t } = useTranslation();
   const queryClient = useQueryClient();
@@ -49,12 +54,14 @@ export default function Step2() {
       }));
 
       axios.defaults.auth = "Bearer " + data.token;
-      console.log("invalidateQueries auth");
       queryClient.invalidateQueries({
         queryKey: ["auth"],
         refetchType: "all",
         exact: false,
       });
+    },
+    onError(err) {
+      Alert.alert("invalid passcode please request another email", err.message);
     },
     retry: false,
   });
@@ -65,6 +72,7 @@ export default function Step2() {
       passcode: "",
     },
     onSubmit({ value }) {
+      if (tokenSent) return;
       setTokenSent(true);
       return mutateLoginPasscode.mutateAsync({
         email: value.email,
@@ -77,8 +85,25 @@ export default function Step2() {
       email: "",
     },
     async onSubmit({ value }) {
-      await mutateLoginEmail.mutateAsync(value.email);
-      setTokenSent(false);
+      if (emailSent) return;
+      formPasscode.setFieldValue("passcode", "");
+      setEmailSent(true);
+      await mutateLoginEmail
+        .mutateAsync(value.email)
+        .then((res) => {
+          Sleep(5000).then(() => setEmailSent(false));
+          setTimeout(() => {
+            console.log("refInputFieldPasscode", refInputFieldPasscode.current);
+          }, 200);
+          return res;
+        })
+        .catch((err) => {
+          setEmailSent(false);
+          throw err;
+        })
+        .finally(() => {
+          setTokenSent(false);
+        });
       formPasscode.setFieldValue("email", value.email);
     },
   });
@@ -132,6 +157,7 @@ export default function Step2() {
                 {(field) => (
                   <Input id="email" key="email-address">
                     <InputField
+                      autoFocus
                       onSubmitEditing={formLogin.handleSubmit}
                       value={field.state.value}
                       autoCapitalize="none"
@@ -150,6 +176,7 @@ export default function Step2() {
             <HStack reversed className="gap-3">
               <Button
                 action={mutateLoginEmail.isError ? "negative" : "primary"}
+                isDisabled={emailSent}
                 onPress={formLogin.handleSubmit}
               >
                 <ButtonText>{t("send")}</ButtonText>

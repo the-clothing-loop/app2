@@ -6,10 +6,10 @@ try {
   const stat = fs.statSync("../assets/open_source_licenses.json");
   if (stat.isFile()) {
     if (stat.mtime > sub(new Date(), { days: 30 })) {
-      console.log("skipping open source license generation");
+      console.info("skipping open source license generation");
       process.exit(0);
     }
-    console.log("open_source_licenses.json is too old, regenerating");
+    console.info("open_source_licenses.json is too old, regenerating");
   }
 } catch (e: any) {
   if (e.code !== "ENOENT") {
@@ -17,7 +17,7 @@ try {
   }
 }
 
-console.log("Reading licenses from package.json");
+console.info("Reading licenses from package.json");
 
 pkg.find({ directory: "../", reach: 1 }, function (err, data) {
   let licenses: { name: string; modules: string[] }[] = [];
@@ -41,7 +41,7 @@ pkg.find({ directory: "../", reach: 1 }, function (err, data) {
     { flag: "w" },
     function (err) {
       if (err) {
-        return console.log(err);
+        return console.info(err);
       }
     },
   );

@@ -168,7 +168,7 @@ export default function HomeScreen(props: {}) {
             {t("loopHost", { count: hosts?.length || 0 })}
           </Text>
 
-          <HStack className="flex-wrap justify-center gap-2">
+          <HStack className="mx-2 flex-wrap justify-center gap-2">
             {!hosts ? (
               <Text key="loading">{t("loading")}</Text>
             ) : hosts.length == 0 ? (

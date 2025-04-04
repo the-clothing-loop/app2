@@ -96,12 +96,7 @@ export interface RouteUser {
   routeIndex: number;
 }
 export const authStoreListRouteUsers = new Derived({
-  deps: [
-    authStore,
-    authStoreCurrentChainAdmin,
-    authStoreCurrentChainWarden,
-    authStoreListPausedUsers,
-  ],
+  deps: [authStore],
   fn() {
     const currentChainRoute = authStore.state.currentChainRoute;
     const currentChainUsers = authStore.state.currentChainUsers;
@@ -109,19 +104,16 @@ export const authStoreListRouteUsers = new Derived({
     return currentChainRoute
       .map((uid, i) => {
         const user = currentChainUsers.find((u) => u.uid == uid);
+        if (!user) return {};
+        const chainUID = authStore.state.currentChain?.uid;
 
-        let isHost = Boolean(
-          authStoreCurrentChainAdmin.state.find((u) => u.uid === uid),
-        );
+        const uc = user.chains.find((uc) => uc.chain_uid === chainUID);
+        const isHost = !!uc?.is_chain_admin;
+        const isWarden = !!uc?.is_chain_warden;
         const isMe = uid === authStore.state.authUser?.uid;
-        let isPaused = Boolean(
-          authStoreListPausedUsers.state.find((v) => v === uid),
-        );
-        let isWarden = Boolean(
-          authStoreCurrentChainWarden.state.find((v) => v === uid),
-        );
+        const isPaused = IsPaused(user, chainUID);
+        const isPrivate = IsPrivate(user?.address || "");
 
-        let isPrivate = IsPrivate(user?.address || "");
         return {
           user: user as User,
           isMe,
@@ -132,7 +124,7 @@ export const authStoreListRouteUsers = new Derived({
           routeIndex: i,
         } satisfies RouteUser;
       })
-      .filter(({ user }) => !!user);
+      .filter(({ user }) => !!user) as RouteUser[];
   },
 });
 authStoreListRouteUsers.mount();

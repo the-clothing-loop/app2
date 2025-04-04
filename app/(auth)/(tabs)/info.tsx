@@ -1,9 +1,15 @@
 import { authStore, authStoreAuthUserRoles } from "@/store/auth";
-import { ChevronDown, EyeOff, Globe2, Lock } from "lucide-react-native";
+import {
+  ChevronDown,
+  EyeOff,
+  Globe2,
+  Lock,
+  PauseCircleIcon,
+} from "lucide-react-native";
 import { useStore } from "@tanstack/react-store";
 import { Link } from "expo-router";
 import { useTranslation } from "react-i18next";
-import { Pressable, ScrollView } from "react-native";
+import { Alert, Pressable, ScrollView } from "react-native";
 import { Box } from "@/components/ui/box";
 import { Text } from "@/components/ui/text";
 import { HStack } from "@/components/ui/hstack";
@@ -13,19 +19,85 @@ import FormattedText from "@/components/custom/FormattedText";
 import InterestedSizes, {
   Categories,
   Sizes,
-} from "@/components/custom/InterestedSizes";
+} from "@/components/custom/route/InterestedSizes";
 import LogoutLink from "@/components/custom/LogoutLink";
 import LegalLinks from "@/components/custom/LegalLinks";
+import RefreshControl from "@/components/custom/RefreshControl";
+import { VStack } from "@/components/ui/vstack";
+import { Switch } from "@/components/ui/switch";
+import { useMemo, useState } from "react";
+import usePauseDialog, { SetPause } from "@/components/custom/info/PauseDialog";
+import { IsPausedHow, SetPauseRequestBody } from "@/utils/user";
+import dayjs from "dayjs";
+import { Badge, BadgeIcon, BadgeText } from "@/components/ui/badge";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { userUpdate } from "@/api/user";
 
 export default function Info() {
   const { t } = useTranslation();
 
   const { authUser, currentChain } = useStore(authStore);
   const authUserRoles = useStore(authStoreAuthUserRoles);
+  const queryClient = useQueryClient();
+
+  const pauseState = useMemo(() => {
+    let pausedFromNow = "";
+    const isUserPausedHow = IsPausedHow(authUser, currentChain?.uid);
+    const isUserPaused = isUserPausedHow.chain || Boolean(isUserPausedHow.user);
+    if (authUser && isUserPaused) {
+      let pausedDayjs = dayjs(authUser.paused_until);
+
+      if (isUserPausedHow.chain) {
+        pausedFromNow = t("onlyForThisLoop");
+      } else if (isUserPausedHow.user) {
+        const now = dayjs();
+        if (isUserPausedHow.user.year() < now.add(20, "year").year()) {
+          if (pausedDayjs.isBefore(now.add(7, "day"))) {
+            pausedFromNow = t("day", {
+              count: pausedDayjs.diff(now, "day") + 1,
+            });
+          } else {
+            pausedFromNow = t("week", {
+              count: pausedDayjs.diff(now, "week"),
+            });
+          }
+        } else {
+          pausedFromNow = t("untilITurnItBackOn");
+        }
+      }
+    }
+    return { pausedFromNow, isUserPausedHow, isUserPaused };
+  }, [authUser, currentChain?.uid, t]);
+
+  const mutationPause = useMutation({
+    async mutationFn(o: SetPause) {
+      const body = SetPauseRequestBody(
+        authStore.state.authUser!.uid,
+        o.isPausedOrUntil,
+        o.chainUid,
+      );
+      await userUpdate(body);
+    },
+    onSettled() {
+      queryClient.invalidateQueries({
+        queryKey: ["auth"],
+        refetchType: "all",
+      });
+    },
+    onError(err) {
+      Alert.alert("Error changing pause status", err.message);
+    },
+    retry: false,
+  });
+  const { handleOpenPause, PauseDateDialog } = usePauseDialog({
+    onSubmit: mutationPause.mutateAsync,
+  });
+
   return (
     <ScrollView
       contentInsetAdjustmentBehavior="automatic"
       className="gap-3 p-3"
+      refreshControl={<RefreshControl />}
     >
       <Box className="mb-3 flex-col bg-background-0">
         <Text className="m-3 text-3xl text-black" bold>
@@ -40,15 +112,32 @@ export default function Info() {
           />
         ) : null}
 
-        {/* <HStack className="items-start gap-3 px-4 py-2">
-          <VStack className="flex-grow">
-            <Text bold size="sm">
-              {t("pauseTitle")}
-            </Text>
-            <Text>{t("pauseBody")}</Text>
-          </VStack>
-          <Switch></Switch>
-        </HStack> */}
+        <Pressable onPress={() => handleOpenPause(pauseState.isUserPausedHow)}>
+          <HStack className="items-center gap-3 px-4 py-2">
+            <VStack className="shrink flex-grow items-start">
+              <Text bold size="sm">
+                {t("pauseParticipation")}
+              </Text>
+              <Text>
+                {pauseState.isUserPaused
+                  ? t("yourParticipationIsPausedClick")
+                  : t("setTimerForACoupleOfWeeks")}
+              </Text>
+              {pauseState.pausedFromNow ? (
+                <Badge size="md" variant="solid" action="muted">
+                  <BadgeIcon as={PauseCircleIcon} className="me-2" />
+                  <BadgeText>{pauseState.pausedFromNow}</BadgeText>
+                </Badge>
+              ) : null}
+            </VStack>
+            <Switch
+              value={pauseState.isUserPausedHow.sum}
+              trackColor={{ true: "#EF4444", false: null }}
+            ></Switch>
+          </HStack>
+        </Pressable>
+
+        <PauseDateDialog />
       </Box>
 
       <Box className="flex-col bg-background-0">

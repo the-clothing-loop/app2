@@ -1,11 +1,11 @@
 import { Dayjs } from "dayjs";
 import { UID } from "../api/types";
-import { User } from "../api/typex2";
+import { User, UserUpdateRequest } from "../api/typex2";
 import dayjs from "./dayjs";
 
 export default function IsPaused(
   user: User | null,
-  currentChainUID: UID | undefined
+  currentChainUID: UID | undefined,
 ): boolean {
   if (user === null) return false;
   if (currentChainUID) {
@@ -29,7 +29,7 @@ export interface IsPausedHowResult {
 
 export function IsPausedHow(
   user: User | null,
-  currentChainUID: UID | undefined
+  currentChainUID: UID | undefined,
 ): IsPausedHowResult {
   if (user === null) return { user: false, chain: false, sum: false };
 
@@ -47,4 +47,43 @@ export function IsPausedHow(
     chain: userChainPaused,
     sum: Boolean(userPaused) || userChainPaused,
   };
+}
+
+export function SetPauseRequestBody(
+  authUserUID: UID,
+  pause: Date | boolean,
+  onlyChainUID?: UID,
+): UserUpdateRequest {
+  if (onlyChainUID) {
+    if (typeof pause !== "boolean") {
+      throw "Invalid pause value: " + pause;
+    }
+    if (pause) {
+      return {
+        user_uid: authUserUID,
+        chain_uid: onlyChainUID,
+        chain_paused: true,
+      };
+    } else {
+      return {
+        user_uid: authUserUID,
+        chain_uid: onlyChainUID,
+        chain_paused: false,
+        paused_until: dayjs().add(-1, "week").format(),
+      };
+    }
+  } else {
+    let pauseUntil = dayjs();
+    if (pause === true) {
+      pauseUntil = pauseUntil.add(100, "years");
+    } else if (pause === false || dayjs(pause).diff(dayjs(), "day") < 0) {
+      pauseUntil = pauseUntil.add(-1, "week");
+    } else {
+      pauseUntil = dayjs(pause);
+    }
+    return {
+      user_uid: authUserUID,
+      paused_until: pauseUntil.format(),
+    };
+  }
 }

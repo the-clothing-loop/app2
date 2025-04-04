@@ -51,7 +51,7 @@ export default function SelectChain() {
     async onSubmit({ value }) {
       if (!value.chainUid) throw "Please select a Loop";
       savedStore.setState((s) => ({ ...s, chainUID: value.chainUid }));
-      router.replace("/(auth)/(tabs)/rules");
+      router.replace("/(auth)/(tabs)/(index)");
     },
   });
   useLayoutEffect(() => {

@@ -6,6 +6,8 @@ import { logout } from "@/api/login";
 import { authStore } from "@/store/auth";
 import { Box } from "../ui/box";
 import { Alert } from "react-native";
+import { oneSignalStore } from "@/store/onesignal";
+import { OneSignal } from "react-native-onesignal";
 
 export default function LogoutLink() {
   const { t } = useTranslation();
@@ -41,6 +43,10 @@ export default function LogoutLink() {
         currentBags: null,
         currentChainRoute: null,
       }));
+      if (oneSignalStore.state.isLoggedIn) {
+        OneSignal.logout();
+        oneSignalStore.setState((s) => ({ ...s, isLoggedIn: false }));
+      }
     });
   }
 

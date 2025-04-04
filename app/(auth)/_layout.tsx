@@ -17,7 +17,8 @@ import { routeGetOrder } from "@/api/route";
 import { registerSheet } from "react-native-actions-sheet";
 import BagsSheet from "@/components/custom/bags/BagsSheet";
 import { Platform } from "react-native";
-// import { OneSignal } from "react-native-onesignal";
+import { OneSignal } from "react-native-onesignal";
+import { oneSignalStore } from "@/store/onesignal";
 
 const isPlatformMobile = ["ios", "android"].includes(Platform.OS);
 const oneSignalKey = process.env.EXPO_PUBLIC_ONESIGNAL_APP_ID;
@@ -94,17 +95,19 @@ export default function TabLayout() {
     if (queryChain.error) queryClient.clear();
   }, [queryChain.error]);
 
-  useLayoutEffect(() => {
-    // if (oneSignalKey && isPlatformMobile) {
-    //   OneSignal.initialize(oneSignalKey);
-    //   OneSignal.Notifications.requestPermission(true);
-    // }
-  }, []);
-  useLayoutEffect(() => {
-    if (oneSignalKey && auth.authUser && isPlatformMobile) {
-      // OneSignal.login(auth.authUser!.uid);
+  useEffect(() => {
+    if (!auth.authUser) return;
+    if (!(oneSignalKey && isPlatformMobile)) return;
+    if (!oneSignalStore.state.isInitialized) {
+      OneSignal.initialize(oneSignalKey);
+      OneSignal.Notifications.requestPermission(true);
+      oneSignalStore.setState((s) => ({ ...s, isInitialized: true }));
     }
-  }, [auth.authUser]);
+    if (!oneSignalStore.state.isLoggedIn) {
+      OneSignal.login(auth.authUser!.uid);
+      oneSignalStore.setState((s) => ({ ...s, isLoggedIn: true }));
+    }
+  }, [auth.authUser?.uid]);
   if (!auth.authUser) {
     console.log("back to onboarding");
     return <Redirect href="/onboarding/step1" />;

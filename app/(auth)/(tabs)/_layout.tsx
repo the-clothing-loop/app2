@@ -122,21 +122,13 @@ export default function TabLayout() {
               </Text>
             </Box>
           ) : undefined,
-        // tabBarActiveTintColor: ,
-        // tabBarStyle: Platform.select({
-        //   ios: {
-        //     // Use a transparent background on iOS to show the blur effect
-        //     position: "absolute",
-        //   },
-        //   default: {},
-        // }),
       }}
     >
       <Tabs.Screen
-        name="rules"
+        name="(index)"
         options={{
+          lazy: false,
           headerShown: false,
-          title: t("rules"),
           tabBarIcon: ({ color }) => (
             <BookOpen size={28} color={color as any} />
           ),

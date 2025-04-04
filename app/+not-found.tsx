@@ -2,9 +2,13 @@ import { Box } from "@/components/ui/box";
 import { Button, ButtonText } from "@/components/ui/button";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
-import { Link } from "expo-router";
+import { Link, useNavigation } from "expo-router";
+import { useMemo } from "react";
 
 export default function NotFoundScreen() {
+  const navigation = useNavigation();
+
+  const currentPage = useMemo(() => navigation.getState(), [navigation]);
   return (
     <Box className="flex-1 items-center justify-center gap-8">
       <VStack className="items-center gap-1">
@@ -12,6 +16,9 @@ export default function NotFoundScreen() {
           404
         </Text>
         <Text size="lg">This page doesn't exist.</Text>
+        <Text size="md">
+          {currentPage?.index} {currentPage?.type}
+        </Text>
       </VStack>
       <Link href="/(auth)/(tabs)/rules" asChild>
         <Button size="xl">

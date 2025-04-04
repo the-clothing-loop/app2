@@ -105,11 +105,10 @@ export default function TabLayout() {
       // OneSignal.login(auth.authUser!.uid);
     }
   }, [auth.authUser]);
-  useEffect(() => {
-    if (!auth.authUser) {
-      router.replace("/onboarding/step1");
-    }
-  }, [auth.authUser]);
+  if (!auth.authUser) {
+    console.log("back to onboarding");
+    return <Redirect href="/onboarding/step1" />;
+  }
 
   return (
     <Stack screenOptions={{}}>

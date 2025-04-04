@@ -23,7 +23,7 @@ export default function RulesStackLayout() {
           //   : undefined,
         }}
       />
-      {/* <Stack.Screen name="Profile" /> */}
     </Stack>
   );
 }
+// <Stack.Screen name="Profile" />

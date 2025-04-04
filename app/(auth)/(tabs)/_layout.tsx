@@ -129,6 +129,7 @@ export default function TabLayout() {
         options={{
           lazy: false,
           headerShown: false,
+          title: t("rules"),
           tabBarIcon: ({ color }) => (
             <BookOpen size={28} color={color as any} />
           ),

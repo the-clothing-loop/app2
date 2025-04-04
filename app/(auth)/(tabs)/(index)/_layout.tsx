@@ -26,4 +26,3 @@ export default function RulesStackLayout() {
     </Stack>
   );
 }
-// <Stack.Screen name="Profile" />

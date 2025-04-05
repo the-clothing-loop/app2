@@ -5,13 +5,25 @@
   },
   "build": {
     "development": {
+      "env": {
+        "EXPO_PUBLIC_API_BASE_URL": "https://app.acc.clothingloop.org/api",
+        "EXPO_PUBLIC_ONESIGNAL_APP_ID": "f1cdfd23-1133-43dd-9070-c5ad00a436ed"
+      },
       "developmentClient": true,
       "distribution": "internal"
     },
     "preview": {
+      "env": {
+        "EXPO_PUBLIC_API_BASE_URL": "https://app.clothingloop.org/api",
+        "EXPO_PUBLIC_ONESIGNAL_APP_ID": "f1cdfd23-1133-43dd-9070-c5ad00a436ed"
+      },
       "distribution": "internal"
     },
     "production": {
+      "env": {
+        "EXPO_PUBLIC_API_BASE_URL": "https://app.clothingloop.org/api",
+        "EXPO_PUBLIC_ONESIGNAL_APP_ID": "f1cdfd23-1133-43dd-9070-c5ad00a436ed"
+      },
       "autoIncrement": true
     }
   },

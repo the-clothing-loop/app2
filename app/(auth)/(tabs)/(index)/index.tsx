@@ -132,7 +132,7 @@ export default function HomeScreen(props: {}) {
   return (
     <ScrollView
       contentInsetAdjustmentBehavior="automatic"
-      refreshControl={<RefreshControl />}
+      refreshControl={RefreshControl()}
     >
       <Accordion type="multiple" isCollapsible>
         {rules.map((r) => (

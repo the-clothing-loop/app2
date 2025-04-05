@@ -32,10 +32,12 @@ import dayjs from "dayjs";
 import { Badge, BadgeIcon, BadgeText } from "@/components/ui/badge";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { userUpdate } from "@/api/user";
+import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 
 export default function Info() {
   const { t } = useTranslation();
 
+  const tabBarHeight = useBottomTabBarHeight();
   const { authUser, currentChain } = useStore(authStore);
   const authUserRoles = useStore(authStoreAuthUserRoles);
   const queryClient = useQueryClient();
@@ -96,100 +98,104 @@ export default function Info() {
   return (
     <ScrollView
       contentInsetAdjustmentBehavior="automatic"
-      className="gap-3 p-3"
-      refreshControl={<RefreshControl />}
+      refreshControl={RefreshControl()}
+      style={{ paddingBottom: tabBarHeight }}
     >
-      <Box className="mb-3 flex-col bg-background-0">
-        <Text className="m-3 text-3xl text-black" bold>
-          {t("account")}
-        </Text>
-        {authUser ? (
-          <UserCard
-            user={authUser}
-            isUserPaused={authUserRoles.isPaused}
-            isUserHost={authUserRoles.isHost}
-            isUserWarden={authUserRoles.isChainWarden}
-          />
-        ) : null}
+      <Box className="gap-3 p-3">
+        <Box className="mb-3 flex-col bg-background-0">
+          <Text className="m-3 text-3xl text-black" bold>
+            {t("account")}
+          </Text>
+          {authUser ? (
+            <UserCard
+              user={authUser}
+              isUserPaused={authUserRoles.isPaused}
+              isUserHost={authUserRoles.isHost}
+              isUserWarden={authUserRoles.isChainWarden}
+            />
+          ) : null}
 
-        <Pressable onPress={() => handleOpenPause(pauseState.isUserPausedHow)}>
-          <HStack className="items-center gap-3 px-4 py-2">
-            <VStack className="shrink flex-grow items-start">
-              <Text bold size="sm">
-                {t("pauseParticipation")}
-              </Text>
-              <Text>
-                {pauseState.isUserPaused
-                  ? t("yourParticipationIsPausedClick")
-                  : t("setTimerForACoupleOfWeeks")}
-              </Text>
-              {pauseState.pausedFromNow ? (
-                <Badge size="md" variant="solid" action="muted">
-                  <BadgeIcon as={PauseCircleIcon} className="me-2" />
-                  <BadgeText>{pauseState.pausedFromNow}</BadgeText>
-                </Badge>
-              ) : null}
-            </VStack>
-            <Switch
-              value={pauseState.isUserPausedHow.sum}
-              trackColor={{ true: "#EF4444", false: null }}
-            ></Switch>
-          </HStack>
-        </Pressable>
-
-        <PauseDateDialog />
-      </Box>
-
-      <Box className="flex-col bg-background-0">
-        <Link asChild href="/(auth)/select-chain">
-          <Pressable>
-            <Box className="flex-col px-3 pb-4 pt-2">
-              <Text bold size="sm">
-                {t("selectALoop")}
-              </Text>
-              <HStack className="items-center justify-between">
-                <Text className="text-3xl text-black" bold>
-                  {currentChain?.name}
+          <Pressable
+            onPress={() => handleOpenPause(pauseState.isUserPausedHow)}
+          >
+            <HStack className="items-center gap-3 px-4 py-2">
+              <VStack className="shrink flex-grow items-start">
+                <Text bold size="sm">
+                  {t("pauseParticipation")}
                 </Text>
-                <Icon as={ChevronDown} size="xl" />
-              </HStack>
-            </Box>
+                <Text>
+                  {pauseState.isUserPaused
+                    ? t("yourParticipationIsPausedClick")
+                    : t("setTimerForACoupleOfWeeks")}
+                </Text>
+                {pauseState.pausedFromNow ? (
+                  <Badge size="md" variant="solid" action="muted">
+                    <BadgeIcon as={PauseCircleIcon} className="me-2" />
+                    <BadgeText>{pauseState.pausedFromNow}</BadgeText>
+                  </Badge>
+                ) : null}
+              </VStack>
+              <Switch
+                value={pauseState.isUserPausedHow.sum}
+                trackColor={{ true: "#EF4444", false: null }}
+              ></Switch>
+            </HStack>
           </Pressable>
-        </Link>
 
-        <Box className="flex-row items-center bg-warning-200 p-3">
-          <Icon as={Lock} className="me-2" />
-          <Text className="me-3">{t("closed")}</Text>
-          <Icon as={EyeOff} className="me-2" />
-          <Text className="me-3">{t("locked")}</Text>
+          <PauseDateDialog />
         </Box>
-        {currentChain ? (
-          <InterestedSizes
-            categories={currentChain.genders as Categories[]}
-            sizes={currentChain.sizes as Sizes[]}
-          />
-        ) : null}
-        {currentChain?.description ? (
-          <Box className="p-3">
-            <Text size="sm" bold>
-              {t("description")}
-            </Text>
-            <FormattedText content={currentChain.description} />
-          </Box>
-        ) : null}
-        {authUserRoles.isHost ? (
-          <Link asChild href="https://clothingloop.org/">
+
+        <Box className="flex-col bg-background-0">
+          <Link asChild href="/(auth)/select-chain">
             <Pressable>
-              <Box className="flex-row items-center gap-3 p-3">
-                <Text className="flex-grow">{t("goToAdminPortal")}</Text>
-                <Icon as={Globe2} />
+              <Box className="flex-col px-3 pb-4 pt-2">
+                <Text bold size="sm">
+                  {t("selectALoop")}
+                </Text>
+                <HStack className="items-center justify-between">
+                  <Text className="text-3xl text-black" bold>
+                    {currentChain?.name}
+                  </Text>
+                  <Icon as={ChevronDown} size="xl" />
+                </HStack>
               </Box>
             </Pressable>
           </Link>
-        ) : null}
+
+          <Box className="flex-row items-center bg-warning-200 p-3">
+            <Icon as={Lock} className="me-2" />
+            <Text className="me-3">{t("closed")}</Text>
+            <Icon as={EyeOff} className="me-2" />
+            <Text className="me-3">{t("locked")}</Text>
+          </Box>
+          {currentChain ? (
+            <InterestedSizes
+              categories={currentChain.genders as Categories[]}
+              sizes={currentChain.sizes as Sizes[]}
+            />
+          ) : null}
+          {currentChain?.description ? (
+            <Box className="p-3">
+              <Text size="sm" bold>
+                {t("description")}
+              </Text>
+              <FormattedText content={currentChain.description} />
+            </Box>
+          ) : null}
+          {authUserRoles.isHost ? (
+            <Link asChild href="https://clothingloop.org/">
+              <Pressable>
+                <Box className="flex-row items-center gap-3 p-3">
+                  <Text className="flex-grow">{t("goToAdminPortal")}</Text>
+                  <Icon as={Globe2} />
+                </Box>
+              </Pressable>
+            </Link>
+          ) : null}
+        </Box>
+        <LogoutLink />
+        <LegalLinks />
       </Box>
-      <LogoutLink />
-      <LegalLinks />
     </ScrollView>
   );
 }

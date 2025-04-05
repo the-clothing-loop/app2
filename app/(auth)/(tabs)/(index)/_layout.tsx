@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next";
 import { Button } from "react-native";
 
 export default function RulesStackLayout() {
-  const isHost = useStore(authStoreAuthUserRoles, (s) => s.isHost);
+  // const isHost = useStore(authStoreAuthUserRoles, (s) => s.isHost);
   const { t } = useTranslation();
   return (
     <Stack>

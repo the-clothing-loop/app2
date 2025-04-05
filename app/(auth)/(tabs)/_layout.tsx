@@ -18,7 +18,7 @@ import {
   ShoppingBag,
   UserCircle2,
 } from "lucide-react-native";
-import { useColorScheme, View } from "react-native";
+import { useColorScheme } from "react-native";
 import { Box } from "@/components/ui/box";
 import { Text } from "@/components/ui/text";
 
@@ -82,7 +82,7 @@ export default function TabLayout() {
   useEffect(() => {
     if (error) queryClient.clear();
   }, [error]);
-  const { data: listOfChains } = useQuery({
+  useQuery({
     queryKey: [
       "auth",
       "user-chains",
@@ -102,26 +102,22 @@ export default function TabLayout() {
     networkMode: "offlineFirst",
   });
 
-  // useEffect(() => {
-  //   if (["ios", "android"].includes(Platform.OS)) {
-  //     OneSignal.initialize(process.env.EXPO_PUBLIC_ONESIGNAL_APP_ID!);
-  //     OneSignal.Notifications.requestPermission(true);
-  //     OneSignal.login(auth.authUser!.uid);
-  //   }
-  // }, []);
-
   return (
     <Tabs
       backBehavior="initialRoute"
       screenOptions={{
-        tabBarBackground: () =>
-          auth.currentChain ? (
-            <Box className="absolute inset-0 pt-4 opacity-25">
-              <Text size="xs" className="text-center">
-                {auth.currentChain.name}
+        tabBarBackground: () => (
+          <Box className="absolute inset-0 bg-background-100">
+            <Box
+              className="absolute w-full bg-primary-100"
+              style={{ top: -14, height: 14 }}
+            >
+              <Text size="xs" className="text-center" numberOfLines={1}>
+                {auth.currentChain?.name || t("selectALoop")}
               </Text>
             </Box>
-          ) : undefined,
+          </Box>
+        ),
       }}
     >
       <Tabs.Screen

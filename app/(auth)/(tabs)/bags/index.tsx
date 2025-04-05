@@ -22,7 +22,7 @@ export default function Bags() {
   };
 
   return (
-    <ScrollView refreshControl={<RefreshControl />}>
+    <ScrollView refreshControl={RefreshControl()}>
       <Box className="mb-1">
         <Donate />
       </Box>

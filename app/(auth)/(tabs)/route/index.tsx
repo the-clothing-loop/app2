@@ -66,7 +66,7 @@ export default function Route() {
       <ScrollView
         contentInsetAdjustmentBehavior="automatic"
         style={{ paddingBottom: tabBarHeight }}
-        refreshControl={<RefreshControl />}
+        refreshControl={RefreshControl()}
       >
         {sortedListRouteUsers?.map(
           (

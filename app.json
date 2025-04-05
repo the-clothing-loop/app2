@@ -9,7 +9,7 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "bundleIdentifier": "org.clothingloop.app2",
+      "bundleIdentifier": "org.clothingloop.app",
       "supportsTablet": true,
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
@@ -20,7 +20,7 @@
         "foregroundImage": "./assets/images/icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "org.clothingloop.app2"
+      "package": "org.clothingloop.app"
     },
     "web": {
       "bundler": "metro",

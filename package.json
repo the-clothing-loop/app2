@@ -5,6 +5,8 @@
   "scripts": {
     "dev": "yarn run start",
     "start": "expo start",
+    "simulator:install:android": "yarn expo run:android --device",
+    "simulator:install:ios": "yarn expo run:ios --device",
     "prebuild": "expo prebuild --clean",
     "prebuild:remove": "rm -rf ios/ android/",
     "android": "DARK_MODE=media expo start --android",

@@ -1,5 +1,6 @@
 import { Chain, UID } from "@/api/types";
 import { Bag, User } from "@/api/typex2";
+import { AuthStatus } from "@/providers/AuthProvider";
 import { IsChainAdmin, IsChainWarden } from "@/utils/chain";
 import isBagTooOld, { IsBagTooOld } from "@/utils/is_bag_too_old";
 import IsPrivate from "@/utils/is_private";
@@ -7,6 +8,7 @@ import IsPaused from "@/utils/user";
 import { Store, Derived } from "@tanstack/react-store";
 
 export const authStore = new Store({
+  authStatus: AuthStatus.Pending,
   authUser: null as null | User,
   currentChain: null as null | Chain,
   currentChainUsers: null as null | User[],

@@ -34,8 +34,18 @@ export default function AuthProvider(props: PropsWithChildren) {
     },
   });
   useEffect(() => {
-    if (queryUser.data !== undefined) {
-      authStore.setState((s) => ({ ...s, authUser: queryUser.data }));
+    if (queryUser.data?.uid) {
+      authStore.setState((s) => ({
+        ...s,
+        authStatus: AuthStatus.LoggedIn,
+        authUser: queryUser.data,
+      }));
+    } else if (queryUser.data === null) {
+      authStore.setState((s) => ({
+        ...s,
+        authStatus: AuthStatus.LoggedOut,
+        authUser: null,
+      }));
     }
   }, [queryUser.dataUpdatedAt]);
 

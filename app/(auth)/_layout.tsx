@@ -19,6 +19,7 @@ import BagsSheet from "@/components/custom/bags/BagsSheet";
 import { Platform } from "react-native";
 import { OneSignal } from "react-native-onesignal";
 import { oneSignalStore } from "@/store/onesignal";
+import { AuthStatus } from "@/providers/AuthProvider";
 
 const isPlatformMobile = ["ios", "android"].includes(Platform.OS);
 const oneSignalKey = process.env.EXPO_PUBLIC_ONESIGNAL_APP_ID;
@@ -108,7 +109,7 @@ export default function TabLayout() {
       oneSignalStore.setState((s) => ({ ...s, isLoggedIn: true }));
     }
   }, [auth.authUser?.uid]);
-  if (!auth.authUser) {
+  if (auth.authStatus === AuthStatus.LoggedOut) {
     console.log("back to onboarding");
     return <Redirect href="/onboarding/step1" />;
   }

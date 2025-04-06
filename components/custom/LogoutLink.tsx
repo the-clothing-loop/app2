@@ -8,6 +8,7 @@ import { Box } from "../ui/box";
 import { Alert } from "react-native";
 import { oneSignalStore } from "@/store/onesignal";
 import { OneSignal } from "react-native-onesignal";
+import { AuthStatus } from "@/providers/AuthProvider";
 
 export default function LogoutLink() {
   const { t } = useTranslation();
@@ -37,6 +38,7 @@ export default function LogoutLink() {
         chainUID: "",
       }));
       authStore.setState(() => ({
+        authStatus: AuthStatus.LoggedOut,
         authUser: null,
         currentChain: null,
         currentChainUsers: null,

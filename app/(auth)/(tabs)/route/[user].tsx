@@ -44,7 +44,7 @@ export default function RouteUser() {
 
   useEffect(() => {
     if (!routeItem && uid) {
-      router.replace("/(auth)/(tabs)/rules");
+      router.replace("/(auth)/(tabs)/(index)");
     }
   }, [listRouteUsers, currentChain?.uid, uid]);
 

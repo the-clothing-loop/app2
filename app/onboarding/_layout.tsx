@@ -1,14 +1,13 @@
+import { AuthStatus } from "@/providers/AuthProvider";
 import { authStore } from "@/store/auth";
 import { savedStore } from "@/store/saved";
 import { useStore } from "@tanstack/react-store";
-import { Redirect, router, Stack } from "expo-router";
-import { useLayoutEffect } from "react";
+import { Redirect, Stack } from "expo-router";
 
 export default function OnboardingStackLayout() {
-  const authUser = useStore(authStore, (s) => s.authUser);
+  const authStatus = useStore(authStore, (s) => s.authStatus);
   const currentChainUID = useStore(savedStore, (s) => s.chainUID);
-  useLayoutEffect(() => {}, [authUser]);
-  if (authUser) {
+  if (authStatus === AuthStatus.LoggedIn) {
     if (currentChainUID) {
       console.log("back to home");
       return <Redirect href="/(auth)/(tabs)/(index)" />;

@@ -21,6 +21,7 @@ import {
 import { useColorScheme } from "react-native";
 import { Box } from "@/components/ui/box";
 import { Text } from "@/components/ui/text";
+import { AuthStatus } from "@/providers/AuthProvider";
 
 export default function TabLayout() {
   const queryClient = useQueryClient();
@@ -29,11 +30,11 @@ export default function TabLayout() {
   const selectedChainUID = useStore(savedStore, (s) => s.chainUID);
   const colorScheme = useColorScheme() ?? "light";
 
-  useLayoutEffect(() => {
-    if (!selectedChainUID) {
+  useEffect(() => {
+    if (!selectedChainUID && auth.authStatus == AuthStatus.LoggedIn) {
       router.replace("/(auth)/select-chain");
     }
-  }, [selectedChainUID]);
+  }, [selectedChainUID, auth.authStatus]);
 
   const { error } = useQuery({
     queryKey: ["auth", "chain", selectedChainUID],

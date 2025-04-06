@@ -12,6 +12,7 @@
       "bundleIdentifier": "org.clothingloop.app",
       "supportsTablet": true,
       "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "This app uses your location to show you where you are on the map",
         "ITSAppUsesNonExemptEncryption": false
       }
     },

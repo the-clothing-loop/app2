@@ -1,9 +1,9 @@
 import { router, Tabs } from "expo-router";
-import React, { useEffect, useLayoutEffect } from "react";
+import React, { useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
 import { useStore } from "@tanstack/react-store";
-import { authStore } from "@/store/auth";
+import { authStore, authStoreListBags } from "@/store/auth";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { chainGet } from "@/api/chain";
 import { savedStore } from "@/store/saved";
@@ -27,6 +27,7 @@ export default function TabLayout() {
   const queryClient = useQueryClient();
   const { t } = useTranslation();
   const auth = useStore(authStore);
+  const listBags = useStore(authStoreListBags);
   const selectedChainUID = useStore(savedStore, (s) => s.chainUID);
   const colorScheme = useColorScheme() ?? "light";
 
@@ -102,6 +103,15 @@ export default function TabLayout() {
     },
     networkMode: "offlineFirst",
   });
+  const bagTabBadge = useMemo(() => {
+    const currentAuthUserUID = auth.authUser?.uid;
+    if (!listBags || !currentAuthUserUID) return 0;
+    return listBags.reduce((v, b, i) => {
+      if (b.bag.user_uid !== currentAuthUserUID) return v;
+      if (b.isTooOld.isBagTooOldMe) return v + 1;
+      return v;
+    }, 0);
+  }, [auth.authUser?.uid, listBags]);
 
   return (
     <Tabs
@@ -146,6 +156,7 @@ export default function TabLayout() {
         options={{
           lazy: false,
           headerShown: false,
+          tabBarBadge: bagTabBadge || undefined,
           title: t("bags"),
           tabBarIcon: ({ color }) => (
             <ShoppingBag size={28} color={color as any} />

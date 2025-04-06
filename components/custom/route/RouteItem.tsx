@@ -40,7 +40,7 @@ export default function RouteItem(props: Props) {
       disabled={hideLink}
     >
       <HStack className="items-center gap-3 border-b border-b-outline-200 bg-background-0 p-2">
-        <Box className="relative h-10 w-10 items-end justify-center">
+        <Box className="relative h-10 w-12 items-end justify-center">
           {props.isPaused ? (
             <Icon
               as={Pause}

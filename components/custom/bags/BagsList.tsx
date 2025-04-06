@@ -85,7 +85,7 @@ export default function BagsList(props: {
 
   return (
     <>
-      <Box className="flex w-full flex-row flex-wrap">
+      <Box className="mb-1 flex w-full flex-row flex-wrap">
         {props.listBags?.map((item) => {
           return (
             <Card

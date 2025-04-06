@@ -1,5 +1,5 @@
 import { Chain, UID } from "@/api/types";
-import { Bag, User } from "@/api/typex2";
+import { Bag, BulkyItem, User } from "@/api/typex2";
 import { AuthStatus } from "@/providers/AuthProvider";
 import { IsChainAdmin, IsChainWarden } from "@/utils/chain";
 import isBagTooOld, { IsBagTooOld } from "@/utils/is_bag_too_old";
@@ -13,6 +13,7 @@ export const authStore = new Store({
   currentChain: null as null | Chain,
   currentChainUsers: null as null | User[],
   currentBags: null as null | Bag[],
+  currentBulky: null as null | BulkyItem[],
   currentChainRoute: null as null | UID[],
 });
 

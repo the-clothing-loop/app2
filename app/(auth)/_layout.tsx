@@ -20,6 +20,7 @@ import { Platform } from "react-native";
 import { OneSignal } from "react-native-onesignal";
 import { oneSignalStore } from "@/store/onesignal";
 import { AuthStatus } from "@/providers/AuthProvider";
+import { bulkyItemGetAllByChain } from "@/api/bulky";
 
 const isPlatformMobile = ["ios", "android"].includes(Platform.OS);
 const oneSignalKey = process.env.EXPO_PUBLIC_ONESIGNAL_APP_ID;
@@ -76,19 +77,23 @@ export default function TabLayout() {
     queryKey: ["auth", "chain-bags", selectedChainUID],
     async queryFn() {
       // test with one request before asking for the rest
-      const resBags = await bagGetAllByChain(
-        selectedChainUID,
-        auth.authUser!.uid,
-      )
-        .then((res) => res.data)
-        .catch(catchErrThrow401);
-      if (typeof resBags === "string") return null;
+      const [resBags, resBulky] = await Promise.all([
+        bagGetAllByChain(selectedChainUID, auth.authUser!.uid)
+          .then((res) => res.data)
+          .catch(catchErrThrow401),
+        bulkyItemGetAllByChain(selectedChainUID, auth.authUser!.uid)
+          .then((res) => res.data)
+          .catch(catchErrThrow401),
+      ]);
+      if (typeof resBags === "string" || typeof resBulky === "string")
+        return null;
       authStore.setState((s) => ({
         ...s,
         currentBags: resBags,
+        currentBulky: resBulky,
       }));
 
-      return resBags;
+      return null;
     },
     enabled: Boolean(selectedChainUID && auth.authUser),
   });

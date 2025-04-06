@@ -43,6 +43,7 @@ export default function LogoutLink() {
         currentChain: null,
         currentChainUsers: null,
         currentBags: null,
+        currentBulky: null,
         currentChainRoute: null,
       }));
       if (oneSignalStore.state.isLoggedIn) {

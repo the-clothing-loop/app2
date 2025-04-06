@@ -8,6 +8,8 @@
     "prebuild": "expo prebuild --clean",
     "prebuild:remove": "rm -rf ios/ android/",
     "android": "DARK_MODE=media expo start --android",
+    "build:local:android": "eas build --platform android --profile production --local",
+    "build:local:ios": "eas build --platform ios --profile production --local",
     "ios": "DARK_MODE=media expo start --ios",
     "web": "DARK_MODE=media expo start --web",
     "lint": "expo lint"

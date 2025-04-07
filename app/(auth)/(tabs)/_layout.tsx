@@ -32,6 +32,18 @@ export default function TabLayout() {
   const colorScheme = useColorScheme() ?? "light";
 
   useEffect(() => {
+    if (auth.authUser) {
+      const shouldRedirectGdpr =
+        auth.authUser.accepted_dpa === false ||
+        auth.authUser.accepted_toh === false;
+      if (shouldRedirectGdpr) {
+        const isAnyHost = auth.authUser.chains.some((uc) => uc.is_chain_admin);
+
+        if (isAnyHost && shouldRedirectGdpr) router.replace("/(auth)/gdpr");
+      }
+    }
+
+    // if no chain selected
     if (!selectedChainUID && auth.authStatus == AuthStatus.LoggedIn) {
       router.replace("/(auth)/select-chain");
     }

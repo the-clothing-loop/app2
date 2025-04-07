@@ -141,6 +141,14 @@ export default function TabLayout() {
           }}
         />
       )}
+      <Stack.Screen
+        name="gdpr"
+        options={{
+          headerTitle: t("gdpr"),
+          headerBackVisible: false,
+          headerShown: true,
+        }}
+      />
     </Stack>
   );
 }

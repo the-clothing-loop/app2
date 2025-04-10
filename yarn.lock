@@ -1675,6 +1675,19 @@
   resolved "https://registry.yarnpkg.com/@legendapp/tools/-/tools-2.0.1.tgz#995fe6cb3e2398b939f645505aa8e1abc84bd07f"
   integrity sha512-Kxt0HWvWElRK6oybHRzcYxdgaKGwuaiRNreS7usW7QuHXRIHaH4yMcW2YNRG4DHE5fpefv+Bno/BohQcCE4FaA==
 
+"@mattermost/react-native-network-client@^1.8.2":
+  version "1.8.2"
+  resolved "https://registry.yarnpkg.com/@mattermost/react-native-network-client/-/react-native-network-client-1.8.2.tgz#8b85b50003aa59238999f46df0f8f72aeb566e2c"
+  integrity sha512-wveW7wuXqwjxt3udip1H3Uw72ApNmSo6ii2qx9HZ81+LX3FnhBJhlB6q7xF6KP8DUEOxRZHvPWwAtGxYKWI0lw==
+  dependencies:
+    validator "13.12.0"
+    zod "3.24.0"
+
+"@mattermost/types@^10.6.0":
+  version "10.6.0"
+  resolved "https://registry.yarnpkg.com/@mattermost/types/-/types-10.6.0.tgz#65f5dfb93462b95d37cd98b2378efe6d896d3f17"
+  integrity sha512-seZIzKJ4XNUUqr7YCu+fgEmwy3zPz7X1cC1ZwRS/FTU29kIAAZkGF5UC5vCMVsA8q1hkkpkE2akH8VBUxpmsVQ==
+
 "@nodelib/fs.scandir@2.1.5":
   version "2.1.5"
   resolved "https://registry.yarnpkg.com/@nodelib/fs.scandir/-/fs.scandir-2.1.5.tgz#7619c2eb21b25483f6d167548b4cfd5a7488c3d5"
@@ -8082,6 +8095,11 @@ validate-npm-package-name@^5.0.0:
   resolved "https://registry.yarnpkg.com/validate-npm-package-name/-/validate-npm-package-name-5.0.1.tgz#a316573e9b49f3ccd90dbb6eb52b3f06c6d604e8"
   integrity sha512-OljLrQ9SQdOUqTaQxqL5dEfZWrXExyyWsozYlAWFawPVNuD83igl7uJD2RTkNMbniIYgt8l81eCJGIdQF7avLQ==
 
+validator@13.12.0:
+  version "13.12.0"
+  resolved "https://registry.yarnpkg.com/validator/-/validator-13.12.0.tgz#7d78e76ba85504da3fee4fd1922b385914d4b35f"
+  integrity sha512-c1Q0mCiPlgdTVVVIJIrBuxNicYE+t/7oKeI9MWLj3fh/uq2Pxh/3eeWbVZ4OcGW1TUf53At0njHw5SMdA3tmMg==
+
 vary@~1.1.2:
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/vary/-/vary-1.1.2.tgz#2299f02c6ded30d4a5961b0b9f74524a18f634fc"
@@ -8340,3 +8358,8 @@ yocto-queue@^0.1.0:
   version "0.1.0"
   resolved "https://registry.yarnpkg.com/yocto-queue/-/yocto-queue-0.1.0.tgz#0294eb3dee05028d31ee1a5fa2c556a6aaf10a1b"
   integrity sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==
+
+zod@3.24.0:
+  version "3.24.0"
+  resolved "https://registry.yarnpkg.com/zod/-/zod-3.24.0.tgz#babb32313f7c5f4a99812feee806d186b4f76bde"
+  integrity sha512-Hz+wiY8yD0VLA2k/+nsg2Abez674dDGTai33SwNvMPuf9uIrBC9eFgIMQxBBbHFxVXi8W+5nX9DcAh9YNSQm/w==

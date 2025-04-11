@@ -1,13 +1,12 @@
-import GenericClient, {
-  APIClientInterface,
-  ClientHeaders,
-  ClientResponse,
+import {
+  type APIClientInterface,
+  type ClientHeaders,
+  type ClientResponse,
   getOrCreateAPIClient,
-  getOrCreateWebSocketClient,
-  RequestOptions,
-  WebSocketClientInterface,
+  // getOrCreateWebSocketClient,
+  type RequestOptions,
+  // WebSocketClientInterface,
 } from "@mattermost/react-native-network-client";
-import { URLSearchParams } from "node:url";
 import { Channel, ServerChannel } from "@mattermost/types/channels";
 import { UserProfile } from "@mattermost/types/users";
 import { Post, PostList } from "@mattermost/types/posts";

@@ -179,6 +179,7 @@ export default function TabLayout() {
         name="chat"
         options={{
           title: t("chat"),
+          headerShown: false,
           tabBarIcon: ({ color }) => (
             <MessageCircle size={28} color={color as any} />
           ),

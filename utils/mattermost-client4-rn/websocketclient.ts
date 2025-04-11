@@ -1,10 +1,6 @@
-import GenericClient, {
-  APIClientInterface,
-  getOrCreateAPIClient,
+import {
   getOrCreateWebSocketClient,
   WebSocketClientInterface,
-  WebSocketEvent,
-  WebSocketEventHandler,
 } from "@mattermost/react-native-network-client";
 
 export type OnClose = () => void;
@@ -29,8 +25,6 @@ export class WebSocketClient {
         messageListener(event.message as WebSocketMessage);
       }
     });
-
-    this.wsClient.onClose((event) => {});
   }
 
   static async initialize(

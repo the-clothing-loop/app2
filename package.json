@@ -17,6 +17,7 @@
     "lint": "expo lint"
   },
   "dependencies": {
+    "@chat-e2ee/service": "^1.5.0",
     "@expo/html-elements": "0.4.2",
     "@expo/react-native-action-sheet": "^4.1.1",
     "@expo/vector-icons": "^14.0.2",

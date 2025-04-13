@@ -1,15 +1,22 @@
+// import {
+// type APIClientInterface,
+// type ClientHeaders,
+// type ClientResponse,
+// getOrCreateAPIClient,
+// getOrCreateWebSocketClient,
+// type RequestOptions,
+// WebSocketClientInterface,
+// } from "@mattermost/react-native-network-client";
+import type { Channel, ServerChannel } from "@mattermost/types/channels";
+import type { UserProfile } from "@mattermost/types/users";
+import type { Post, PostList } from "@mattermost/types/posts";
 import {
-  type APIClientInterface,
-  type ClientHeaders,
-  type ClientResponse,
+  APIClientInterface,
+  ClientHeaders,
+  ClientResponse,
   getOrCreateAPIClient,
-  // getOrCreateWebSocketClient,
-  type RequestOptions,
-  // WebSocketClientInterface,
-} from "@mattermost/react-native-network-client";
-import { Channel, ServerChannel } from "@mattermost/types/channels";
-import { UserProfile } from "@mattermost/types/users";
-import { Post, PostList } from "@mattermost/types/posts";
+  RequestOptions,
+} from "./internal/apiclient";
 
 const PER_PAGE_DEFAULT = 60;
 
@@ -28,11 +35,10 @@ export default class Client4 {
   }
   static async initialize(hostUrl: string): Promise<Client4> {
     const url = "https://" + hostUrl;
-    const { client: apiClient, created } = await getOrCreateAPIClient(url);
-
+    const { client, created } = await getOrCreateAPIClient(url);
     if (!created) throw "unable to create mattermost connection";
 
-    return new Client4(url, apiClient);
+    return new Client4(url, client);
   }
 
   getOptions(options: RequestOptions): RequestOptions {
@@ -97,7 +103,7 @@ export default class Client4 {
       }),
     );
     if (!resp.ok || !resp.headers) throw resp;
-    this.token = resp.headers["Token"];
+    this.token = resp.headers.get("Token") || "";
     return resp.data as UserProfile;
   }
 

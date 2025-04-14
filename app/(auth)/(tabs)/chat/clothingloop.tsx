@@ -15,7 +15,9 @@ import { useStore } from "@tanstack/react-store";
 import { MessageCircleMoreIcon } from "lucide-react-native";
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { KeyboardAvoidingView, Platform } from "react-native";
+import { Animated, KeyboardAvoidingView, Platform } from "react-native";
+import { useAnimatedStyle } from "react-native-reanimated";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function ChatMattermost() {
   const { currentChain, authUser } = useStore(authStore);
@@ -88,17 +90,19 @@ export default function ChatMattermost() {
     // queryRoomMessageList.
   };
 
+  const safeInsets = useSafeAreaInsets();
+
   function handleCreateRoom() {
     console.log("create room");
   }
   return (
-    <Box className="flex-1">
+    <VStack className="flex-1 pb-4">
       <KeyboardAvoidingView
+        keyboardVerticalOffset={64 + safeInsets.bottom}
+        behavior="padding"
         className="flex-1"
-        keyboardVerticalOffset={84}
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
       >
-        <VStack className="flex-1 pb-4">
+        <VStack className="flex-1">
           <ChatRooms
             rooms={queryRoomList.data || []}
             selectedId={selectedRoomId}
@@ -106,10 +110,10 @@ export default function ChatMattermost() {
             onPressCreateRoom={handleCreateRoom}
             onPressRoom={setSelectedRoomId}
           />
-          <ChatMessages messages={queryRoomMessageListArr || []} />
+          <ChatMessages messages={queryRoomMessageListArr} />
           <ChatInput />
         </VStack>
       </KeyboardAvoidingView>
-    </Box>
+    </VStack>
   );
 }

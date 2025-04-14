@@ -10,7 +10,7 @@ import { SectionList, VirtualizedList } from "react-native";
 export default function ChatMessages(props: { messages: ChatMessage[] }) {
   return (
     <VirtualizedList<ChatMessage>
-      className="flex-grow bg-background-100"
+      className="flex-1 flex-grow bg-background-100"
       initialNumToRender={0}
       data={props.messages}
       renderItem={({ item }) => (

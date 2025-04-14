@@ -8,15 +8,13 @@ import { Icon } from "@/components/ui/icon";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
 import { authStore, authStoreAuthUserRoles } from "@/store/auth";
-import { ChatConnStatus, chatStore } from "@/store/chat";
-import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
+import { chatStore } from "@/store/chat";
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { useStore } from "@tanstack/react-store";
-import { MessageCircleMoreIcon } from "lucide-react-native";
+import { MessageCircleQuestionIcon } from "lucide-react-native";
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Animated, KeyboardAvoidingView, Platform } from "react-native";
-import { useAnimatedStyle } from "react-native-reanimated";
+import { KeyboardAvoidingView } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function ChatMattermost() {
@@ -110,8 +108,20 @@ export default function ChatMattermost() {
             onPressCreateRoom={handleCreateRoom}
             onPressRoom={setSelectedRoomId}
           />
-          <ChatMessages messages={queryRoomMessageListArr} />
-          <ChatInput />
+          {selectedRoomId ? (
+            <ChatMessages messages={queryRoomMessageListArr} />
+          ) : (
+            <Box className="flex-1 items-center justify-center gap-4">
+              <Icon
+                className="h-20 w-20 text-typography-600"
+                as={MessageCircleQuestionIcon}
+              />
+              <Text className="text-typography-600" size="xl" bold>
+                {t("Select a chat room")}
+              </Text>
+            </Box>
+          )}
+          <ChatInput isDisabled={!selectedRoomId} />
         </VStack>
       </KeyboardAvoidingView>
     </VStack>

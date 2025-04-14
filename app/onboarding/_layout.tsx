@@ -1,6 +1,6 @@
-import { AuthStatus } from "@/providers/AuthProvider";
 import { authStore } from "@/store/auth";
 import { savedStore } from "@/store/saved";
+import { AuthStatus } from "@/types/auth_status";
 import { useStore } from "@tanstack/react-store";
 import { Redirect, Stack } from "expo-router";
 

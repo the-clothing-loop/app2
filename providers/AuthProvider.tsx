@@ -3,14 +3,9 @@ import { User } from "@/api/typex2";
 import { userGetByUID } from "@/api/user";
 import { authStore } from "@/store/auth";
 import { savedStore } from "@/store/saved";
+import { AuthStatus } from "@/types/auth_status";
 import { useQuery } from "@tanstack/react-query";
 import { PropsWithChildren, useEffect } from "react";
-
-export enum AuthStatus {
-  LoggedIn,
-  LoggedOut,
-  Pending,
-}
 
 export default function AuthProvider(props: PropsWithChildren) {
   const queryUser = useQuery({

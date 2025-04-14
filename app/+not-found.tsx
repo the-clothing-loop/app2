@@ -20,7 +20,7 @@ export default function NotFoundScreen() {
           {currentPage?.index} {currentPage?.type}
         </Text>
       </VStack>
-      <Link href="/(auth)/(tabs)/rules" asChild>
+      <Link href="/(auth)/(tabs)/(index)" asChild>
         <Button size="xl">
           <ButtonText>Go to home screen!</ButtonText>
         </Button>

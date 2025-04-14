@@ -8,8 +8,8 @@ import { Box } from "../ui/box";
 import { Alert } from "react-native";
 import { oneSignalStore } from "@/store/onesignal";
 import { OneSignal } from "react-native-onesignal";
-import { AuthStatus } from "@/providers/AuthProvider";
-import { ChatConnStatus, chatStore } from "@/store/chat";
+import { chatStore } from "@/store/chat";
+import { AuthStatus } from "@/types/auth_status";
 
 export default function LogoutLink() {
   const { t } = useTranslation();

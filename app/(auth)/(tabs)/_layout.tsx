@@ -21,7 +21,7 @@ import {
 import { useColorScheme } from "react-native";
 import { Box } from "@/components/ui/box";
 import { Text } from "@/components/ui/text";
-import { AuthStatus } from "@/providers/AuthProvider";
+import { AuthStatus } from "@/types/auth_status";
 
 export default function TabLayout() {
   const queryClient = useQueryClient();

@@ -1,7 +1,7 @@
-import { Redirect, router, Stack } from "expo-router";
-import React, { useEffect, useLayoutEffect } from "react";
+import { Redirect, Stack } from "expo-router";
+import React, { useEffect } from "react";
 
-import { useColorScheme } from "@/hooks/useColorScheme";
+// import { useColorScheme } from "@/hooks/useColorScheme";
 import { useTranslation } from "react-i18next";
 
 // import { LogLevel, OneSignal } from "react-native-onesignal";
@@ -19,8 +19,8 @@ import BagsSheet from "@/components/custom/bags/BagsSheet";
 import { Platform } from "react-native";
 import { OneSignal } from "react-native-onesignal";
 import { oneSignalStore } from "@/store/onesignal";
-import { AuthStatus } from "@/providers/AuthProvider";
 import { bulkyItemGetAllByChain } from "@/api/bulky";
+import { AuthStatus } from "@/types/auth_status";
 
 const isPlatformMobile = ["ios", "android"].includes(Platform.OS);
 const oneSignalKey = process.env.EXPO_PUBLIC_ONESIGNAL_APP_ID;

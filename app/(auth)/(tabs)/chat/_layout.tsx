@@ -3,8 +3,7 @@ import { authStore } from "@/store/auth";
 import { AppType, chatStore } from "@/store/chat";
 import { useQuery } from "@tanstack/react-query";
 import { useStore } from "@tanstack/react-store";
-import { router, Stack } from "expo-router";
-import { useEffect } from "react";
+import { Stack } from "expo-router";
 import { useTranslation } from "react-i18next";
 
 export default function ChatStackLayout() {
@@ -36,7 +35,7 @@ export default function ChatStackLayout() {
         }}
       />
       <Stack.Screen
-        name="mattermost"
+        name="clothingloop"
         options={{
           title: t("chat"),
         }}

@@ -173,7 +173,7 @@ export default function ChatChange() {
             {t("imChatMessage", { chat: currentChatApp.title })}
           </Text>
           {currentChatApp.key == "clothingloop" ? (
-            <Link href="/(auth)/(tabs)/chat/mattermost" replace asChild>
+            <Link href="/(auth)/(tabs)/chat/clothingloop" replace asChild>
               <Button
                 style={{ backgroundColor: currentChatApp.bgColor }}
                 className="rounded-pill"

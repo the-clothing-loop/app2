@@ -1,39 +1,52 @@
 import axios from "./axios";
+import { UID } from "./types";
 import {
-  ChatCreateChannelRequest,
-  ChatCreateChannelResponse,
-  ChatDeleteChannelRequest,
-  ChatJoinChannelsRequest,
-  ChatPatchUserRequest,
-  ChatPatchUserResponse,
+  ChatGetTypeRequest,
+  ChatGetTypeResponse,
+  ChatMessage,
+  ChatPatchTypeRequest,
+  ChatRoom,
+  ChatRoomEditRequest,
+  ChatRoomListQuery,
+  ChatRoomListResponse,
+  ChatRoomMessageListQuery,
+  ChatRoomMessageListResponse,
 } from "./typex2";
 
-export function chatPatchUser(chain_uid: string) {
-  return axios.patch<ChatPatchUserResponse>(`/v2/chat/user`, {
-    chain_uid,
-  } satisfies ChatPatchUserRequest);
-}
-export function chatCreateChannel(
-  chain_uid: string,
-  name: string,
-  color: string,
-) {
-  return axios.post<ChatCreateChannelResponse>(`/v2/chat/channel/create`, {
-    chain_uid,
-    name,
-    color,
-  } satisfies ChatCreateChannelRequest);
+export function chatTypeGet(chain_uid: string) {
+  return axios.get<ChatGetTypeResponse>("/v2/chat/type", {
+    params: {
+      chain_uid,
+    } satisfies ChatGetTypeRequest,
+  });
 }
 
-export function chatDeleteChannel(chain_uid: string, channel_id: string) {
-  return axios.post<never>(`/v2/chat/channel/delete`, {
-    chain_uid,
-    channel_id,
-  } satisfies ChatDeleteChannelRequest);
+export function chatTypePatch(body: ChatPatchTypeRequest) {
+  return axios.patch<never>("/v2/chat/type", body);
 }
 
-export function chatJoinChannels(chain_uid: string) {
-  return axios.post<never>(`/v2/chat/channel/join`, {
-    chain_uid,
-  } satisfies ChatJoinChannelsRequest);
+export function chatRoomCreate(body: Omit<ChatRoom, "id" | "created_at">) {
+  return axios.post<never>("/v2/chat/room/create", body);
+}
+
+export function chatRoomList(chain_uid: UID) {
+  return axios.get<ChatRoomListResponse>("/v2/chat/rooms", {
+    params: {
+      chain_uid,
+    } satisfies ChatRoomListQuery,
+  });
+}
+
+export function chatRoomEdit(body: ChatRoomEditRequest) {
+  return axios.patch<never>("/v2/chat/room/edit", body);
+}
+
+export function chatRoomMessageList(params: ChatRoomMessageListQuery) {
+  return axios.get<ChatRoomMessageListResponse>("/v2/chat/room/messages", {
+    params,
+  });
+}
+
+export function chatRoomMessageCreate(body: ChatMessage) {
+  return axios.post<never>("/v2/chat/room/message/create", body);
 }

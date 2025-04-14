@@ -6,15 +6,15 @@ This is an [Expo](https://expo.dev) project created with [`create-expo-app`](htt
 
 1. Install dependencies
 
-   ```bash
-   npm install
-   ```
+  ```bash
+  yarn install
+  ```
 
 2. Start the app
 
-   ```bash
-    npx expo start
-   ```
+  ```bash
+  yarn dev
+  ```
 
 In the output, you'll find options to open the app in a
 
@@ -25,15 +25,15 @@ In the output, you'll find options to open the app in a
 
 You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
 
-## Get a fresh project
+## Get a fresh ios, android project
 
 When you're ready, run:
 
 ```bash
-npm run reset-project
+yarn prebuild
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+This command will replace the ios and android directories with freshly generated ones
 
 ## Learn more
 

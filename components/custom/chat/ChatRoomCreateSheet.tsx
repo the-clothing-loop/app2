@@ -1,0 +1,133 @@
+import { chatRoomCreate, chatRoomEdit } from "@/api/chat";
+import { UID } from "@/api/types";
+import { ChatRoom } from "@/api/typex2";
+import { Button, ButtonText } from "@/components/ui/button";
+import { HStack } from "@/components/ui/hstack";
+import { Text } from "@/components/ui/text";
+import { useForm } from "@tanstack/react-form";
+import { Ref, RefObject, useRef } from "react";
+import { useTranslation } from "react-i18next";
+import { ScrollView } from "react-native";
+import ActionSheet, { ActionSheetRef } from "react-native-actions-sheet";
+import FormLabel from "../FormLabel";
+import { Input, InputField } from "@/components/ui/input";
+import ColorSelect from "../ColorSelect";
+import { Box } from "@/components/ui/box";
+
+const roomColors = [
+  "#C9843E",
+  "#AD8F22",
+  "#79A02D",
+  "#66926E",
+  "#199FBA",
+  "#6494C2",
+  "#1467B3",
+  "#A899C2",
+  "#513484",
+  "#B37EAD",
+  "#B76DAC",
+  "#F57BB0",
+  "#A35C7B",
+  "#E38C95",
+  "#C73643",
+  "#7D7D7D",
+  "#3C3C3B",
+];
+
+export default function ChatRoomCreateSheet(props: {
+  currentChatRoom?: ChatRoom;
+  fallbackChainUID: UID;
+  refSheet: RefObject<ActionSheetRef>;
+}) {
+  const { t } = useTranslation();
+  const isEdit = Boolean(props.currentChatRoom);
+  const form = useForm({
+    defaultValues: {
+      id: undefined as undefined | number,
+      name: "",
+      color: roomColors[15], // "#7D7D7D"
+      chain_uid: "",
+    } satisfies Parameters<typeof chatRoomCreate>[0] & Partial<ChatRoom>,
+    async onSubmit({ value }) {
+      if (isEdit) {
+        if (!value.id) throw "Unable to edit non-existing chat room";
+        await chatRoomEdit({
+          chain_uid: value.chain_uid,
+          id: value.id,
+          name: value.name,
+          color: value.color,
+        });
+      } else {
+        await chatRoomCreate({
+          chain_uid: value.chain_uid,
+          name: value.name,
+          color: value.color,
+        });
+      }
+
+      props.refSheet.current?.hide();
+    },
+  });
+
+  function handleClose() {
+    props.refSheet.current?.hide();
+  }
+  return (
+    <ActionSheet
+      snapPoints={[100]}
+      gestureEnabled
+      ref={props.refSheet}
+      drawUnderStatusBar={false}
+      closeOnTouchBackdrop={false}
+    >
+      <HStack className="items-center justify-between gap-3 px-3">
+        <Button
+          action="negative"
+          onPress={handleClose}
+          className="bg-transparent"
+        >
+          <ButtonText className="text-error-600">{t("close")}</ButtonText>
+        </Button>
+        <Text>{isEdit ? t("editRoom") : t("newRoom")}</Text>
+        <Button
+          action="primary"
+          className="bg-transparent"
+          onPress={form.handleSubmit}
+        >
+          <ButtonText className="text-primary-600">
+            {isEdit ? t("change") : t("create")}
+          </ButtonText>
+        </Button>
+      </HStack>
+      <ScrollView>
+        <Box className="flex flex-col gap-4 p-4 pb-8">
+          <FormLabel label={t("roomName")}>
+            <form.Field name="name">
+              {(field) => (
+                <>
+                  <Input>
+                    <InputField
+                      value={field.state.value}
+                      onChangeText={field.setValue}
+                    />
+                  </Input>
+                </>
+              )}
+            </form.Field>
+          </FormLabel>
+          <FormLabel label={t("roomColor")}>
+            <form.Field name="color">
+              {(field) => (
+                <ColorSelect
+                  colors={roomColors}
+                  value={field.state.value}
+                  setValue={field.setValue}
+                />
+              )}
+            </form.Field>
+          </FormLabel>
+        </Box>
+      </ScrollView>
+    </ActionSheet>
+  );
+}

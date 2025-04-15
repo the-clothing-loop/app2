@@ -2,6 +2,7 @@ import { chatRoomList, chatRoomMessageList } from "@/api/chat";
 import { ChatMessage } from "@/api/typex2";
 import ChatInput from "@/components/custom/chat/ChatInput";
 import ChatMessages from "@/components/custom/chat/ChatMessages";
+import ChatRoomCreateSheet from "@/components/custom/chat/ChatRoomCreateSheet";
 import ChatRooms from "@/components/custom/chat/ChatRooms";
 import { Box } from "@/components/ui/box";
 import { Icon } from "@/components/ui/icon";
@@ -12,9 +13,10 @@ import { chatStore } from "@/store/chat";
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { useStore } from "@tanstack/react-store";
 import { MessageCircleQuestionIcon } from "lucide-react-native";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { KeyboardAvoidingView } from "react-native";
+import { ActionSheetRef } from "react-native-actions-sheet";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function ChatMattermost() {
@@ -22,6 +24,7 @@ export default function ChatMattermost() {
   const authUserRoles = useStore(authStoreAuthUserRoles);
   const { t } = useTranslation();
   const chat = useStore(chatStore);
+  const refSheet = useRef<ActionSheetRef>(null);
 
   useEffect(() => {
     if (!authUser) return;
@@ -91,7 +94,7 @@ export default function ChatMattermost() {
   const safeInsets = useSafeAreaInsets();
 
   function handleCreateRoom() {
-    console.log("create room");
+    refSheet.current?.show();
   }
   return (
     <VStack className="flex-1 pb-4">
@@ -101,6 +104,11 @@ export default function ChatMattermost() {
         className="flex-1"
       >
         <VStack className="flex-1">
+          <ChatRoomCreateSheet
+            currentChatRoom={undefined}
+            fallbackChainUID={currentChain?.uid || ""}
+            refSheet={refSheet}
+          />
           <ChatRooms
             rooms={queryRoomList.data || []}
             selectedId={selectedRoomId}

@@ -3,17 +3,14 @@ import { Card } from "@/components/ui/card";
 import { Image } from "@/components/ui/image";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
-import FormattedText from "../FormattedText";
 import { Box } from "@/components/ui/box";
 import { useMemo, useState } from "react";
 import { HStack } from "@/components/ui/hstack";
-import React from "react";
-import { Alert, Modal, Pressable, SafeAreaView, View } from "react-native";
+import { Modal, Pressable, SafeAreaView } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
 export default function BulkyList(props: { bulkyList: BulkyItem[] }) {
   const [selected, setSelected] = useState<BulkyItem | null>(null);
-
   const cols = useMemo(() => {
     const col1: BulkyItem[] = [];
     const col2: BulkyItem[] = [];
@@ -52,6 +49,7 @@ export default function BulkyList(props: { bulkyList: BulkyItem[] }) {
                     >
                       <Text className="text-3xl">{bulky.title}</Text>
                       <Text className="">{bulky.message}</Text>
+                      <Text className="">{bulky.created_at.slice(0, 10)}</Text>
                     </VStack>
                   </Card>
                 </Pressable>
@@ -89,7 +87,7 @@ export default function BulkyList(props: { bulkyList: BulkyItem[] }) {
                   <VStack>
                     {selected.image_url && (
                       <Image
-                        className="mb-2 w-full"
+                        className="mb-2 h-96 w-full"
                         source={{ uri: selected.image_url }}
                       />
                     )}

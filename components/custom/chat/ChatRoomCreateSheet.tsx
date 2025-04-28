@@ -13,6 +13,8 @@ import FormLabel from "../FormLabel";
 import { Input, InputField } from "@/components/ui/input";
 import ColorSelect from "../ColorSelect";
 import { Box } from "@/components/ui/box";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { catchErrThrow401 } from "@/utils/handleRequests";
 
 const roomColors = [
   "#C9843E",
@@ -34,37 +36,55 @@ const roomColors = [
   "#3C3C3B",
 ];
 
+type FormValues = Parameters<typeof chatRoomCreate>[0] & Partial<ChatRoom>;
+
 export default function ChatRoomCreateSheet(props: {
   currentChatRoom?: ChatRoom;
   fallbackChainUID: UID;
   refSheet: RefObject<ActionSheetRef>;
 }) {
   const { t } = useTranslation();
+  const queryClient = useQueryClient();
   const isEdit = Boolean(props.currentChatRoom);
+  const mutateRoom = useMutation({
+    async mutationFn(value: FormValues) {
+      if (isEdit) {
+        if (!value.id) throw "Unable to edit non-existing chat room";
+        console.info("edit chat room");
+        await chatRoomEdit({
+          chain_uid: value.chain_uid,
+          id: value.id,
+          name: value.name,
+          color: value.color,
+        }).catch(catchErrThrow401);
+      } else {
+        console.info("create chat room");
+        await chatRoomCreate({
+          chain_uid: value.chain_uid,
+          name: value.name,
+          color: value.color,
+        }).catch(catchErrThrow401);
+      }
+    },
+    onSuccess(data) {
+      queryClient.invalidateQueries({
+        queryKey: ["chat"],
+        refetchType: "all",
+      });
+    },
+    onError(error) {
+      queryClient.invalidateQueries();
+    },
+  });
   const form = useForm({
     defaultValues: {
       id: undefined as undefined | number,
       name: "",
       color: roomColors[15], // "#7D7D7D"
       chain_uid: "",
-    } satisfies Parameters<typeof chatRoomCreate>[0] & Partial<ChatRoom>,
+    } satisfies FormValues,
     async onSubmit({ value }) {
-      if (isEdit) {
-        if (!value.id) throw "Unable to edit non-existing chat room";
-        await chatRoomEdit({
-          chain_uid: value.chain_uid,
-          id: value.id,
-          name: value.name,
-          color: value.color,
-        });
-      } else {
-        await chatRoomCreate({
-          chain_uid: value.chain_uid,
-          name: value.name,
-          color: value.color,
-        });
-      }
-
+      await mutateRoom.mutateAsync(value);
       props.refSheet.current?.hide();
     },
   });

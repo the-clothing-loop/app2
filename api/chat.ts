@@ -4,6 +4,7 @@ import {
   ChatGetTypeRequest,
   ChatGetTypeResponse,
   ChatMessage,
+  ChatMessageCreateRequest,
   ChatPatchTypeRequest,
   ChatRoom,
   ChatRoomEditRequest,
@@ -47,6 +48,6 @@ export function chatRoomMessageList(params: ChatRoomMessageListQuery) {
   });
 }
 
-export function chatRoomMessageCreate(body: ChatMessage) {
+export function chatRoomMessageCreate(body: ChatMessageCreateRequest) {
   return axios.post<never>("/v2/chat/room/message/create", body);
 }

@@ -1,4 +1,8 @@
-import { chatRoomList, chatRoomMessageList } from "@/api/chat";
+import {
+  chatRoomList,
+  chatRoomMessageCreate,
+  chatRoomMessageList,
+} from "@/api/chat";
 import { ChatMessage } from "@/api/typex2";
 import ChatInput from "@/components/custom/chat/ChatInput";
 import ChatMessages from "@/components/custom/chat/ChatMessages";
@@ -38,6 +42,7 @@ export default function ChatMattermost() {
   const queryRoomList = useQuery({
     queryKey: ["auth", "chat", "rooms", currentChain?.uid],
     queryFn() {
+      console.log("get chat room list", currentChain?.uid);
       return chatRoomList(currentChain!.uid).then((res) => res.data.list);
     },
     enabled: Boolean(currentChain),
@@ -51,6 +56,7 @@ export default function ChatMattermost() {
       "messages",
       currentChain?.uid,
       setSelectedRoomId,
+      startFrom,
     ],
     initialPageParam: 0,
     getNextPageParam: (
@@ -64,7 +70,7 @@ export default function ChatMattermost() {
       return chatRoomMessageList({
         chain_uid: currentChain!.uid,
         chat_room_id: selectedRoomId!,
-        start_from: 0,
+        start_from: startFrom,
         page: pageParam,
       }).then((res) => res.data.messages);
     },
@@ -92,6 +98,18 @@ export default function ChatMattermost() {
   };
 
   const safeInsets = useSafeAreaInsets();
+
+  async function handleSendMessage(text: string) {
+    if (!authUser) throw "not logged in";
+    if (!currentChain) throw "no loop selected";
+    if (!selectedRoomId) throw "must select a chat room";
+    await chatRoomMessageCreate({
+      chain_uid: currentChain?.uid,
+      message: text,
+      chat_room_id: selectedRoomId,
+    });
+    setStartFrom(new Date().valueOf());
+  }
 
   function handleCreateRoom() {
     refSheet.current?.show();
@@ -129,7 +147,7 @@ export default function ChatMattermost() {
               </Text>
             </Box>
           )}
-          <ChatInput isDisabled={!selectedRoomId} />
+          <ChatInput isDisabled={!selectedRoomId} onEnter={handleSendMessage} />
         </VStack>
       </KeyboardAvoidingView>
     </VStack>

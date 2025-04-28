@@ -23,17 +23,18 @@ export default function ChatRooms(props: {
         .join("");
       return (
         <Pressable
+          className="flex h-full items-center justify-center px-2"
           onPress={() =>
             props.onPressRoom(props.selectedId == room.id ? null : room.id)
           }
           key={room.id}
         >
-          <Box className="w-22 h-full flex-col">
-            <Avatar style={{ backgroundColor: room.color }}>
-              <AvatarFallbackText>{initials}</AvatarFallbackText>
-              <Text>{room.name}</Text>
-            </Avatar>
-          </Box>
+          <Avatar style={{ backgroundColor: room.color }}>
+            <AvatarFallbackText>{initials}</AvatarFallbackText>
+          </Avatar>
+          <Text className="w-22" isTruncated={true}>
+            {room.name}
+          </Text>
         </Pressable>
       );
     },

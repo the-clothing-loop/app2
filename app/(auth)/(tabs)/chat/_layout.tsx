@@ -19,6 +19,7 @@ export default function ChatStackLayout() {
           ...s,
           appType: res.data.chat_type as AppType,
           chatUrl: res.data.chat_url,
+          chatInAppDisabled: res.data.chat_in_app_disabled,
         }));
         return null;
       });
@@ -36,6 +37,12 @@ export default function ChatStackLayout() {
       />
       <Stack.Screen
         name="clothingloop"
+        options={{
+          title: t("chat"),
+        }}
+      />
+      <Stack.Screen
+        name="types"
         options={{
           title: t("chat"),
         }}

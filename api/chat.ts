@@ -6,12 +6,12 @@ import {
   ChatMessage,
   ChatMessageCreateRequest,
   ChatPatchTypeRequest,
-  ChatRoom,
-  ChatRoomEditRequest,
-  ChatRoomListQuery,
-  ChatRoomListResponse,
-  ChatRoomMessageListQuery,
-  ChatRoomMessageListResponse,
+  ChatChannel,
+  ChatChannelEditRequest,
+  ChatChannelListQuery,
+  ChatChannelListResponse,
+  ChatChannelMessageListQuery,
+  ChatChannelMessageListResponse,
 } from "./typex2";
 
 export function chatTypeGet(chain_uid: string) {
@@ -26,28 +26,33 @@ export function chatTypePatch(body: ChatPatchTypeRequest) {
   return axios.patch<never>("/v2/chat/type", body);
 }
 
-export function chatRoomCreate(body: Omit<ChatRoom, "id" | "created_at">) {
-  return axios.post<never>("/v2/chat/room/create", body);
+export function chatChannelCreate(
+  body: Omit<ChatChannel, "id" | "created_at">,
+) {
+  return axios.post<never>("/v2/chat/channel/create", body);
 }
 
-export function chatRoomList(chain_uid: UID) {
-  return axios.get<ChatRoomListResponse>("/v2/chat/rooms", {
+export function chatChannelList(chain_uid: UID) {
+  return axios.get<ChatChannelListResponse>("/v2/chat/channels", {
     params: {
       chain_uid,
-    } satisfies ChatRoomListQuery,
+    } satisfies ChatChannelListQuery,
   });
 }
 
-export function chatRoomEdit(body: ChatRoomEditRequest) {
-  return axios.patch<never>("/v2/chat/room/edit", body);
+export function chatChannelEdit(body: ChatChannelEditRequest) {
+  return axios.patch<never>("/v2/chat/channel/edit", body);
 }
 
-export function chatRoomMessageList(params: ChatRoomMessageListQuery) {
-  return axios.get<ChatRoomMessageListResponse>("/v2/chat/room/messages", {
-    params,
-  });
+export function chatChannelMessageList(params: ChatChannelMessageListQuery) {
+  return axios.get<ChatChannelMessageListResponse>(
+    "/v2/chat/channel/messages",
+    {
+      params,
+    },
+  );
 }
 
-export function chatRoomMessageCreate(body: ChatMessageCreateRequest) {
-  return axios.post<never>("/v2/chat/room/message/create", body);
+export function chatChannelMessageCreate(body: ChatMessageCreateRequest) {
+  return axios.post<never>("/v2/chat/channel/message/create", body);
 }

@@ -1,6 +1,6 @@
-import { chatRoomCreate, chatRoomEdit } from "@/api/chat";
+import { chatChannelCreate, chatChannelEdit } from "@/api/chat";
 import { UID } from "@/api/types";
-import { ChatRoom } from "@/api/typex2";
+import { ChatChannel } from "@/api/typex2";
 import { Button, ButtonText } from "@/components/ui/button";
 import { HStack } from "@/components/ui/hstack";
 import { Text } from "@/components/ui/text";
@@ -16,7 +16,7 @@ import { Box } from "@/components/ui/box";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { catchErrThrow401 } from "@/utils/handleRequests";
 
-const roomColors = [
+const channelColors = [
   "#C9843E",
   "#AD8F22",
   "#79A02D",
@@ -36,30 +36,31 @@ const roomColors = [
   "#3C3C3B",
 ];
 
-type FormValues = Parameters<typeof chatRoomCreate>[0] & Partial<ChatRoom>;
+type FormValues = Parameters<typeof chatChannelCreate>[0] &
+  Partial<ChatChannel>;
 
-export default function ChatRoomCreateSheet(props: {
-  currentChatRoom?: ChatRoom;
+export default function ChatChannelCreateSheet(props: {
+  currentChatChannel?: ChatChannel;
   fallbackChainUID: UID;
   refSheet: RefObject<ActionSheetRef>;
 }) {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
-  const isEdit = Boolean(props.currentChatRoom);
-  const mutateRoom = useMutation({
+  const isEdit = Boolean(props.currentChatChannel);
+  const mutateChannel = useMutation({
     async mutationFn(value: FormValues) {
       if (isEdit) {
-        if (!value.id) throw "Unable to edit non-existing chat room";
-        console.info("edit chat room");
-        await chatRoomEdit({
+        if (!value.id) throw "Unable to edit non-existing chat channel";
+        console.info("edit chat channel");
+        await chatChannelEdit({
           chain_uid: value.chain_uid,
           id: value.id,
           name: value.name,
           color: value.color,
         }).catch(catchErrThrow401);
       } else {
-        console.info("create chat room");
-        await chatRoomCreate({
+        console.info("create chat channel");
+        await chatChannelCreate({
           chain_uid: value.chain_uid,
           name: value.name,
           color: value.color,
@@ -80,11 +81,11 @@ export default function ChatRoomCreateSheet(props: {
     defaultValues: {
       id: undefined as undefined | number,
       name: "",
-      color: roomColors[15], // "#7D7D7D"
+      color: channelColors[15], // "#7D7D7D"
       chain_uid: "",
     } satisfies FormValues,
     async onSubmit({ value }) {
-      await mutateRoom.mutateAsync(value);
+      await mutateChannel.mutateAsync(value);
       props.refSheet.current?.hide();
     },
   });
@@ -108,7 +109,7 @@ export default function ChatRoomCreateSheet(props: {
         >
           <ButtonText className="text-error-600">{t("close")}</ButtonText>
         </Button>
-        <Text>{isEdit ? t("editRoom") : t("newRoom")}</Text>
+        <Text>{isEdit ? t("editChannel") : t("newChannel")}</Text>
         <Button
           action="primary"
           className="bg-transparent"
@@ -121,7 +122,7 @@ export default function ChatRoomCreateSheet(props: {
       </HStack>
       <ScrollView>
         <Box className="flex flex-col gap-4 p-4 pb-8">
-          <FormLabel label={t("roomName")}>
+          <FormLabel label={t("channelName")}>
             <form.Field name="name">
               {(field) => (
                 <>
@@ -135,11 +136,11 @@ export default function ChatRoomCreateSheet(props: {
               )}
             </form.Field>
           </FormLabel>
-          <FormLabel label={t("roomColor")}>
+          <FormLabel label={t("channelColor")}>
             <form.Field name="color">
               {(field) => (
                 <ColorSelect
-                  colors={roomColors}
+                  colors={channelColors}
                   value={field.state.value}
                   setValue={field.setValue}
                 />

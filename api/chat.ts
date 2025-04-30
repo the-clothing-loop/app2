@@ -63,10 +63,10 @@ export function chatChannelMessageCreate(body: ChatMessageCreateRequest) {
   return axios.post<never>("/v2/chat/channel/message/create", body);
 }
 
-export function chatChannelMessageDelete(body: ChatMessageRequest) {
-  return axios.post<never>("/v2/chat/channel/message/pin-toggle", body);
+export function chatChannelMessageDelete(params: ChatMessageRequest) {
+  return axios.delete<never>("/v2/chat/channel/message/delete", { params });
 }
 
-export function chatChannelMessagePinToggle(params: ChatMessageRequest) {
-  return axios.delete<never>("/v2/chat/channel/message/delete", { params });
+export function chatChannelMessagePinToggle(body: ChatMessageRequest) {
+  return axios.post<never>("/v2/chat/channel/message/pin-toggle", body);
 }

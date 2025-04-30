@@ -2,7 +2,9 @@ import {
   chatChannelDelete,
   chatChannelList,
   chatChannelMessageCreate,
+  chatChannelMessageDelete,
   chatChannelMessageList,
+  chatChannelMessagePinToggle,
 } from "@/api/chat";
 import { ChatChannel, ChatMessage } from "@/api/typex2";
 import ChatInput from "@/components/custom/chat/ChatInput";
@@ -24,7 +26,12 @@ import { useStore } from "@tanstack/react-store";
 import { MessageCircleQuestionIcon } from "lucide-react-native";
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Alert, KeyboardAvoidingView, Pressable } from "react-native";
+import {
+  Alert,
+  AlertButton,
+  KeyboardAvoidingView,
+  Pressable,
+} from "react-native";
 import { ActionSheetRef } from "react-native-actions-sheet";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import ChatTypeSheet from "@/components/custom/chat/ChatTypeSheet";
@@ -33,6 +40,7 @@ import { useInterval } from "usehooks-ts";
 
 export default function ChatClothingloop() {
   const { currentChain, authUser } = useStore(authStore);
+  const { isHost } = useStore(authStoreAuthUserRoles);
   const queryClient = useQueryClient();
   const authUserRoles = useStore(authStoreAuthUserRoles);
   const { t } = useTranslation();
@@ -195,6 +203,82 @@ export default function ChatClothingloop() {
     setStartFrom(new Date().valueOf());
   }
 
+  function handleMessageOptions(message: ChatMessage) {
+    const buttons: AlertButton[] = [];
+    if (isHost) {
+      buttons.push({
+        text: message.is_pinned ? t("unpin") : t("pin"),
+        style: "default",
+        onPress() {
+          handleMessagePinToggle(message);
+        },
+      });
+    }
+    buttons.push(
+      {
+        text: t("delete"),
+        style: "destructive",
+        onPress() {
+          Alert.alert(t("areYouSureDeleteMessage"), message.message, [
+            {
+              text: t("delete"),
+              style: "destructive",
+              onPress() {
+                handleMessageDelete(message);
+              },
+            },
+            {
+              text: t("cancel"),
+              style: "cancel",
+            },
+          ]);
+        },
+      },
+      {
+        text: t("cancel"),
+        style: "cancel",
+      },
+    );
+    Alert.alert(t("messageOptions"), message.message, buttons);
+  }
+
+  function handleMessagePinToggle(message: ChatMessage) {
+    chatChannelMessagePinToggle({
+      chain_uid: currentChain!.uid,
+      chat_channel_id: message.chat_channel_id,
+      chat_message_id: message.id,
+    }).finally(() => {
+      queryClient.refetchQueries({
+        queryKey: [
+          "auth",
+          "chat",
+          "messages",
+          currentChain?.uid,
+          selectedChannelId,
+          startFrom,
+        ],
+      });
+    });
+  }
+  function handleMessageDelete(message: ChatMessage) {
+    chatChannelMessageDelete({
+      chain_uid: currentChain!.uid,
+      chat_channel_id: message.chat_channel_id,
+      chat_message_id: message.id,
+    }).finally(() => {
+      queryClient.refetchQueries({
+        queryKey: [
+          "auth",
+          "chat",
+          "messages",
+          currentChain?.uid,
+          selectedChannelId,
+          startFrom,
+        ],
+      });
+    });
+  }
+
   function handleCreateChannel() {
     setEditChannel(null);
     setTimeout(() => {
@@ -229,6 +313,8 @@ export default function ChatClothingloop() {
             <ChatMessages
               messages={queryChannelMessageListArr}
               authUserUID={authUser?.uid || ""}
+              isAuthUserAdmin={isHost}
+              onMessageOptions={handleMessageOptions}
             />
           ) : (
             <Box className="flex-1 items-center justify-center gap-4">

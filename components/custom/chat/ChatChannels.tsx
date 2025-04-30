@@ -11,7 +11,8 @@ import { Pressable } from "react-native";
 export default function ChatChannels(props: {
   channels: ChatChannel[];
   selectedId: number | null;
-  onPressChannel: (id: number | null) => void;
+  onPressChannel: (id: number) => void;
+  onLongPressChannel: (channel: ChatChannel) => void;
   showCreateChannel: boolean;
   onPressCreateChannel?: () => void;
 }) {
@@ -22,14 +23,22 @@ export default function ChatChannels(props: {
         .split(" ")
         .map((word) => word[0])
         .join("");
+      function handleLongPressChannel() {
+        // do not selected do nothing
+        if (props.selectedId !== channel.id) return;
+        props.onLongPressChannel(channel);
+      }
+      function handlePressChannel() {
+        // do nothing if already selected
+        if (props.selectedId == channel.id) return;
+
+        props.onPressChannel(channel.id);
+      }
       return (
         <Pressable
           className={`flex h-full items-center justify-center px-2 ${isSelected ? "bg-background-0" : ""}`}
-          onPress={() =>
-            props.onPressChannel(
-              props.selectedId == channel.id ? null : channel.id,
-            )
-          }
+          onPress={handlePressChannel}
+          onLongPress={handleLongPressChannel}
           key={channel.id}
         >
           <Avatar style={{ backgroundColor: channel.color }}>
@@ -41,7 +50,7 @@ export default function ChatChannels(props: {
         </Pressable>
       );
     },
-    [props.selectedId],
+    [props.selectedId, props.channels],
   );
 
   return (

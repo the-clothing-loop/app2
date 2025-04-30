@@ -81,7 +81,7 @@ export default function TabLayout() {
         typeof resBags === "string" ||
         typeof resChainRoute === "string"
       )
-        return null;
+        throw "Server is responding incorrectly";
       authStore.setState((s) => ({
         ...s,
         currentChain: resChain,

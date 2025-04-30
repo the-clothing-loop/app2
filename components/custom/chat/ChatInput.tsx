@@ -16,7 +16,7 @@ export default function ChatInput(props: {
     setValue("");
   }
   return (
-    <HStack className="w-full items-center gap-2 p-2">
+    <HStack className="w-full items-center gap-2 bg-background-0 p-2">
       <Input className="flex-grow" isDisabled={props.isDisabled}>
         <InputField
           onSubmitEditing={handleSend}

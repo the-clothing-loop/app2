@@ -37,7 +37,6 @@ export default function TabLayout() {
   const queryChain = useQuery({
     queryKey: ["auth", "chain", selectedChainUID],
     async queryFn() {
-      if (!selectedChainUID || !auth.authUser) return null;
       // test with one request before asking for the rest
       const resChain = await chainGet(selectedChainUID, {
         addHeaders: true,
@@ -62,7 +61,7 @@ export default function TabLayout() {
         typeof resChainUsers === "string" ||
         typeof resChainRoute === "string"
       )
-        return null;
+        throw "Server is responding incorrectly";
       authStore.setState((s) => ({
         ...s,
         currentChain: resChain,
@@ -72,6 +71,7 @@ export default function TabLayout() {
 
       return { resChain, resChainUsers };
     },
+    enabled: Boolean(selectedChainUID && auth.authUser),
   });
   useQuery({
     queryKey: ["auth", "chain-bags", selectedChainUID],
@@ -86,7 +86,7 @@ export default function TabLayout() {
           .catch(catchErrThrow401),
       ]);
       if (typeof resBags === "string" || typeof resBulky === "string")
-        return null;
+        throw "Server responds incorrectly";
       authStore.setState((s) => ({
         ...s,
         currentBags: resBags,
@@ -101,6 +101,7 @@ export default function TabLayout() {
     if (queryChain.error) queryClient.clear();
   }, [queryChain.error]);
 
+  // one signal
   useEffect(() => {
     if (!auth.authUser) return;
     if (!(oneSignalKey && isPlatformMobile)) return;
@@ -113,7 +114,8 @@ export default function TabLayout() {
       OneSignal.login(auth.authUser!.uid);
       oneSignalStore.setState((s) => ({ ...s, isLoggedIn: true }));
     }
-  }, [auth.authUser?.uid]);
+  }, [auth.authUser]);
+
   if (auth.authStatus === AuthStatus.LoggedOut) {
     console.log("back to onboarding");
     return <Redirect href="/onboarding/step1" />;

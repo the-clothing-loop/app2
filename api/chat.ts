@@ -12,6 +12,8 @@ import {
   ChatChannelListResponse,
   ChatChannelMessageListQuery,
   ChatChannelMessageListResponse,
+  ChatChannelDeleteQuery,
+  ChatMessageRequest,
 } from "./typex2";
 
 export function chatTypeGet(chain_uid: string) {
@@ -30,6 +32,10 @@ export function chatChannelCreate(
   body: Omit<ChatChannel, "id" | "created_at">,
 ) {
   return axios.post<never>("/v2/chat/channel/create", body);
+}
+
+export function chatChannelDelete(params: ChatChannelDeleteQuery) {
+  return axios.delete<never>("/v2/chat/channel/delete", { params });
 }
 
 export function chatChannelList(chain_uid: UID) {
@@ -55,4 +61,12 @@ export function chatChannelMessageList(params: ChatChannelMessageListQuery) {
 
 export function chatChannelMessageCreate(body: ChatMessageCreateRequest) {
   return axios.post<never>("/v2/chat/channel/message/create", body);
+}
+
+export function chatChannelMessageDelete(body: ChatMessageRequest) {
+  return axios.post<never>("/v2/chat/channel/message/pin-toggle", body);
+}
+
+export function chatChannelMessagePinToggle(params: ChatMessageRequest) {
+  return axios.delete<never>("/v2/chat/channel/message/delete", { params });
 }

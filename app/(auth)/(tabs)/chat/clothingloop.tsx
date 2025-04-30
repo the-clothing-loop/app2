@@ -1,9 +1,10 @@
 import {
+  chatChannelDelete,
   chatChannelList,
   chatChannelMessageCreate,
   chatChannelMessageList,
 } from "@/api/chat";
-import { ChatMessage } from "@/api/typex2";
+import { ChatChannel, ChatMessage } from "@/api/typex2";
 import ChatInput from "@/components/custom/chat/ChatInput";
 import ChatMessages from "@/components/custom/chat/ChatMessages";
 import ChatChannelCreateSheet from "@/components/custom/chat/ChatChannelsCreateSheet";
@@ -14,12 +15,16 @@ import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
 import { authStore, authStoreAuthUserRoles } from "@/store/auth";
 import { chatStore } from "@/store/chat";
-import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import {
+  useInfiniteQuery,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { useStore } from "@tanstack/react-store";
 import { MessageCircleQuestionIcon } from "lucide-react-native";
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { KeyboardAvoidingView, Pressable } from "react-native";
+import { Alert, KeyboardAvoidingView, Pressable } from "react-native";
 import { ActionSheetRef } from "react-native-actions-sheet";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import ChatTypeSheet from "@/components/custom/chat/ChatTypeSheet";
@@ -28,9 +33,11 @@ import { useInterval } from "usehooks-ts";
 
 export default function ChatClothingloop() {
   const { currentChain, authUser } = useStore(authStore);
+  const queryClient = useQueryClient();
   const authUserRoles = useStore(authStoreAuthUserRoles);
   const { t } = useTranslation();
   const chat = useStore(chatStore);
+  const [editChannel, setEditChannel] = useState<ChatChannel | null>(null);
   const refSheet = useRef<ActionSheetRef>(null);
   const refTypeSheet = useRef<ActionSheetRef>(null);
   const navigation = useNavigation();
@@ -65,9 +72,16 @@ export default function ChatClothingloop() {
     null,
   );
   const [startFrom, setStartFrom] = useState(() => new Date().valueOf());
-  useInterval(() => {
-    setStartFrom(new Date().valueOf());
-  }, 10000);
+  // useInterval(() => {
+  //   setStartFrom(new Date().valueOf());
+  // }, 10000);
+
+  useEffect(() => {
+    if (authUser && queryChannelList.data?.length && !selectedChannelId) {
+      setSelectedChannelId(queryChannelList.data[0].id);
+    }
+  }, [queryChannelList.data, authUser, selectedChannelId]);
+
   const queryChannelMessageList = useInfiniteQuery({
     queryKey: [
       "auth",
@@ -109,9 +123,62 @@ export default function ChatClothingloop() {
     }
     return arr.reverse();
   }, [queryChannelMessageList]);
-  function changeSelectedChannel(id: number | null) {
+
+  function changeSelectedChannel(id: number) {
     setSelectedChannelId(id);
     setStartFrom(new Date().valueOf());
+  }
+
+  function alertDeleteChannel(channelID: number) {
+    Alert.alert(t("deleteChannel"), undefined, [
+      {
+        text: t("delete"),
+        style: "destructive",
+        onPress() {
+          chatChannelDelete({
+            chain_uid: currentChain!.uid,
+            chat_channel_id: channelID,
+          }).finally(() => {
+            queryClient.refetchQueries({
+              queryKey: ["auth", "chat"],
+            });
+          });
+        },
+      },
+      { text: t("cancel"), style: "cancel" },
+    ]);
+  }
+
+  function openEditChannel(channel: ChatChannel) {
+    setEditChannel(channel);
+    setTimeout(() => {
+      refSheet.current?.show();
+    });
+  }
+
+  function handleLongPressChannel(channel: ChatChannel) {
+    Alert.alert(
+      t("editChannel"),
+      undefined,
+      [
+        {
+          text: t("edit"),
+          style: "default",
+          onPress() {
+            openEditChannel(channel);
+          },
+        },
+        {
+          text: t("delete"),
+          style: "destructive",
+          onPress() {
+            alertDeleteChannel(channel.id);
+          },
+        },
+        { text: t("cancel"), style: "cancel" },
+      ],
+      {},
+    );
   }
 
   const safeInsets = useSafeAreaInsets();
@@ -129,7 +196,10 @@ export default function ChatClothingloop() {
   }
 
   function handleCreateChannel() {
-    refSheet.current?.show();
+    setEditChannel(null);
+    setTimeout(() => {
+      refSheet.current?.show();
+    });
   }
   if (chat.chatInAppDisabled === true) {
     return <Redirect href="/(auth)/(tabs)/chat/types" withAnchor />;
@@ -143,7 +213,7 @@ export default function ChatClothingloop() {
       >
         <VStack className="flex-1">
           <ChatChannelCreateSheet
-            currentChatChannel={undefined}
+            currentChatChannel={editChannel}
             fallbackChainUID={currentChain?.uid || ""}
             refSheet={refSheet}
           />
@@ -153,6 +223,7 @@ export default function ChatClothingloop() {
             showCreateChannel={authUserRoles.isHost}
             onPressCreateChannel={handleCreateChannel}
             onPressChannel={changeSelectedChannel}
+            onLongPressChannel={handleLongPressChannel}
           />
           {selectedChannelId ? (
             <ChatMessages

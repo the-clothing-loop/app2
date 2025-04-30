@@ -38,7 +38,7 @@ export default function ChatMessages(props: {
 
   return (
     <VirtualizedList<ChatMessage>
-      className="flex-1 flex-grow bg-background-100"
+      className="mb-2 flex-1 flex-grow bg-background-100"
       initialNumToRender={20}
       data={props.messages}
       renderItem={({ item }) => {
@@ -59,7 +59,7 @@ export default function ChatMessages(props: {
             ) : (
               <VStack className="items-start px-2 pt-2">
                 <Text className="text-sm text-typography-600">{date}</Text>
-                <Box className="rounded-b-xl rounded-se-xl bg-secondary-400 p-3">
+                <Box className="rounded-b-xl rounded-se-xl bg-secondary-400 py-3">
                   <Text bold className="text-xs">
                     {item.sent_by}
                   </Text>

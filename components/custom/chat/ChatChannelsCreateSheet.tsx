@@ -5,7 +5,7 @@ import { Button, ButtonText } from "@/components/ui/button";
 import { HStack } from "@/components/ui/hstack";
 import { Text } from "@/components/ui/text";
 import { useForm } from "@tanstack/react-form";
-import { Ref, RefObject, useRef } from "react";
+import { RefObject, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { ScrollView } from "react-native";
 import ActionSheet, { ActionSheetRef } from "react-native-actions-sheet";
@@ -40,7 +40,7 @@ type FormValues = Parameters<typeof chatChannelCreate>[0] &
   Partial<ChatChannel>;
 
 export default function ChatChannelCreateSheet(props: {
-  currentChatChannel?: ChatChannel;
+  currentChatChannel: ChatChannel | null;
   fallbackChainUID: UID;
   refSheet: RefObject<ActionSheetRef>;
 }) {
@@ -51,7 +51,7 @@ export default function ChatChannelCreateSheet(props: {
     async mutationFn(value: FormValues) {
       if (isEdit) {
         if (!value.id) throw "Unable to edit non-existing chat channel";
-        console.info("edit chat channel");
+        console.info("edit chat channel", value);
         await chatChannelEdit({
           chain_uid: value.chain_uid,
           id: value.id,
@@ -68,9 +68,8 @@ export default function ChatChannelCreateSheet(props: {
       }
     },
     onSuccess(data) {
-      queryClient.invalidateQueries({
-        queryKey: ["chat"],
-        refetchType: "all",
+      queryClient.refetchQueries({
+        queryKey: ["auth", "chat"],
       });
     },
     onError(error) {
@@ -89,10 +88,24 @@ export default function ChatChannelCreateSheet(props: {
       props.refSheet.current?.hide();
     },
   });
+  useEffect(() => {
+    if (props.currentChatChannel) {
+      form.setFieldValue("id", props.currentChatChannel.id);
+      form.setFieldValue("name", props.currentChatChannel.name);
+      form.setFieldValue("color", props.currentChatChannel.color);
+      form.setFieldValue("chain_uid", props.currentChatChannel.chain_uid);
+    } else {
+      form.setFieldValue("id", undefined);
+      form.setFieldValue("name", "");
+      form.setFieldValue("color", channelColors[3]);
+      form.setFieldValue("chain_uid", props.fallbackChainUID);
+    }
+  }, [props.currentChatChannel]);
 
   function handleClose() {
     props.refSheet.current?.hide();
   }
+
   return (
     <ActionSheet
       snapPoints={[100]}

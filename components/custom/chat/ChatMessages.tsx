@@ -75,6 +75,7 @@ export default function ChatMessages(props: {
         const date = toLocalRelativeDate(item.created_at);
         const user = getUser(item.sent_by);
         const isMe = props.authUserUID === item.sent_by;
+        const isDeleted = item.message == "__DELETED__";
         function handleLongPress() {
           if (isMe || props.isAuthUserAdmin) {
             props.onMessageOptions(item);
@@ -82,7 +83,19 @@ export default function ChatMessages(props: {
         }
         return (
           <Box key={item.id}>
-            {item.is_pinned ? (
+            {isDeleted ? (
+              <VStack className={`px-2 pt-2 ${isMe ? "items-end" : ""}`}>
+                <Text className="text-sm text-typography-600">{date}</Text>
+                <Box
+                  className={`rounded-xl border border-secondary-500 bg-secondary-300 p-2 ${isMe ? "items-end" : ""}`}
+                >
+                  <Text bold className="text-xs">
+                    {user.name}
+                  </Text>
+                  <Text className="text-sm">{t("messageDeleted")}</Text>
+                </Box>
+              </VStack>
+            ) : item.is_pinned ? (
               <VStack className="relative items-stretch px-2 pt-2">
                 <Pressable
                   onLongPress={handleLongPress}
@@ -122,7 +135,7 @@ export default function ChatMessages(props: {
                   className="flex rounded-b-xl rounded-se-xl bg-secondary-400 py-3"
                 >
                   <Text bold className="text-xs">
-                    {item.sent_by}
+                    {user.name}
                   </Text>
                   <Text className="">{item.message}</Text>
                 </Pressable>

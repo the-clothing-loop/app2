@@ -102,15 +102,15 @@ export default function ChatClothingloop() {
     setSelectedChannelId(id);
   }
 
-  function alertDeleteChannel(channelID: number) {
-    Alert.alert(t("deleteChannel"), undefined, [
+  function alertDeleteChannel(channel: ChatChannel) {
+    Alert.alert(t("areYouSureDeleteChannel"), channel.name, [
       {
         text: t("delete"),
         style: "destructive",
         onPress() {
           chatChannelDelete({
             chain_uid: currentChain!.uid,
-            chat_channel_id: channelID,
+            chat_channel_id: channel.id,
           }).finally(() => {
             queryClient.refetchQueries({
               queryKey: ["auth", "chat"],
@@ -145,7 +145,7 @@ export default function ChatClothingloop() {
           text: t("delete"),
           style: "destructive",
           onPress() {
-            alertDeleteChannel(channel.id);
+            alertDeleteChannel(channel);
           },
         },
         { text: t("cancel"), style: "cancel" },

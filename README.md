@@ -27,12 +27,25 @@ You can start developing by editing the files inside the **app** directory. This
 
 ## Building
 
-```bash
-# Run this first before building!!
-yarn doctor
+Run this first before building!!
 
+```bash
+npm install -g eas-cli
+brew update
+brew upgrade fastlane
+yarn doctor
+```
+
+You can build locally for production or acceptance on both platforms:
+```bash
 yarn build:local:production:ios
 yarn build:local:production:android
+```
+
+You can also build using expo's aes for production or acceptance on both platforms:
+```bash
+yarn build:aes:production:ios
+yarn build:aes:production:android
 ```
 
 ## Get a fresh ios, android project

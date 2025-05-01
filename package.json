@@ -15,12 +15,15 @@
     "build:local:acceptance:ios": "eas build --platform ios --profile acceptance --local",
     "build:local:production:android": "eas build --platform android --profile production --local",
     "build:local:production:ios": "eas build --platform ios --profile production --local",
+    "build:aes:acceptance:android": "eas build --platform android --profile acceptance",
+    "build:aes:acceptance:ios": "eas build --platform ios --profile acceptance",
+    "build:aes:production:android": "eas build --platform android --profile production",
+    "build:aes:production:ios": "eas build --platform ios --profile production",
     "ios": "DARK_MODE=media expo start --ios",
     "web": "DARK_MODE=media expo start --web",
     "lint": "expo lint"
   },
   "dependencies": {
-    "@chat-e2ee/service": "^1.5.0",
     "@expo/html-elements": "0.11.2",
     "@expo/react-native-action-sheet": "^4.1.1",
     "@expo/vector-icons": "^14.1.0",

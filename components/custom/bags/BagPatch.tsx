@@ -18,6 +18,7 @@ import { bagPut } from "@/api/bag";
 import { savedStore } from "@/store/saved";
 import { useQueryClient } from "@tanstack/react-query";
 import { Bag } from "@/api/typex2";
+import ColorSelect from "../ColorSelect";
 
 const bagColors = [
   "#C9843E",
@@ -110,28 +111,11 @@ export default function BagPatch(props: { bag: Bag | null }) {
         <FormLabel label={t("bagColor")}>
           <form.Field name="color">
             {(field) => (
-              <HStack className="flex-wrap items-center justify-center gap-4">
-                {bagColors.map((c) => {
-                  const isSelected = c == field.state.value;
-                  return (
-                    <Button
-                      key={c}
-                      onPress={() => field.setValue(c)}
-                      className="h-20 w-20 rounded-full"
-                      style={{ backgroundColor: c }}
-                    >
-                      {isSelected ? (
-                        <Icon
-                          color="white"
-                          //@ts-expect-error
-                          size="2xl"
-                          as={CheckIcon}
-                        />
-                      ) : null}
-                    </Button>
-                  );
-                })}
-              </HStack>
+              <ColorSelect
+                colors={bagColors}
+                value={field.state.value}
+                setValue={field.setValue}
+              />
             )}
           </form.Field>
         </FormLabel>

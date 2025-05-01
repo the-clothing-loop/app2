@@ -1,6 +1,6 @@
 import { Chain, UID } from "@/api/types";
 import { Bag, BulkyItem, User } from "@/api/typex2";
-import { AuthStatus } from "@/providers/AuthProvider";
+import { AuthStatus } from "@/types/auth_status";
 import { IsChainAdmin, IsChainWarden } from "@/utils/chain";
 import isBagTooOld, { IsBagTooOld } from "@/utils/is_bag_too_old";
 import IsPrivate from "@/utils/is_private";

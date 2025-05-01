@@ -38,7 +38,7 @@ export default function ChatChange() {
   if (chatInAppDisabled === false) {
     return <Redirect href="/(auth)/(tabs)/chat/clothingloop" />;
   } else if (chatInAppDisabled === true) {
-    return <Redirect href="/(auth)/(tabs)/chat/links" />;
+    return <Redirect href="/(auth)/(tabs)/chat/types" />;
   }
   return (
     <Box>

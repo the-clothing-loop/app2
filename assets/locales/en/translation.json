@@ -137,6 +137,7 @@
   "openSource": "Open Source",
   "stayTuned": "Stay tuned",
   "messageDeleted": "Message deleted",
+  "areYouSureDeleteMessage": "Are you sure you want to delete this message?",
   "pinned": "Pinned",
   "unpin": "Remove pin",
   "pin": "Pin",

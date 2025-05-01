@@ -4,23 +4,37 @@ import { Box } from "@/components/ui/box";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
 import dayjs from "@/utils/dayjs";
-import { Pressable, VirtualizedList } from "react-native";
+import { Pressable, RefreshControl, VirtualizedList } from "react-native";
 import { authStore } from "@/store/auth";
 import { useStore } from "@tanstack/react-store";
-import { useMemo } from "react";
+import {
+  Dispatch,
+  SetStateAction,
+  useCallback,
+  useMemo,
+  useState,
+} from "react";
 import { Icon } from "@/components/ui/icon";
 import { PinIcon } from "lucide-react-native";
 import { HStack } from "@/components/ui/hstack";
 import { useTranslation } from "react-i18next";
+import Sleep from "@/utils/sleep";
+import { useQueryClient } from "@tanstack/react-query";
+import { useDebounceCallback } from "usehooks-ts";
 
 export default function ChatMessages(props: {
   messages: ChatMessage[];
   authUserUID: UID;
   isAuthUserAdmin: boolean;
   onMessageOptions: (m: ChatMessage) => void;
+  onRefresh: (setRefreshing: Dispatch<SetStateAction<boolean>>) => void;
+  onEndReached: () => void;
 }) {
   const { t } = useTranslation();
   const { currentChainUsers } = useStore(authStore);
+  const debounceOnEndReached = useDebounceCallback(() => {
+    props.onEndReached();
+  }, 300);
   function toLocalRelativeDate(created_at: number): string {
     const now = dayjs();
     const created_at_dayjs = dayjs(created_at);
@@ -53,7 +67,9 @@ export default function ChatMessages(props: {
     <VirtualizedList<ChatMessage>
       className="mb-2 flex-1 flex-grow bg-background-100"
       initialNumToRender={20}
-      stickyHeaderIndices={stickyHeaderIndices}
+      refreshControl={<ChatRefreshControl onRefresh={props.onRefresh} />}
+      inverted
+      onEndReached={debounceOnEndReached}
       data={props.messages}
       renderItem={({ item }) => {
         const date = toLocalRelativeDate(item.created_at);
@@ -117,6 +133,20 @@ export default function ChatMessages(props: {
       }}
       getItem={(data, index) => data[index]}
       getItemCount={(data) => data.length}
+    />
+  );
+}
+
+export function ChatRefreshControl(props: {
+  onRefresh: (setRefreshing: Dispatch<SetStateAction<boolean>>) => void;
+}) {
+  const [refreshing, setRefreshing] = useState(false);
+  const queryClient = useQueryClient();
+
+  return (
+    <RefreshControl
+      refreshing={refreshing}
+      onRefresh={() => props.onRefresh(setRefreshing)}
     />
   );
 }

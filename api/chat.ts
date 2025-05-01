@@ -16,6 +16,8 @@ import {
   ChatMessageRequest,
 } from "./typex2";
 
+export const CHAT_MESSAGE_MAX = 20;
+
 export function chatTypeGet(chain_uid: string) {
   return axios.get<ChatGetTypeResponse>("/v2/chat/type", {
     params: {

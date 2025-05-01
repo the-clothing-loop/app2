@@ -3,7 +3,6 @@ import {
   chatChannelList,
   chatChannelMessageCreate,
   chatChannelMessageDelete,
-  chatChannelMessageList,
   chatChannelMessagePinToggle,
 } from "@/api/chat";
 import { ChatChannel, ChatMessage } from "@/api/typex2";
@@ -17,14 +16,17 @@ import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
 import { authStore, authStoreAuthUserRoles } from "@/store/auth";
 import { chatStore } from "@/store/chat";
-import {
-  useInfiniteQuery,
-  useQuery,
-  useQueryClient,
-} from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useStore } from "@tanstack/react-store";
 import { MessageCircleQuestionIcon } from "lucide-react-native";
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import {
+  Dispatch,
+  SetStateAction,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
 import { useTranslation } from "react-i18next";
 import {
   Alert,
@@ -37,6 +39,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import ChatTypeSheet from "@/components/custom/chat/ChatTypeSheet";
 import { Redirect, useNavigation } from "expo-router";
 import { useInterval } from "usehooks-ts";
+import useQueryChatMessages from "@/components/custom/chat/UseQueryChatMessages";
 
 export default function ChatClothingloop() {
   const { currentChain, authUser } = useStore(authStore);
@@ -79,10 +82,10 @@ export default function ChatClothingloop() {
   const [selectedChannelId, setSelectedChannelId] = useState<null | number>(
     null,
   );
-  const [startFrom, setStartFrom] = useState(() => new Date().valueOf());
-  // useInterval(() => {
-  //   setStartFrom(new Date().valueOf());
-  // }, 10000);
+
+  useInterval(() => {
+    if (navigation.isFocused()) queryChatHistory.addPagesTillNewest();
+  }, 10000);
 
   useEffect(() => {
     if (authUser && queryChannelList.data?.length && !selectedChannelId) {
@@ -90,51 +93,13 @@ export default function ChatClothingloop() {
     }
   }, [queryChannelList.data, authUser, selectedChannelId]);
 
-  const queryChannelMessageList = useInfiniteQuery({
-    queryKey: [
-      "auth",
-      "chat",
-      "messages",
-      currentChain?.uid,
-      selectedChannelId,
-      startFrom,
-    ],
-    initialPageParam: 0,
-    getNextPageParam: (
-      lastPage: ChatMessage[],
-      pages: ChatMessage[][],
-      lastPageParam,
-    ) =>
-      // return null to tell useInfiniteQuery that last page has been reached
-      lastPage.length ? lastPageParam + 1 : null,
-    queryFn({ pageParam }) {
-      return chatChannelMessageList({
-        chain_uid: currentChain!.uid,
-        chat_channel_id: selectedChannelId!,
-        start_from: startFrom,
-        page: pageParam,
-      })
-        .then((res) => res.data.messages)
-        .then((res) => {
-          console.log("res", res);
-          return res;
-        });
-    },
-    enabled: Boolean(currentChain && selectedChannelId),
-  });
-  const queryChannelMessageListArr = useMemo(() => {
-    console.log("pages", queryChannelMessageList.data?.pages);
-    const arrInArr = queryChannelMessageList.data?.pages || [];
-    const arr: ChatMessage[] = [];
-    for (const value of arrInArr) {
-      arr.push(...value);
-    }
-    return arr.reverse();
-  }, [queryChannelMessageList]);
+  const queryChatHistory = useQueryChatMessages(
+    currentChain?.uid,
+    selectedChannelId,
+  );
 
   function changeSelectedChannel(id: number) {
     setSelectedChannelId(id);
-    setStartFrom(new Date().valueOf());
   }
 
   function alertDeleteChannel(channelID: number) {
@@ -200,7 +165,8 @@ export default function ChatClothingloop() {
       message: text,
       chat_channel_id: selectedChannelId,
     });
-    setStartFrom(new Date().valueOf());
+
+    await queryChatHistory.resetToNow();
   }
 
   function handleMessageOptions(message: ChatMessage) {
@@ -248,16 +214,7 @@ export default function ChatClothingloop() {
       chat_channel_id: message.chat_channel_id,
       chat_message_id: message.id,
     }).finally(() => {
-      queryClient.refetchQueries({
-        queryKey: [
-          "auth",
-          "chat",
-          "messages",
-          currentChain?.uid,
-          selectedChannelId,
-          startFrom,
-        ],
-      });
+      queryChatHistory.afterMessageAltered(message.id);
     });
   }
   function handleMessageDelete(message: ChatMessage) {
@@ -266,16 +223,16 @@ export default function ChatClothingloop() {
       chat_channel_id: message.chat_channel_id,
       chat_message_id: message.id,
     }).finally(() => {
-      queryClient.refetchQueries({
-        queryKey: [
-          "auth",
-          "chat",
-          "messages",
-          currentChain?.uid,
-          selectedChannelId,
-          startFrom,
-        ],
-      });
+      queryChatHistory.afterMessageAltered(message.id);
+    });
+  }
+
+  function handleMessagesRefresh(
+    setRefreshing: Dispatch<SetStateAction<boolean>>,
+  ) {
+    setRefreshing(true);
+    queryChatHistory.resetToNow().finally(() => {
+      setRefreshing(false);
     });
   }
 
@@ -311,10 +268,12 @@ export default function ChatClothingloop() {
           />
           {selectedChannelId ? (
             <ChatMessages
-              messages={queryChannelMessageListArr}
+              onEndReached={() => queryChatHistory.addPagePrev()}
+              messages={queryChatHistory.messages}
               authUserUID={authUser?.uid || ""}
               isAuthUserAdmin={isHost}
               onMessageOptions={handleMessageOptions}
+              onRefresh={handleMessagesRefresh}
             />
           ) : (
             <Box className="flex-1 items-center justify-center gap-4">

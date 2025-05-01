@@ -34,7 +34,7 @@ export default function useQueryChatMessages(
   const messages = useMemo(
     () =>
       history.reduce((prev, curr) => {
-        prev.push(...curr.messages);
+        prev.push(...curr.messages.map((m) => ({ page: curr.page, ...m })));
         return prev;
       }, [] as ChatMessage[]),
     [history],
@@ -43,7 +43,7 @@ export default function useQueryChatMessages(
   // returns NaN if it couldn't find the message
   function findPageOfMessageID(messageID: number): number {
     for (const msgByPage of history) {
-      const found = !!msgByPage.messages.find((m) => m.id);
+      const found = !!msgByPage.messages.find((m) => m.id === messageID);
       if (found) return msgByPage.page;
     }
 
@@ -127,6 +127,7 @@ export default function useQueryChatMessages(
     console.log("afterMessageAltered");
     const oldest = findPageOfMessageID(messageID);
     if (Number.isNaN(oldest)) return resetToNow();
+    // console.log("afterMessageAltered", "page", oldest, "messageID", messageID);
 
     const messages = await chatChannelMessageList({
       chain_uid: chainUID!,
@@ -135,7 +136,7 @@ export default function useQueryChatMessages(
       page: oldest,
     }).then((res) => res.data.messages);
     setHistory((s) => [
-      ...s.filter((mp) => mp.page >= oldest),
+      ...s.filter((mp) => mp.page < oldest),
       {
         page: oldest,
         messages,

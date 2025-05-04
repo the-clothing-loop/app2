@@ -6,7 +6,7 @@ import { VStack } from "@/components/ui/vstack";
 import { Box } from "@/components/ui/box";
 import { useMemo, useState } from "react";
 import { HStack } from "@/components/ui/hstack";
-import { Modal, Pressable, SafeAreaView } from "react-native";
+import { Modal, Pressable, SafeAreaView, ScrollView, View } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { useActionSheet } from "@expo/react-native-action-sheet";
 import { useStore } from "@tanstack/react-store";
@@ -55,13 +55,6 @@ export default function BulkyList(props: { bulkyList: BulkyItem[] }) {
         } else if (buttonIndex === 2) {
           // delete
           bulkyItemRemove(bulky.chain_uid, bulky.user_uid, bulky.id);
-          console.log(
-            queryClient
-              .getQueryCache()
-              .getAll()
-              .map((q) => q.queryKey),
-          );
-
           queryClient.invalidateQueries({
             queryKey: ["auth", "chain-bags", bulky.chain_uid],
             exact: true,
@@ -100,7 +93,13 @@ export default function BulkyList(props: { bulkyList: BulkyItem[] }) {
                       className={`bg-background-0 p-3 ${bulky.image_url ? "rounded-b-md" : "rounded-md"}`}
                     >
                       <Text className="text-3xl">{bulky.title}</Text>
-                      <Text className="">{bulky.message}</Text>
+                      {bulky.message.length > 200 ? (
+                        <Text className="">
+                          {bulky.message.slice(0, 200)}...
+                        </Text>
+                      ) : (
+                        <Text className="">{bulky.message}</Text>
+                      )}
                       <Text className="">{bulky.created_at.slice(0, 10)}</Text>
                     </VStack>
                   </Card>
@@ -148,7 +147,13 @@ export default function BulkyList(props: { bulkyList: BulkyItem[] }) {
                     <Text className="mb-2 text-2xl font-bold">
                       {selected.title}
                     </Text>
-                    <Text>{selected.message}</Text>
+                    <View className="grow-1 max-h-80">
+                      <ScrollView>
+                        <Pressable>
+                          <Text>{selected.message}</Text>
+                        </Pressable>
+                      </ScrollView>
+                    </View>
                   </VStack>
                 </Pressable>
               </Pressable>

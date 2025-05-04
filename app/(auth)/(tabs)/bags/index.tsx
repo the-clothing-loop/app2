@@ -17,6 +17,7 @@ import { HStack } from "@/components/ui/hstack";
 import { Text } from "@/components/ui/text";
 import { useTranslation } from "react-i18next";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
+import { Link } from "expo-router";
 
 export default function Bags() {
   const { t } = useTranslation();
@@ -45,15 +46,15 @@ export default function Bags() {
         showUser
         showBagOptions={authUserRoles.isHost}
       />
-      <HStack className="relative justify-center bg-background-0 p-3">
+      <HStack className="relative items-center justify-between bg-background-0 p-3">
         <Text className="text-lg font-semibold text-typography-800">
           {t("bulkyItems")}
         </Text>
-        <Box className="absolute bottom-0 right-0 top-0 me-6 justify-center">
-          <Pressable>
-            <Text className="text-xl text-primary-500">{t("create")}</Text>
-          </Pressable>
-        </Box>
+        <Link href="./bags/createBulky" className="px-2">
+          <Text size="md" className="text-primary-500">
+            {t("createBulkyItem")}
+          </Text>
+        </Link>
       </HStack>
       <BulkyList bulkyList={currentBulky || []} />
     </ScrollView>

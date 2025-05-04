@@ -1,26 +1,25 @@
 import FormLabel from "@/components/custom/FormLabel";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
-import { Link, useNavigation } from "expo-router";
-import { useEffect, useLayoutEffect, useState } from "react";
+import { useNavigation } from "expo-router";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { NativeStackNavigationOptions } from "@react-navigation/native-stack/src/types";
 import { Pressable, ScrollView, View, Image } from "react-native";
 import { useForm, useStore } from "@tanstack/react-form";
-import { authStore, authStoreListBags } from "@/store/auth";
+import { authStore } from "@/store/auth";
 import { Input, InputField } from "@/components/ui/input";
-import { HStack } from "@/components/ui/hstack";
-import { Button, ButtonIcon, ButtonText } from "@/components/ui/button";
-import { Icon } from "@/components/ui/icon";
-import { CheckIcon, LoaderIcon } from "lucide-react-native";
+import { Button, ButtonText } from "@/components/ui/button";
+import { LoaderIcon } from "lucide-react-native";
 import { bulkyItemPut } from "@/api/bag";
 import { savedStore } from "@/store/saved";
 import { useQueryClient } from "@tanstack/react-query";
-import { Bag } from "@/api/typex2";
+import { BulkyItem } from "@/api/typex2";
 import * as ImagePicker from "expo-image-picker";
 import { uploadImage } from "@/api/imgbb";
+import { Textarea, TextareaInput } from "@/components/ui/textarea";
 
-export default function BulkyPatch(props: { bag: Bag | null }) {
+export default function BulkyPatch(props: { BulkyItem: BulkyItem | null }) {
   const { t } = useTranslation();
 
   const authUser = useStore(authStore, (s) => s.authUser);
@@ -34,14 +33,11 @@ export default function BulkyPatch(props: { bag: Bag | null }) {
 
   const form = useForm({
     defaultValues: {
-      title: "",
-      message: "",
+      title: props.BulkyItem?.title || "",
+      message: props.BulkyItem?.message || "",
     },
     async onSubmit({ value }) {
-      console.log("on submit");
       try {
-        console.log("image value:", image);
-
         await bulkyItemPut({
           chain_uid: chainUid,
           user_uid: authUser!.uid,
@@ -49,7 +45,6 @@ export default function BulkyPatch(props: { bag: Bag | null }) {
           message: value.message,
           image_url: image,
         });
-        console.log("test 1");
       } catch (error) {
         console.error("Error during form submission", error);
       }
@@ -57,7 +52,6 @@ export default function BulkyPatch(props: { bag: Bag | null }) {
         queryKey: ["auth", "chain-bags", chainUid],
         exact: true,
       });
-      console.log("test 2");
 
       navigation.goBack();
     },
@@ -71,19 +65,15 @@ export default function BulkyPatch(props: { bag: Bag | null }) {
       base64: true,
     });
 
-    //console.log(result);
-
     if (!result.canceled) {
       setLoading(true);
 
       const _image = result.assets[0].base64;
-      //if (_image) setImage(_image);
       if (result.assets[0].width && result.assets[0].height) {
         setAspectRatio(result.assets[0].width / result.assets[0].height);
       }
       if (_image && result.assets[0].fileSize)
         uploadImgDB(_image, result.assets[0].fileSize);
-      //  let im = await uploadImage(_image, result.assets[0].fileSize);
     }
   };
 
@@ -92,7 +82,6 @@ export default function BulkyPatch(props: { bag: Bag | null }) {
     setLoading(false);
 
     setImage(result.data.image);
-    console.log("Here", result.data.image);
   };
   useEffect(() => {
     console.log(image, loading);
@@ -104,18 +93,18 @@ export default function BulkyPatch(props: { bag: Bag | null }) {
             size="xl"
             className={`text-primary-500 ${loading ? "opacity-50" : ""}`}
           >
-            {props.bag ? t("save") : t("create")}
+            {props.BulkyItem ? t("save") : t("create")}
           </Text>
         </Pressable>
       ),
     } satisfies NativeStackNavigationOptions);
-  }, [navigation, t, props.bag, loading]);
+  }, [navigation, t, props.BulkyItem, loading]);
   return (
     <ScrollView className="bg-background-0">
       <VStack className="gap-3 p-3">
         <form.Field name="title">
           {(field) => (
-            <FormLabel label={t("bulkyItemName")}>
+            <FormLabel label={t("bulkyItemsTitle")}>
               <>
                 <Input>
                   <InputField
@@ -130,14 +119,16 @@ export default function BulkyPatch(props: { bag: Bag | null }) {
 
         <form.Field name="message">
           {(field) => (
-            <FormLabel label={t("bulkyItemDesc")}>
+            <FormLabel label={t("description")}>
               <>
-                <Input>
-                  <InputField
+                <Textarea>
+                  <TextareaInput
+                    multiline
+                    numberOfLines={4}
                     value={field.state.value}
                     onChangeText={field.setValue}
                   />
-                </Input>
+                </Textarea>
               </>
             </FormLabel>
           )}
@@ -145,7 +136,7 @@ export default function BulkyPatch(props: { bag: Bag | null }) {
         <View>
           <Button onPress={pickImage}>
             <ButtonText>{loading ? "" : t("upload")}</ButtonText>
-            {loading && <LoaderIcon />}
+            {loading && <LoaderIcon color="#FFFFFF" />}
           </Button>
           {image && (
             <Image

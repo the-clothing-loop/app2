@@ -8,9 +8,19 @@ import { useMemo, useState } from "react";
 import { HStack } from "@/components/ui/hstack";
 import { Modal, Pressable, SafeAreaView } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
+import { useActionSheet } from "@expo/react-native-action-sheet";
+import { useStore } from "@tanstack/react-store";
+import { authStore } from "@/store/auth";
+import { router } from "expo-router";
+import { bulkyItemRemove } from "@/api/bulky";
+import { useQueryClient } from "@tanstack/react-query";
 
 export default function BulkyList(props: { bulkyList: BulkyItem[] }) {
   const [selected, setSelected] = useState<BulkyItem | null>(null);
+  const { showActionSheetWithOptions } = useActionSheet();
+  const authUser = useStore(authStore, (s) => s.authUser);
+  const queryClient = useQueryClient();
+
   const cols = useMemo(() => {
     const col1: BulkyItem[] = [];
     const col2: BulkyItem[] = [];
@@ -23,6 +33,43 @@ export default function BulkyList(props: { bulkyList: BulkyItem[] }) {
     });
     return [col1, col2];
   }, [props.bulkyList]);
+
+  function bulkyLongPressHandler(bulky: BulkyItem) {
+    console.log("in long press handler");
+    if (bulky?.user_uid !== authUser?.uid) return;
+
+    const options = ["Cancel", "Edit", "Delete"];
+
+    showActionSheetWithOptions(
+      {
+        options,
+        destructiveButtonIndex: 2,
+        cancelButtonIndex: 0,
+      },
+      (buttonIndex) => {
+        if (buttonIndex === 0) {
+          // cancel action
+        } else if (buttonIndex === 1) {
+          // edit
+          router.push(`/(auth)/(tabs)/bags/bulky/edit/${bulky.id}/`);
+        } else if (buttonIndex === 2) {
+          // delete
+          bulkyItemRemove(bulky.chain_uid, bulky.user_uid, bulky.id);
+          console.log(
+            queryClient
+              .getQueryCache()
+              .getAll()
+              .map((q) => q.queryKey),
+          );
+
+          queryClient.invalidateQueries({
+            queryKey: ["auth", "chain-bags", bulky.chain_uid],
+            exact: true,
+          });
+        }
+      },
+    );
+  }
   return (
     <>
       <HStack className="pb-6 pt-1">
@@ -30,7 +77,10 @@ export default function BulkyList(props: { bulkyList: BulkyItem[] }) {
           <VStack key={i} className="w-1/2">
             {list.map((bulky) => {
               return (
-                <Pressable onPress={() => setSelected(bulky)}>
+                <Pressable
+                  onPress={() => setSelected(bulky)}
+                  onLongPress={() => bulkyLongPressHandler(bulky)}
+                >
                   <Card
                     key={bulky.id}
                     className="bg-transparent p-1"

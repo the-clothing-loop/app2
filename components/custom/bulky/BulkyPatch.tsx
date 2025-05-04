@@ -56,6 +56,11 @@ export default function BulkyPatch(props: { BulkyItem: BulkyItem | null }) {
       navigation.goBack();
     },
   });
+  useEffect(() => {
+    if (props.BulkyItem?.image_url) {
+      setImage(props.BulkyItem.image_url);
+    }
+  }, [props.BulkyItem]);
   const pickImage = async () => {
     setImage(undefined);
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -141,7 +146,7 @@ export default function BulkyPatch(props: { BulkyItem: BulkyItem | null }) {
           {image && (
             <Image
               source={{ uri: image }}
-              style={{ width: "100%", aspectRatio }}
+              style={{ width: "100%", height: 200, resizeMode: "contain" }}
               className="mx-auto mt-4"
             />
           )}

@@ -5,7 +5,13 @@ import { useNavigation } from "expo-router";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { NativeStackNavigationOptions } from "@react-navigation/native-stack/src/types";
-import { Pressable, ScrollView, View, Image } from "react-native";
+import {
+  Pressable,
+  ScrollView,
+  View,
+  Image,
+  ActivityIndicator,
+} from "react-native";
 import { useForm, useStore } from "@tanstack/react-form";
 import { authStore } from "@/store/auth";
 import { Input, InputField } from "@/components/ui/input";
@@ -93,7 +99,11 @@ export default function BulkyPatch(props: { BulkyItem: BulkyItem | null }) {
     navigation.setOptions({
       title: t("createBulkyItem"),
       headerRight: () => (
-        <Pressable onPress={form.handleSubmit} className="px-2">
+        <Pressable
+          disabled={!loading}
+          onPress={form.handleSubmit}
+          className="px-2"
+        >
           <Text
             size="xl"
             className={`text-primary-500 ${loading ? "opacity-50" : ""}`}
@@ -141,7 +151,7 @@ export default function BulkyPatch(props: { BulkyItem: BulkyItem | null }) {
         <View>
           <Button onPress={pickImage}>
             <ButtonText>{loading ? "" : t("upload")}</ButtonText>
-            {loading && <LoaderIcon color="#FFFFFF" />}
+            {loading && <ActivityIndicator color="#FFFFFF" />}
           </Button>
           {image && (
             <Image

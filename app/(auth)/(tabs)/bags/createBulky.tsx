@@ -1,5 +1,5 @@
 import BulkyPatch from "@/components/custom/bulky/BulkyPatch";
 
 export default function BulkyCreate() {
-  return <BulkyPatch bag={null} />;
+  return <BulkyPatch BulkyItem={null} />;
 }

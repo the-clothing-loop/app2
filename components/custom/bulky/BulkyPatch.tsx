@@ -23,7 +23,6 @@ import { BulkyItem } from "@/api/typex2";
 import * as ImagePicker from "expo-image-picker";
 import { uploadImage } from "@/api/imgbb";
 import { Textarea, TextareaInput } from "@/components/ui/textarea";
-import colors from "tailwindcss/colors";
 
 export default function BulkyPatch(props: { BulkyItem: BulkyItem | null }) {
   const { t } = useTranslation();
@@ -94,7 +93,7 @@ export default function BulkyPatch(props: { BulkyItem: BulkyItem | null }) {
   };
   useEffect(() => {
     navigation.setOptions({
-      title: t("createBulkyItem"),
+      title: `${props.BulkyItem ? t("updateBulkyItem") : t("createBulkyItem")}`,
       headerRight: () => (
         <Pressable
           disabled={loading}
@@ -152,7 +151,11 @@ export default function BulkyPatch(props: { BulkyItem: BulkyItem | null }) {
             </form.Field>
             <View>
               <Button onPress={pickImage}>
-                <ButtonText><Text>{loading ? "" : t("upload")}</Text></ButtonText>
+                <ButtonText>
+                  <Text className="text-white">
+                    {loading ? "" : t("upload")}
+                  </Text>
+                </ButtonText>
                 {loading && <ActivityIndicator color="#ffffff" />}
               </Button>
               {image && (
@@ -162,8 +165,8 @@ export default function BulkyPatch(props: { BulkyItem: BulkyItem | null }) {
                   className="mx-auto mt-4"
                 />
               )}
-            </View>{" "}
-          </VStack>{" "}
+            </View>
+          </VStack>
         </ScrollView>
       )}
     </>

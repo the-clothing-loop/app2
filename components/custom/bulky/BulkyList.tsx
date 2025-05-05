@@ -22,7 +22,7 @@ import { router } from "expo-router";
 import { bulkyItemRemove } from "@/api/bulky";
 import { useQueryClient } from "@tanstack/react-query";
 import { t } from "i18next";
-
+import { EllipsisVertical } from "lucide-react-native";
 export default function BulkyList(props: { bulkyList: BulkyItem[] }) {
   const [selected, setSelected] = useState<BulkyItem | null>(null);
   const { showActionSheetWithOptions } = useActionSheet();
@@ -42,7 +42,7 @@ export default function BulkyList(props: { bulkyList: BulkyItem[] }) {
     return [col1, col2];
   }, [props.bulkyList]);
 
-  function bulkyLongPressHandler(bulky: BulkyItem) {
+  function bulkyOptionsHandler(bulky: BulkyItem) {
     console.log("in long press handler");
     if (bulky?.user_uid !== authUser?.uid) return;
 
@@ -105,7 +105,7 @@ export default function BulkyList(props: { bulkyList: BulkyItem[] }) {
                     onLongPress={
                       bulky.user_uid === authUser?.uid ||
                       useStore(authStoreAuthUserRoles, (s) => s.isHost)
-                        ? () => bulkyLongPressHandler(bulky)
+                        ? () => bulkyOptionsHandler(bulky)
                         : undefined
                     }
                   >
@@ -115,13 +115,23 @@ export default function BulkyList(props: { bulkyList: BulkyItem[] }) {
                       id={"bulky-" + bulky.id}
                     >
                       {bulky.image_url ? (
-                        <Box className="aspect-square">
+                        <Box className="relative aspect-square">
                           <Image
                             className="h-full w-full rounded-t-md"
                             source={{
                               uri: bulky.image_url,
                             }}
                           />
+                          <Box className="absolute right-2 top-2 rounded-2xl bg-white p-1">
+                            <Pressable
+                              onPress={() => bulkyOptionsHandler(bulky)}
+                            >
+                              <EllipsisVertical
+                                color="#5f9c8a"
+                                className=""
+                              ></EllipsisVertical>{" "}
+                            </Pressable>
+                          </Box>
                         </Box>
                       ) : null}
                       <VStack

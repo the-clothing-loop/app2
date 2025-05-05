@@ -89,10 +89,12 @@ export default function ChatMessages(props: {
                 <Box
                   className={`rounded-xl border border-secondary-500 bg-secondary-300 p-2 ${isMe ? "items-end" : ""}`}
                 >
-                  <Text bold className="text-xs">
+                  <Text bold className="text-xs text-typography-600">
                     {user.name}
                   </Text>
-                  <Text className="text-sm">{t("messageDeleted")}</Text>
+                  <Text className="text-sm text-typography-600">
+                    {t("messageDeleted")}
+                  </Text>
                 </Box>
               </VStack>
             ) : item.is_pinned ? (

@@ -24,6 +24,7 @@ import { BulkyItem } from "@/api/typex2";
 import * as ImagePicker from "expo-image-picker";
 import { uploadImage } from "@/api/imgbb";
 import { Textarea, TextareaInput } from "@/components/ui/textarea";
+import colors from "tailwindcss/colors";
 
 export default function BulkyPatch(props: { BulkyItem: BulkyItem | null }) {
   const { t } = useTranslation();
@@ -34,8 +35,8 @@ export default function BulkyPatch(props: { BulkyItem: BulkyItem | null }) {
   //   const listBags = useStore(authStoreListBags);
   const navigation = useNavigation();
   const [image, setImage] = useState<string | undefined>(undefined);
-  const [aspectRatio, setAspectRatio] = useState<number>(1);
   const [loading, setLoading] = useState(false);
+  const [afterSubmit, setAfterSubmit] = useState(false);
 
   const form = useForm({
     defaultValues: {
@@ -51,6 +52,7 @@ export default function BulkyPatch(props: { BulkyItem: BulkyItem | null }) {
           message: value.message,
           image_url: image,
         });
+        setAfterSubmit(true);
       } catch (error) {
         console.error("Error during form submission", error);
       }
@@ -80,9 +82,6 @@ export default function BulkyPatch(props: { BulkyItem: BulkyItem | null }) {
       setLoading(true);
 
       const _image = result.assets[0].base64;
-      if (result.assets[0].width && result.assets[0].height) {
-        setAspectRatio(result.assets[0].width / result.assets[0].height);
-      }
       if (_image && result.assets[0].fileSize)
         uploadImgDB(_image, result.assets[0].fileSize);
     }
@@ -95,12 +94,11 @@ export default function BulkyPatch(props: { BulkyItem: BulkyItem | null }) {
     setImage(result.data.image);
   };
   useEffect(() => {
-    console.log(image, loading);
     navigation.setOptions({
       title: t("createBulkyItem"),
       headerRight: () => (
         <Pressable
-          disabled={!loading}
+          disabled={loading}
           onPress={form.handleSubmit}
           className="px-2"
         >
@@ -115,53 +113,60 @@ export default function BulkyPatch(props: { BulkyItem: BulkyItem | null }) {
     } satisfies NativeStackNavigationOptions);
   }, [navigation, t, props.BulkyItem, loading]);
   return (
-    <ScrollView className="bg-background-0">
-      <VStack className="gap-3 p-3">
-        <form.Field name="title">
-          {(field) => (
-            <FormLabel label={t("bulkyItemsTitle")}>
-              <>
-                <Input>
-                  <InputField
-                    value={field.state.value}
-                    onChangeText={field.setValue}
-                  />
-                </Input>
-              </>
-            </FormLabel>
-          )}
-        </form.Field>
-
-        <form.Field name="message">
-          {(field) => (
-            <FormLabel label={t("description")}>
-              <>
-                <Textarea>
-                  <TextareaInput
-                    multiline
-                    numberOfLines={4}
-                    value={field.state.value}
-                    onChangeText={field.setValue}
-                  />
-                </Textarea>
-              </>
-            </FormLabel>
-          )}
-        </form.Field>
-        <View>
-          <Button onPress={pickImage}>
-            <ButtonText>{loading ? "" : t("upload")}</ButtonText>
-            {loading && <ActivityIndicator color="#FFFFFF" />}
-          </Button>
-          {image && (
-            <Image
-              source={{ uri: image }}
-              style={{ width: "100%", height: 200, resizeMode: "contain" }}
-              className="mx-auto mt-4"
-            />
-          )}
+    <>
+      {afterSubmit ? (
+        <View className="h-[100vh] flex-1 items-center justify-center bg-background-0">
+          <ActivityIndicator color="#5f9c8a" size="large" />
         </View>
-      </VStack>
-    </ScrollView>
+      ) : (
+        <ScrollView className="bg-background-0">
+          <VStack className="gap-3 p-3">
+            <form.Field name="title">
+              {(field) => (
+                <FormLabel label={t("bulkyItemsTitle")}>
+                  <>
+                    <Input>
+                      <InputField
+                        value={field.state.value}
+                        onChangeText={field.setValue}
+                      />
+                    </Input>
+                  </>
+                </FormLabel>
+              )}
+            </form.Field>
+            <form.Field name="message">
+              {(field) => (
+                <FormLabel label={t("description")}>
+                  <>
+                    <Textarea>
+                      <TextareaInput
+                        multiline
+                        numberOfLines={4}
+                        value={field.state.value}
+                        onChangeText={field.setValue}
+                      />
+                    </Textarea>
+                  </>
+                </FormLabel>
+              )}
+            </form.Field>
+            <View>
+              <Button onPress={pickImage}>
+                <ButtonText>{loading ? "" : t("upload")}</ButtonText>
+                {loading && <ActivityIndicator color="#ffffff" />}
+              </Button>
+              {image && (
+                <Image
+                  source={{ uri: image }}
+                  style={{ width: "100%", height: 200, resizeMode: "contain" }}
+                  className="mx-auto mt-4"
+                />
+              )}
+            </View>{" "}
+          </VStack>{" "}
+        </ScrollView>
+      )}
+    </>
   );
 }

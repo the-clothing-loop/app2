@@ -16,7 +16,6 @@ import { useForm, useStore } from "@tanstack/react-form";
 import { authStore } from "@/store/auth";
 import { Input, InputField } from "@/components/ui/input";
 import { Button, ButtonText } from "@/components/ui/button";
-import { LoaderIcon } from "lucide-react-native";
 import { bulkyItemPut } from "@/api/bag";
 import { savedStore } from "@/store/saved";
 import { useQueryClient } from "@tanstack/react-query";
@@ -153,7 +152,7 @@ export default function BulkyPatch(props: { BulkyItem: BulkyItem | null }) {
             </form.Field>
             <View>
               <Button onPress={pickImage}>
-                <ButtonText>{loading ? "" : t("upload")}</ButtonText>
+                <ButtonText><Text>{loading ? "" : t("upload")}</Text></ButtonText>
                 {loading && <ActivityIndicator color="#ffffff" />}
               </Button>
               {image && (

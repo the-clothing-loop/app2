@@ -68,44 +68,56 @@ export default function BulkyList(props: { bulkyList: BulkyItem[] }) {
       <HStack className="pb-6 pt-1">
         {cols.map((list, i) => (
           <VStack key={i} className="w-1/2">
-            {list.map((bulky) => {
-              return (
-                <Pressable
-                  onPress={() => setSelected(bulky)}
-                  onLongPress={() => bulkyLongPressHandler(bulky)}
-                >
-                  <Card
-                    key={bulky.id}
-                    className="bg-transparent p-1"
-                    id={"bulky-" + bulky.id}
+            {list
+              .sort(
+                (a, b) =>
+                  new Date(b.created_at).getTime() -
+                  new Date(a.created_at).getTime(),
+              )
+              .map((bulky) => {
+                return (
+                  <Pressable
+                    onPress={() => setSelected(bulky)}
+                    onLongPress={
+                      bulky.user_uid === authUser?.uid
+                        ? () => bulkyLongPressHandler(bulky)
+                        : undefined
+                    }
                   >
-                    {bulky.image_url ? (
-                      <Box className="aspect-square">
-                        <Image
-                          className="h-full w-full rounded-t-md"
-                          source={{
-                            uri: bulky.image_url,
-                          }}
-                        />
-                      </Box>
-                    ) : null}
-                    <VStack
-                      className={`bg-background-0 p-3 ${bulky.image_url ? "rounded-b-md" : "rounded-md"}`}
+                    <Card
+                      key={bulky.id}
+                      className="bg-transparent p-1"
+                      id={"bulky-" + bulky.id}
                     >
-                      <Text className="text-3xl">{bulky.title}</Text>
-                      {bulky.message.length > 200 ? (
+                      {bulky.image_url ? (
+                        <Box className="aspect-square">
+                          <Image
+                            className="h-full w-full rounded-t-md"
+                            source={{
+                              uri: bulky.image_url,
+                            }}
+                          />
+                        </Box>
+                      ) : null}
+                      <VStack
+                        className={`bg-background-0 p-3 ${bulky.image_url ? "rounded-b-md" : "rounded-md"}`}
+                      >
+                        <Text className="text-3xl">{bulky.title}</Text>
+                        {bulky.message.length > 200 ? (
+                          <Text className="">
+                            {bulky.message.slice(0, 200)}...
+                          </Text>
+                        ) : (
+                          <Text className="">{bulky.message}</Text>
+                        )}
                         <Text className="">
-                          {bulky.message.slice(0, 200)}...
+                          {bulky.created_at.slice(0, 10)}
                         </Text>
-                      ) : (
-                        <Text className="">{bulky.message}</Text>
-                      )}
-                      <Text className="">{bulky.created_at.slice(0, 10)}</Text>
-                    </VStack>
-                  </Card>
-                </Pressable>
-              );
-            })}
+                      </VStack>
+                    </Card>
+                  </Pressable>
+                );
+              })}
           </VStack>
         ))}
       </HStack>

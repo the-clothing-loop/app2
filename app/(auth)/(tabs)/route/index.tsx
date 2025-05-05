@@ -1,6 +1,7 @@
 import { useStore } from "@tanstack/react-store";
 import {
   authStore,
+  authStoreAuthUserRoles,
   authStoreCurrentBagsPerUser,
   authStoreListPausedUsers,
   authStoreListRouteUsers,
@@ -24,6 +25,7 @@ import useFilteredRouteUsers, {
 
 export default function Route() {
   const { currentChain } = useStore(authStore);
+  const authUserRoles = useStore(authStoreAuthUserRoles);
   const routeUsers = useStore(authStoreListRouteUsers);
   const bagsPerUser = useStore(authStoreCurrentBagsPerUser);
 
@@ -82,6 +84,7 @@ export default function Route() {
                 index={routeIndex}
                 isWarden={isWarden}
                 isHost={isHost}
+                isAuthHost={authUserRoles.isHost}
                 isMe={isMe}
                 bags={bagsOfUser}
                 isPaused={isPaused}

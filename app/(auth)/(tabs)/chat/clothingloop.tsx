@@ -227,13 +227,8 @@ export default function ChatClothingloop() {
     });
   }
 
-  function handleMessagesRefresh(
-    setRefreshing: Dispatch<SetStateAction<boolean>>,
-  ) {
-    setRefreshing(true);
-    queryChatHistory.resetToNow().finally(() => {
-      setRefreshing(false);
-    });
+  function handleMessagesRefresh(): Promise<void> {
+    return queryChatHistory.resetToNow();
   }
 
   function handleCreateChannel() {

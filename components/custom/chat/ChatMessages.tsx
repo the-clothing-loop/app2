@@ -27,10 +27,17 @@ export default function ChatMessages(props: {
   authUserUID: UID;
   isAuthUserAdmin: boolean;
   onMessageOptions: (m: ChatMessage) => void;
-  onRefresh: (setRefreshing: Dispatch<SetStateAction<boolean>>) => void;
+  onRefresh: () => Promise<void>;
   onEndReached: () => void;
 }) {
   const { t } = useTranslation();
+  const [refreashing, setRefreshing] = useState(false);
+  const handleRefresh = () => {
+    setRefreshing(true);
+    props.onRefresh().finally(() => {
+      setRefreshing(false);
+    });
+  };
   const { currentChainUsers } = useStore(authStore);
   const debounceOnEndReached = useDebounceCallback(() => {
     props.onEndReached();
@@ -54,22 +61,15 @@ export default function ChatMessages(props: {
     );
   }
 
-  const stickyHeaderIndices = useMemo(() => {
-    return props.messages.reduce((prev, message, i) => {
-      if (message.is_pinned) {
-        prev.push(i);
-      }
-      return prev;
-    }, [] as number[]);
-  }, [props.messages]);
-
   return (
     <VirtualizedList<ChatMessage>
       className="mb-2 flex-1 flex-grow bg-background-100"
       initialNumToRender={20}
-      refreshControl={<ChatRefreshControl onRefresh={props.onRefresh} />}
-      inverted
+      onRefresh={handleRefresh}
+      refreshing={refreashing}
+      inverted={true}
       onEndReached={debounceOnEndReached}
+      keyExtractor={(item) => item.id + ""}
       data={props.messages}
       renderItem={({ item }) => {
         const date = toLocalRelativeDate(item.created_at);
@@ -82,9 +82,11 @@ export default function ChatMessages(props: {
           }
         }
         return (
-          <Box key={item.id}>
+          <Box>
             {isDeleted ? (
-              <VStack className={`px-2 pt-2 ${isMe ? "items-end" : ""}`}>
+              <VStack
+                className={`px-2 pt-2 ${isMe ? "items-end" : "items-start"}`}
+              >
                 <Text className="text-sm text-typography-600">{date}</Text>
                 <Box
                   className={`rounded-xl border border-secondary-500 bg-secondary-300 p-2 ${isMe ? "items-end" : ""}`}
@@ -121,7 +123,7 @@ export default function ChatMessages(props: {
                 <Text className="text-sm text-typography-600">{date}</Text>
                 <Pressable
                   onLongPress={handleLongPress}
-                  className="flex items-end rounded-b-xl rounded-ss-xl bg-primary-100 p-3"
+                  className="flex items-end rounded-b-xl rounded-tl-xl bg-primary-100 p-3"
                 >
                   <Text bold className="text-xs">
                     {user.name}
@@ -134,7 +136,7 @@ export default function ChatMessages(props: {
                 <Text className="text-sm text-typography-600">{date}</Text>
                 <Pressable
                   onLongPress={handleLongPress}
-                  className="flex rounded-b-xl rounded-se-xl bg-secondary-400 py-3"
+                  className="flex rounded-b-xl rounded-tr-xl bg-secondary-400 p-3"
                 >
                   <Text bold className="text-xs">
                     {user.name}
@@ -148,20 +150,6 @@ export default function ChatMessages(props: {
       }}
       getItem={(data, index) => data[index]}
       getItemCount={(data) => data.length}
-    />
-  );
-}
-
-export function ChatRefreshControl(props: {
-  onRefresh: (setRefreshing: Dispatch<SetStateAction<boolean>>) => void;
-}) {
-  const [refreshing, setRefreshing] = useState(false);
-  const queryClient = useQueryClient();
-
-  return (
-    <RefreshControl
-      refreshing={refreshing}
-      onRefresh={() => props.onRefresh(setRefreshing)}
     />
   );
 }

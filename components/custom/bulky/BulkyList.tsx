@@ -6,14 +6,22 @@ import { VStack } from "@/components/ui/vstack";
 import { Box } from "@/components/ui/box";
 import { useMemo, useState } from "react";
 import { HStack } from "@/components/ui/hstack";
-import { Modal, Pressable, SafeAreaView, ScrollView, View } from "react-native";
+import {
+  Alert,
+  Modal,
+  Pressable,
+  SafeAreaView,
+  ScrollView,
+  View,
+} from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { useActionSheet } from "@expo/react-native-action-sheet";
 import { useStore } from "@tanstack/react-store";
-import { authStore } from "@/store/auth";
+import { authStore, authStoreAuthUserRoles } from "@/store/auth";
 import { router } from "expo-router";
 import { bulkyItemRemove } from "@/api/bulky";
 import { useQueryClient } from "@tanstack/react-query";
+import { t } from "i18next";
 
 export default function BulkyList(props: { bulkyList: BulkyItem[] }) {
   const [selected, setSelected] = useState<BulkyItem | null>(null);
@@ -54,11 +62,27 @@ export default function BulkyList(props: { bulkyList: BulkyItem[] }) {
           router.push(`/(auth)/(tabs)/bags/bulky/edit/${bulky.id}/`);
         } else if (buttonIndex === 2) {
           // delete
-          bulkyItemRemove(bulky.chain_uid, bulky.user_uid, bulky.id);
-          queryClient.invalidateQueries({
-            queryKey: ["auth", "chain-bags", bulky.chain_uid],
-            exact: true,
-          });
+          Alert.alert(
+            t("deleteBulkyItem"),
+            t("areYouSureYouWantToDeleteThisBulkyItem"),
+            [
+              {
+                text: t("delete"),
+                style: "destructive",
+                onPress() {
+                  bulkyItemRemove(bulky.chain_uid, bulky.user_uid, bulky.id);
+                  queryClient.invalidateQueries({
+                    queryKey: ["auth", "chain-bags", bulky.chain_uid],
+                    exact: true,
+                  });
+                },
+              },
+              {
+                text: t("cancel"),
+                style: "cancel",
+              },
+            ],
+          );
         }
       },
     );
@@ -79,7 +103,8 @@ export default function BulkyList(props: { bulkyList: BulkyItem[] }) {
                   <Pressable
                     onPress={() => setSelected(bulky)}
                     onLongPress={
-                      bulky.user_uid === authUser?.uid
+                      bulky.user_uid === authUser?.uid ||
+                      useStore(authStoreAuthUserRoles, (s) => s.isHost)
                         ? () => bulkyLongPressHandler(bulky)
                         : undefined
                     }

@@ -31,7 +31,6 @@ export default function BulkyPatch(props: { BulkyItem: BulkyItem | null }) {
   const chainUid = useStore(savedStore, (s) => s.chainUID);
   const queryClient = useQueryClient();
   const navigation = useNavigation();
-  const [image, setImage] = useState<string | undefined>(undefined);
   const [loading, setLoading] = useState(false);
   const [afterSubmit, setAfterSubmit] = useState(false);
 
@@ -39,15 +38,19 @@ export default function BulkyPatch(props: { BulkyItem: BulkyItem | null }) {
     defaultValues: {
       title: props.BulkyItem?.title || "",
       message: props.BulkyItem?.message || "",
+      image: props.BulkyItem?.image_url || "",
     },
+
     async onSubmit({ value }) {
+      if (!value.image) return;
+      console.log(value.image);
       try {
         await bulkyItemPut({
           chain_uid: chainUid,
           user_uid: authUser!.uid,
           title: value.title,
           message: value.message,
-          image_url: image,
+          image_url: value.image,
         });
         setAfterSubmit(true);
       } catch (error) {
@@ -63,11 +66,11 @@ export default function BulkyPatch(props: { BulkyItem: BulkyItem | null }) {
   });
   useEffect(() => {
     if (props.BulkyItem?.image_url) {
-      setImage(props.BulkyItem.image_url);
+      // setImage(props.BulkyItem.image_url);
     }
   }, [props.BulkyItem]);
-  const pickImage = async () => {
-    setImage(undefined);
+  const pickImage = async (setValue: (val: string) => void) => {
+    //setImage(undefined);
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ["images"],
       allowsEditing: true,
@@ -80,15 +83,21 @@ export default function BulkyPatch(props: { BulkyItem: BulkyItem | null }) {
 
       const _image = result.assets[0].base64;
       if (_image && result.assets[0].fileSize)
-        uploadImgDB(_image, result.assets[0].fileSize);
+        uploadImgDB(_image, result.assets[0].fileSize, setValue);
     }
   };
 
-  const uploadImgDB = async (Base64: string, fileSize: number) => {
+  const uploadImgDB = async (
+    Base64: string,
+    fileSize: number,
+    setValue: (val: string) => void,
+  ) => {
     let result = await uploadImage(Base64, fileSize);
-    setLoading(false);
 
-    setImage(result.data.image);
+    // setImage(result.data.image);
+    setValue(result.data.image);
+
+    setLoading(false);
   };
   useEffect(() => {
     navigation.setOptions({
@@ -118,9 +127,18 @@ export default function BulkyPatch(props: { BulkyItem: BulkyItem | null }) {
       ) : (
         <ScrollView className="bg-background-0">
           <VStack className="gap-3 p-3">
-            <form.Field name="title">
+            <form.Field
+              name="title"
+              validators={{
+                onChange: ({ value }) =>
+                  value === "" ? "Title is required" : undefined,
+              }}
+            >
               {(field) => (
-                <FormLabel label={t("bulkyItemsTitle")}>
+                <FormLabel
+                  label={t("bulkyItemsTitle")}
+                  error={field.state.meta.errors[0]}
+                >
                   <>
                     <Input>
                       <InputField
@@ -132,9 +150,18 @@ export default function BulkyPatch(props: { BulkyItem: BulkyItem | null }) {
                 </FormLabel>
               )}
             </form.Field>
-            <form.Field name="message">
+            <form.Field
+              name="message"
+              validators={{
+                onChange: ({ value }) =>
+                  value === "" ? "Description is required" : undefined,
+              }}
+            >
               {(field) => (
-                <FormLabel label={t("description")}>
+                <FormLabel
+                  label={t("description")}
+                  error={field.state.meta.errors[0]}
+                >
                   <>
                     <Textarea>
                       <TextareaInput
@@ -149,21 +176,40 @@ export default function BulkyPatch(props: { BulkyItem: BulkyItem | null }) {
               )}
             </form.Field>
             <View>
-              <Button onPress={pickImage}>
-                <ButtonText>
-                  <Text className="text-white">
-                    {loading ? "" : t("upload")}
-                  </Text>
-                </ButtonText>
-                {loading && <ActivityIndicator color="#ffffff" />}
-              </Button>
-              {image && (
-                <Image
-                  source={{ uri: image }}
-                  style={{ width: "100%", height: 200, resizeMode: "contain" }}
-                  className="mx-auto mt-4"
-                />
-              )}
+              <form.Field
+                name="image"
+                validators={{
+                  onChange: ({ value }) =>
+                    value === "" ? "Image is required" : undefined,
+                }}
+              >
+                {(field) => (
+                  <FormLabel
+                    label={t("description")}
+                    error={field.state.meta.errors[0]}
+                  >
+                    <Button onPress={() => pickImage(field.setValue)}>
+                      <ButtonText>
+                        <Text className="text-white">
+                          {loading ? "" : t("upload")}
+                        </Text>
+                      </ButtonText>
+                      {loading && <ActivityIndicator color="#ffffff" />}
+                    </Button>
+                    {field.state.value && (
+                      <Image
+                        source={{ uri: field.state.value }}
+                        style={{
+                          width: "100%",
+                          height: 200,
+                          resizeMode: "contain",
+                        }}
+                        className="mx-auto mt-4"
+                      />
+                    )}
+                  </FormLabel>
+                )}
+              </form.Field>
             </View>
           </VStack>
         </ScrollView>

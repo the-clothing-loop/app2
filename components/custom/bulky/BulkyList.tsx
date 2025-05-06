@@ -174,7 +174,7 @@ export default function BulkyList(props: { bulkyList: BulkyItem[] }) {
                     className="mb-2 self-end"
                   >
                     <Text className="text-md mb-2 text-right text-primary-500">
-                      Close {t("close")}
+                      {t("close")}
                     </Text>
                   </Pressable>
 

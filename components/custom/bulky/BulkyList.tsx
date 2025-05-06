@@ -28,7 +28,7 @@ export default function BulkyList(props: { bulkyList: BulkyItem[] }) {
   const { showActionSheetWithOptions } = useActionSheet();
   const authUser = useStore(authStore, (s) => s.authUser);
   const queryClient = useQueryClient();
-
+  const isHost = useStore(authStoreAuthUserRoles, (s) => s.isHost);
   const cols = useMemo(() => {
     const col1: BulkyItem[] = [];
     const col2: BulkyItem[] = [];
@@ -43,7 +43,6 @@ export default function BulkyList(props: { bulkyList: BulkyItem[] }) {
   }, [props.bulkyList]);
 
   function bulkyOptionsHandler(bulky: BulkyItem) {
-    console.log("in long press handler");
     if (bulky?.user_uid !== authUser?.uid) return;
 
     const options = ["Cancel", "Edit", "Delete"];
@@ -103,8 +102,7 @@ export default function BulkyList(props: { bulkyList: BulkyItem[] }) {
                   <Pressable
                     onPress={() => setSelected(bulky)}
                     onLongPress={
-                      bulky.user_uid === authUser?.uid ||
-                      useStore(authStoreAuthUserRoles, (s) => s.isHost)
+                      bulky.user_uid === authUser?.uid || isHost
                         ? () => bulkyOptionsHandler(bulky)
                         : undefined
                     }
@@ -122,16 +120,18 @@ export default function BulkyList(props: { bulkyList: BulkyItem[] }) {
                               uri: bulky.image_url,
                             }}
                           />
-                          <Box className="absolute right-2 top-2 rounded-2xl bg-white p-1">
-                            <Pressable
-                              onPress={() => bulkyOptionsHandler(bulky)}
-                            >
-                              <EllipsisVertical
-                                color="#5f9c8a"
-                                className=""
-                              ></EllipsisVertical>{" "}
-                            </Pressable>
-                          </Box>
+                          {bulky.user_uid === authUser?.uid || isHost ? (
+                            <Box className="absolute right-2 top-2 rounded-2xl bg-white p-1">
+                              <Pressable
+                                onPress={() => bulkyOptionsHandler(bulky)}
+                              >
+                                <EllipsisVertical
+                                  color="#5f9c8a"
+                                  className=""
+                                ></EllipsisVertical>
+                              </Pressable>
+                            </Box>
+                          ) : null}
                         </Box>
                       ) : null}
                       <VStack
@@ -139,15 +139,11 @@ export default function BulkyList(props: { bulkyList: BulkyItem[] }) {
                       >
                         <Text className="text-3xl">{bulky.title}</Text>
                         {bulky.message.length > 200 ? (
-                          <Text className="">
-                            {bulky.message.slice(0, 200)}...
-                          </Text>
+                          <Text>{bulky.message.slice(0, 200)}...</Text>
                         ) : (
-                          <Text className="">{bulky.message}</Text>
+                          <Text>{bulky.message}</Text>
                         )}
-                        <Text className="">
-                          {bulky.created_at.slice(0, 10)}
-                        </Text>
+                        <Text>{bulky.created_at.slice(0, 10)}</Text>
                       </VStack>
                     </Card>
                   </Pressable>
@@ -178,7 +174,7 @@ export default function BulkyList(props: { bulkyList: BulkyItem[] }) {
                     className="mb-2 self-end"
                   >
                     <Text className="text-md mb-2 text-right text-primary-500">
-                      Close
+                      Close {t("close")}
                     </Text>
                   </Pressable>
 

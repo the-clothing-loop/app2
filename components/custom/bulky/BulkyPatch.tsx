@@ -30,7 +30,6 @@ export default function BulkyPatch(props: { BulkyItem: BulkyItem | null }) {
   const authUser = useStore(authStore, (s) => s.authUser);
   const chainUid = useStore(savedStore, (s) => s.chainUID);
   const queryClient = useQueryClient();
-  //   const listBags = useStore(authStoreListBags);
   const navigation = useNavigation();
   const [image, setImage] = useState<string | undefined>(undefined);
   const [loading, setLoading] = useState(false);

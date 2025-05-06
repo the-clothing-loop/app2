@@ -1,7 +1,13 @@
 import FormLabel from "@/components/custom/FormLabel";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
-import { useNavigation } from "expo-router";
+import {
+  useGlobalSearchParams,
+  useLocalSearchParams,
+  useNavigation,
+  usePathname,
+  useRouter,
+} from "expo-router";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { NativeStackNavigationOptions } from "@react-navigation/native-stack/src/types";
@@ -46,6 +52,7 @@ export default function BulkyPatch(props: { BulkyItem: BulkyItem | null }) {
       console.log(value.image);
       try {
         await bulkyItemPut({
+          id: props.BulkyItem?.id,
           chain_uid: chainUid,
           user_uid: authUser!.uid,
           title: value.title,
@@ -64,13 +71,8 @@ export default function BulkyPatch(props: { BulkyItem: BulkyItem | null }) {
       navigation.goBack();
     },
   });
-  useEffect(() => {
-    if (props.BulkyItem?.image_url) {
-      // setImage(props.BulkyItem.image_url);
-    }
-  }, [props.BulkyItem]);
+
   const pickImage = async (setValue: (val: string) => void) => {
-    //setImage(undefined);
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ["images"],
       allowsEditing: true,
@@ -94,9 +96,7 @@ export default function BulkyPatch(props: { BulkyItem: BulkyItem | null }) {
   ) => {
     let result = await uploadImage(Base64, fileSize);
 
-    // setImage(result.data.image);
     setValue(result.data.image);
-
     setLoading(false);
   };
   useEffect(() => {

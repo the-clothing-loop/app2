@@ -1,13 +1,7 @@
 import FormLabel from "@/components/custom/FormLabel";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
-import {
-  useGlobalSearchParams,
-  useLocalSearchParams,
-  useNavigation,
-  usePathname,
-  useRouter,
-} from "expo-router";
+import { useNavigation } from "expo-router";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { NativeStackNavigationOptions } from "@react-navigation/native-stack/src/types";

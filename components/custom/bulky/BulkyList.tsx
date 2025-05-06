@@ -32,13 +32,18 @@ export default function BulkyList(props: { bulkyList: BulkyItem[] }) {
   const cols = useMemo(() => {
     const col1: BulkyItem[] = [];
     const col2: BulkyItem[] = [];
-    props.bulkyList.forEach((bulky, i) => {
-      if (i % 2 == 0) {
-        col1.push(bulky);
-      } else {
-        col2.push(bulky);
-      }
-    });
+    props.bulkyList
+      .sort(
+        (a, b) =>
+          new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
+      )
+      .forEach((bulky, i) => {
+        if (i % 2 == 0) {
+          col1.push(bulky);
+        } else {
+          col2.push(bulky);
+        }
+      });
     return [col1, col2];
   }, [props.bulkyList]);
 
@@ -91,64 +96,58 @@ export default function BulkyList(props: { bulkyList: BulkyItem[] }) {
       <HStack className="pb-6 pt-1">
         {cols.map((list, i) => (
           <VStack key={i} className="w-1/2">
-            {list
-              .sort(
-                (a, b) =>
-                  new Date(b.created_at).getTime() -
-                  new Date(a.created_at).getTime(),
-              )
-              .map((bulky) => {
-                return (
-                  <Pressable
-                    onPress={() => setSelected(bulky)}
-                    onLongPress={
-                      bulky.user_uid === authUser?.uid || isHost
-                        ? () => bulkyOptionsHandler(bulky)
-                        : undefined
-                    }
+            {list.map((bulky) => {
+              return (
+                <Pressable
+                  onPress={() => setSelected(bulky)}
+                  onLongPress={
+                    bulky.user_uid === authUser?.uid || isHost
+                      ? () => bulkyOptionsHandler(bulky)
+                      : undefined
+                  }
+                >
+                  <Card
+                    key={bulky.id}
+                    className="bg-transparent p-1"
+                    id={"bulky-" + bulky.id}
                   >
-                    <Card
-                      key={bulky.id}
-                      className="bg-transparent p-1"
-                      id={"bulky-" + bulky.id}
+                    {bulky.image_url ? (
+                      <Box className="relative aspect-square">
+                        <Image
+                          className="h-full w-full rounded-t-md"
+                          source={{
+                            uri: bulky.image_url,
+                          }}
+                        />
+                        {bulky.user_uid === authUser?.uid || isHost ? (
+                          <Box className="absolute right-2 top-2 rounded-2xl bg-white p-1">
+                            <Pressable
+                              onPress={() => bulkyOptionsHandler(bulky)}
+                            >
+                              <EllipsisVertical
+                                color="#5f9c8a"
+                                className=""
+                              ></EllipsisVertical>
+                            </Pressable>
+                          </Box>
+                        ) : null}
+                      </Box>
+                    ) : null}
+                    <VStack
+                      className={`bg-background-0 p-3 ${bulky.image_url ? "rounded-b-md" : "rounded-md"}`}
                     >
-                      {bulky.image_url ? (
-                        <Box className="relative aspect-square">
-                          <Image
-                            className="h-full w-full rounded-t-md"
-                            source={{
-                              uri: bulky.image_url,
-                            }}
-                          />
-                          {bulky.user_uid === authUser?.uid || isHost ? (
-                            <Box className="absolute right-2 top-2 rounded-2xl bg-white p-1">
-                              <Pressable
-                                onPress={() => bulkyOptionsHandler(bulky)}
-                              >
-                                <EllipsisVertical
-                                  color="#5f9c8a"
-                                  className=""
-                                ></EllipsisVertical>
-                              </Pressable>
-                            </Box>
-                          ) : null}
-                        </Box>
-                      ) : null}
-                      <VStack
-                        className={`bg-background-0 p-3 ${bulky.image_url ? "rounded-b-md" : "rounded-md"}`}
-                      >
-                        <Text className="text-3xl">{bulky.title}</Text>
-                        {bulky.message.length > 200 ? (
-                          <Text>{bulky.message.slice(0, 200)}...</Text>
-                        ) : (
-                          <Text>{bulky.message}</Text>
-                        )}
-                        <Text>{bulky.created_at.slice(0, 10)}</Text>
-                      </VStack>
-                    </Card>
-                  </Pressable>
-                );
-              })}
+                      <Text className="text-3xl">{bulky.title}</Text>
+                      {bulky.message.length > 200 ? (
+                        <Text>{bulky.message.slice(0, 200)}...</Text>
+                      ) : (
+                        <Text>{bulky.message}</Text>
+                      )}
+                      <Text>{bulky.created_at.slice(0, 10)}</Text>
+                    </VStack>
+                  </Card>
+                </Pressable>
+              );
+            })}
           </VStack>
         ))}
       </HStack>

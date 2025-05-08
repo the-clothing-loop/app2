@@ -9,11 +9,14 @@ import {
 import { useDebounce } from "@uidotdev/usehooks";
 import { useLayoutEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Map } from "lucide-react-native";
-import { ScrollView } from "react-native";
-import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
+// import { Map } from "lucide-react-native";
+import { Pressable, ScrollView } from "react-native";
+import {
+  BottomTabNavigationOptions,
+  useBottomTabBarHeight,
+} from "@react-navigation/bottom-tabs";
 import { Box } from "@/components/ui/box";
-import { Fab, FabIcon } from "@/components/ui/fab";
+// import { Fab, FabIcon } from "@/components/ui/fab";
 import { Text } from "@/components/ui/text";
 import RouteItem from "@/components/custom/route/RouteItem";
 import RefreshControl from "@/components/custom/RefreshControl";
@@ -22,6 +25,7 @@ import { SearchBar, SearchBarProps } from "react-native-screens";
 import useFilteredRouteUsers, {
   FilteredRouteUsersSort,
 } from "@/hooks/useFilteredRouteUsers";
+import RouteOrderDialog from "@/components/custom/route/RouteOrderDialog";
 
 export default function Route() {
   const { currentChain } = useStore(authStore);
@@ -29,6 +33,7 @@ export default function Route() {
   const routeUsers = useStore(authStoreListRouteUsers);
   const bagsPerUser = useStore(authStoreCurrentBagsPerUser);
 
+  const [openRouteOrderDialog, setOpenRouteOrderDialog] = useState(false);
   const [search, setSearch] = useState("");
   const pausedUserUids = useStore(authStoreListPausedUsers);
   const { t } = useTranslation();
@@ -40,27 +45,38 @@ export default function Route() {
         hideWhenScrolling: true,
         placeholder: t("search"),
         onChangeText: (e) => setSearch(e.nativeEvent.text),
-      } satisfies SearchBarProps,
-    });
-  }, [navigation, t]);
+      } as SearchBarProps,
+      headerLeft: () => (
+        <Pressable onPress={handleHeaderLeft}>
+          <Text className="text-lg">{t("order")}</Text>
+        </Pressable>
+      ),
+    } as BottomTabNavigationOptions);
+  }, [navigation, t, routeUsers]);
 
   const debounceSearch = useDebounce(search, 500);
-  const [sort, setSort] = useState<FilteredRouteUsersSort>("isMe3rd");
+  const [sort, setSort] = useState<FilteredRouteUsersSort>("routeForMe");
   const sortedListRouteUsers = useFilteredRouteUsers(
     routeUsers,
+    bagsPerUser,
     sort,
     debounceSearch,
   );
 
-  const countActiveMembers = useMemo(
-    () =>
+  const { countActiveMembers, countAllMembers } = useMemo(() => {
+    const countActiveMembers =
       routeUsers?.filter(
         ({ user }) => !pausedUserUids?.some((up) => up === user.uid),
-      ).length || 0,
-    [routeUsers, pausedUserUids],
-  );
+      ).length || 0;
+    const countAllMembers = routeUsers.length;
+    return { countActiveMembers, countAllMembers };
+  }, [routeUsers, pausedUserUids]);
 
   const tabBarHeight = useBottomTabBarHeight();
+
+  function handleHeaderLeft() {
+    setOpenRouteOrderDialog(true);
+  }
 
   return (
     <>
@@ -70,35 +86,37 @@ export default function Route() {
         style={{ paddingBottom: tabBarHeight }}
         refreshControl={RefreshControl()}
       >
-        {sortedListRouteUsers?.map(
-          (
-            { user, isHost, isMe, routeIndex, isWarden, isPaused, isPrivate },
-            i,
-          ) => {
-            const bagsOfUser = bagsPerUser[user.uid] || [];
-
-            return (
-              <RouteItem
-                key={user.uid + currentChain?.uid}
-                user={user}
-                index={routeIndex}
-                isWarden={isWarden}
-                isHost={isHost}
-                isAuthHost={authUserRoles.isHost}
-                isMe={isMe}
-                bags={bagsOfUser}
-                isPaused={isPaused}
-                isPrivate={isPrivate}
-              />
-            );
-          },
-        )}
+        {sortedListRouteUsers?.map((item, i) => {
+          return (
+            <RouteItem
+              key={item.routeUser.user.uid + currentChain?.uid}
+              user={item.routeUser.user}
+              index={item.routeUser.routeIndex}
+              isWarden={item.routeUser.isWarden}
+              isHost={item.routeUser.isHost}
+              isAuthHost={authUserRoles.isHost}
+              isMe={item.routeUser.isMe}
+              bags={item.bags}
+              isPaused={item.routeUser.isPaused}
+              isPrivate={item.routeUser.isPrivate}
+            />
+          );
+        })}
         <Box key="bottom" className="p-2 pb-6">
           <Text className="text-center font-bold">
             {t("activeMembers") + ": " + countActiveMembers}
           </Text>
         </Box>
       </ScrollView>
+      <RouteOrderDialog
+        open={openRouteOrderDialog}
+        setOpen={setOpenRouteOrderDialog}
+        selected={sort}
+        onSubmit={(v) => {
+          setSort(v);
+        }}
+        routeUsersLen={countAllMembers}
+      />
       {/* <Box className="fixed bottom-2 right-2">
         <Fab size="lg">
           <FabIcon as={Map} size="xl" />

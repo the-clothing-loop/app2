@@ -162,12 +162,22 @@ export default function Info() {
             </Pressable>
           </Link>
 
-          <Box className="flex-row items-center bg-warning-200 p-3">
-            <Icon as={Lock} className="me-2" />
-            <Text className="me-3">{t("closed")}</Text>
-            <Icon as={EyeOff} className="me-2" />
-            <Text className="me-3">{t("locked")}</Text>
-          </Box>
+          {!currentChain?.open_to_new_members || !currentChain?.published ? (
+            <Box className="flex-row items-center bg-warning-200 p-3">
+              {currentChain?.open_to_new_members ? null : (
+                <>
+                  <Icon as={EyeOff} className="me-2" />
+                  <Text className="me-3">{t("locked")}</Text>
+                </>
+              )}
+              {currentChain?.published ? null : (
+                <>
+                  <Icon as={Lock} className="me-2" />
+                  <Text className="me-3">{t("closed")}</Text>
+                </>
+              )}
+            </Box>
+          ) : null}
           {currentChain ? (
             <InterestedSizes
               categories={currentChain.genders as Categories[]}

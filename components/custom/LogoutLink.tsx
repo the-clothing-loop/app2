@@ -8,7 +8,8 @@ import { Box } from "../ui/box";
 import { Alert } from "react-native";
 import { oneSignalStore } from "@/store/onesignal";
 import { OneSignal } from "react-native-onesignal";
-import { AuthStatus } from "@/providers/AuthProvider";
+import { chatStore } from "@/store/chat";
+import { AuthStatus } from "@/types/auth_status";
 
 export default function LogoutLink() {
   const { t } = useTranslation();
@@ -45,6 +46,16 @@ export default function LogoutLink() {
         currentBags: null,
         currentBulky: null,
         currentChainRoute: null,
+      }));
+      // chatStore.state.conn?.close();
+      chatStore.setState((s) => ({
+        ...s,
+        appType: null,
+        chatUrl: "",
+        state: {},
+        // connStatus: ChatConnStatus.Loading,
+        // conn: null,
+        // chatAuth: null,
       }));
       if (oneSignalStore.state.isLoggedIn) {
         OneSignal.logout();

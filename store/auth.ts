@@ -1,6 +1,6 @@
 import { Chain, UID } from "@/api/types";
 import { Bag, BulkyItem, User } from "@/api/typex2";
-import { AuthStatus } from "@/providers/AuthProvider";
+import { AuthStatus } from "@/types/auth_status";
 import { IsChainAdmin, IsChainWarden } from "@/utils/chain";
 import isBagTooOld, { IsBagTooOld } from "@/utils/is_bag_too_old";
 import IsPrivate from "@/utils/is_private";
@@ -105,9 +105,9 @@ export const authStoreListRouteUsers = new Derived({
     const currentChainUsers = authStore.state.currentChainUsers;
     if (!currentChainRoute || !currentChainUsers) return [];
     return currentChainRoute
-      .map((uid, i) => {
+      .reduce<RouteUser[]>((acc, uid) => {
         const user = currentChainUsers.find((u) => u.uid == uid);
-        if (!user) return {};
+        if (!user) return acc;
         const chainUID = authStore.state.currentChain?.uid;
 
         const uc = user.chains.find((uc) => uc.chain_uid === chainUID);
@@ -117,16 +117,17 @@ export const authStoreListRouteUsers = new Derived({
         const isPaused = IsPaused(user, chainUID);
         const isPrivate = IsPrivate(user?.address || "");
 
-        return {
+        acc.push({
           user: user as User,
           isMe,
           isHost,
           isWarden,
           isPaused,
           isPrivate,
-          routeIndex: i,
-        } satisfies RouteUser;
-      })
+          routeIndex: acc.length,
+        } satisfies RouteUser);
+        return acc;
+      }, [])
       .filter(({ user }) => !!user) as RouteUser[];
   },
 });

@@ -21,7 +21,7 @@ import {
 import { useColorScheme } from "react-native";
 import { Box } from "@/components/ui/box";
 import { Text } from "@/components/ui/text";
-import { AuthStatus } from "@/providers/AuthProvider";
+import { AuthStatus } from "@/types/auth_status";
 
 export default function TabLayout() {
   const queryClient = useQueryClient();
@@ -81,7 +81,7 @@ export default function TabLayout() {
         typeof resBags === "string" ||
         typeof resChainRoute === "string"
       )
-        return null;
+        throw "Server is responding incorrectly";
       authStore.setState((s) => ({
         ...s,
         currentChain: resChain,
@@ -179,6 +179,7 @@ export default function TabLayout() {
         name="chat"
         options={{
           title: t("chat"),
+          headerShown: false,
           tabBarIcon: ({ color }) => (
             <MessageCircle size={28} color={color as any} />
           ),

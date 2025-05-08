@@ -1,28 +1,51 @@
+import { Bag } from "@/api/typex2";
 import { RouteUser } from "@/store/auth";
+import dayjs from "dayjs";
 import { useMemo } from "react";
-export type FilteredRouteUsersSort = "isMe3rd" | "aToZ" | false;
+
+export type FilteredRouteUsersSort =
+  | "route1toN"
+  | "routeForMe"
+  | "aToZ"
+  | "zToA"
+  | "dateLastSwapped"
+  | "dateLastSwappedRev";
+
 export default function useFilteredRouteUsers(
   routeUsers: RouteUser[],
+  bagsPerUser: Record<string, Bag[]>,
   sort: FilteredRouteUsersSort,
   search: string,
 ) {
   return useMemo(() => {
-    let result = routeUsers || [];
-    result = [...result];
+    let result = [...(routeUsers || [])].map((routeUser) => {
+      const bags = bagsPerUser[routeUser.user.uid] || [];
+      const latestBagUpdate = bags.reduce<number>((acc, value) => {
+        const updatedAtMilli = dayjs(value.updated_at).toDate().valueOf() || 0;
+        if (acc < updatedAtMilli) return updatedAtMilli;
+        return acc;
+      }, -1);
+      return {
+        bags,
+        routeUser,
+        latestBagUpdate,
+      };
+    });
 
     if (search) {
       const searchLower = search.toLowerCase();
-      result = result.filter((item) =>
-        item.user.name.toLowerCase().includes(searchLower),
+      result = result.filter(({ routeUser }) =>
+        routeUser.user.name.toLowerCase().includes(searchLower),
       );
       sort = "aToZ";
     }
 
     if (sort) {
-      if (sort == "isMe3rd") {
-        result.sort((a, b) => a.routeIndex - b.routeIndex);
+      if (sort == "routeForMe") {
+        result.sort((a, b) => a.routeUser.routeIndex - b.routeUser.routeIndex);
         const routeIndexOfMe =
-          result.find((item) => item.isMe)?.routeIndex || 0;
+          result.find(({ routeUser }) => routeUser.isMe)?.routeUser
+            .routeIndex || 0;
         let routeIndexStarter = routeIndexOfMe;
         if (result.length > 5) {
           routeIndexStarter = routeIndexOfMe - 2;
@@ -36,8 +59,39 @@ export default function useFilteredRouteUsers(
             ...result.slice(routeIndexStarter),
             ...result.slice(0, routeIndexStarter - 1),
           ];
-      } else if (sort == "aToZ") {
-        result.sort((a, b) => a.user.name.localeCompare(b.user.name));
+      } else if (sort == "aToZ" || sort == "zToA") {
+        result.sort((a, b) =>
+          a.routeUser.user.name.localeCompare(b.routeUser.user.name),
+        );
+        if (sort == "zToA") {
+          result.reverse();
+        }
+      } else if (sort == "dateLastSwapped") {
+        result.sort((a, b) =>
+          a.latestBagUpdate === -1
+            ? 1
+            : b.latestBagUpdate === -1
+              ? -1
+              : a.latestBagUpdate > b.latestBagUpdate
+                ? -1
+                : a.latestBagUpdate < b.latestBagUpdate
+                  ? 1
+                  : 0,
+        );
+      } else if (sort == "dateLastSwappedRev") {
+        result.sort((a, b) =>
+          a.latestBagUpdate === -1
+            ? 1
+            : b.latestBagUpdate === -1
+              ? -1
+              : a.latestBagUpdate < b.latestBagUpdate
+                ? -1
+                : a.latestBagUpdate > b.latestBagUpdate
+                  ? 1
+                  : 0,
+        );
+      } else if (sort == "route1toN") {
+        result.sort((a, b) => a.routeUser.routeIndex - b.routeUser.routeIndex);
       }
     }
 

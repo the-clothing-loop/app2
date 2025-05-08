@@ -99,34 +99,85 @@ export interface ChainUpdateRequest {
 	is_app_disabled?: (boolean | null | undefined)
 }
 
-export interface ChatCreateChannelRequest {
-	chain_uid: string
+export interface ChatChannel {
+	id: number
 	name: string
 	color: string
-}
-
-export interface ChatCreateChannelResponse {
-	chat_channel: string
-}
-
-export interface ChatDeleteChannelRequest {
+	created_at: number
 	chain_uid: string
-	channel_id: string
 }
 
-export interface ChatJoinChannelsRequest {
+export interface ChatChannelDeleteQuery {
 	chain_uid: string
+	chat_channel_id: number
+}
+
+export interface ChatChannelEditRequest {
+	chain_uid: string
+	id: number
+	name?: (string | null | undefined)
+	color?: (string | null | undefined)
+}
+
+export interface ChatChannelListQuery {
+	chain_uid: string
+}
+
+export interface ChatChannelListResponse {
+	list: ChatChannel[]
+}
+
+export interface ChatChannelMessageListQuery {
+	chain_uid: string
+	chat_channel_id: number
+	start_from: number
+	page: number
+}
+
+export interface ChatChannelMessageListResponse {
+	messages: ChatMessage[]
+}
+
+export interface ChatGetTypeRequest {
+	chain_uid: string
+}
+
+export interface ChatGetTypeResponse {
+	chat_type: string
+	chat_url: string
+	chat_in_app_disabled: boolean
+}
+
+export interface ChatMessage {
+	id: number
+	message: string
+	sent_by: string
+	chat_channel_id: number
+	is_pinned?: (boolean | null | undefined)
+	created_at: number
+}
+
+export interface ChatMessageCreateRequest {
+	chain_uid: string
+	chat_channel_id: number
+	message: string
+}
+
+export interface ChatMessageRequest {
+	chain_uid: string
+	chat_channel_id: number
+	chat_message_id: number
+}
+
+export interface ChatPatchTypeRequest {
+	chain_uid: string
+	chat_type: string
+	chat_url: string
+	chat_in_app_disabled: boolean
 }
 
 export interface ChatPatchUserRequest {
 	chain_uid: string
-}
-
-export interface ChatPatchUserResponse {
-	chat_team: string
-	chat_user_id: string
-	chat_pass: string
-	chat_user_name: string
 }
 
 export interface ContactMailRequest {

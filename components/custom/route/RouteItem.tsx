@@ -18,6 +18,7 @@ interface Props {
   index: number;
   isWarden: boolean;
   isHost: boolean;
+  isAuthHost: boolean;
   isMe: boolean;
   isPaused: boolean;
   isPrivate: boolean;
@@ -26,7 +27,7 @@ interface Props {
 
 export default function RouteItem(props: Props) {
   const hideLink =
-    (props.isPaused || props.isPrivate) && !props.isHost && !props.isMe;
+    (props.isPaused || props.isPrivate) && !props.isAuthHost && !props.isMe;
 
   return (
     <Link

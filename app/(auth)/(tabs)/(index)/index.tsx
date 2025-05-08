@@ -128,7 +128,6 @@ export default function HomeScreen(props: {}) {
     }));
   }, [rulesCustom, rulesDefault]);
 
-  console.log("render rules page");
   return (
     <ScrollView
       contentInsetAdjustmentBehavior="automatic"

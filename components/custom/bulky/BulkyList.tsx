@@ -22,7 +22,8 @@ import { router } from "expo-router";
 import { bulkyItemRemove } from "@/api/bulky";
 import { useQueryClient } from "@tanstack/react-query";
 import { t } from "i18next";
-import { EllipsisVertical } from "lucide-react-native";
+import { EllipsisIcon } from "lucide-react-native";
+import dayjs from "@/utils/dayjs";
 export default function BulkyList(props: { bulkyList: BulkyItem[] }) {
   const [selected, setSelected] = useState<BulkyItem | null>(null);
   const { showActionSheetWithOptions } = useActionSheet();
@@ -113,13 +114,10 @@ export default function BulkyList(props: { bulkyList: BulkyItem[] }) {
                   >
                     {bulky.user_uid === authUser?.uid || isHost ? (
                       <Pressable
-                        className="absolute right-2 top-2 z-10 flex rounded-full bg-typography-100/80 p-1"
+                        className="absolute right-2 top-2 z-10 flex rounded-full bg-black/30 p-1"
                         onPress={() => bulkyOptionsHandler(bulky)}
                       >
-                        <EllipsisVertical
-                          color="#5f9c8a"
-                          className=""
-                        ></EllipsisVertical>
+                        <EllipsisIcon color="#fff" className=""></EllipsisIcon>
                       </Pressable>
                     ) : null}
                     {bulky.image_url ? (
@@ -135,13 +133,15 @@ export default function BulkyList(props: { bulkyList: BulkyItem[] }) {
                     <VStack
                       className={`bg-background-0 p-3 ${bulky.image_url ? "rounded-b-md" : "rounded-md"}`}
                     >
+                      <Text className="text-typography-500" size="sm" bold>
+                        {dayjs(bulky.created_at).toDate().toLocaleDateString()}
+                      </Text>
                       <Text className="text-3xl">{bulky.title}</Text>
-                      {bulky.message.length > 200 ? (
-                        <Text>{bulky.message.slice(0, 200)}...</Text>
-                      ) : (
-                        <Text>{bulky.message}</Text>
-                      )}
-                      <Text>{bulky.created_at.slice(0, 10)}</Text>
+                      <Text>
+                        {bulky.message.length > 200
+                          ? bulky.message.slice(0, 200) + "..."
+                          : bulky.message}
+                      </Text>
                     </VStack>
                   </Card>
                 </Pressable>

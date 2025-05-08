@@ -138,8 +138,8 @@ export default function BulkyList(props: { bulkyList: BulkyItem[] }) {
                       </Text>
                       <Text className="text-3xl">{bulky.title}</Text>
                       <Text>
-                        {bulky.message.length > 200
-                          ? bulky.message.slice(0, 200) + "..."
+                        {bulky.message.length > 100
+                          ? bulky.message.slice(0, 100) + "..."
                           : bulky.message}
                       </Text>
                     </VStack>

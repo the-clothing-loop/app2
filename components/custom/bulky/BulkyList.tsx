@@ -24,6 +24,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { t } from "i18next";
 import { EllipsisIcon } from "lucide-react-native";
 import dayjs from "@/utils/dayjs";
+import BulkyListItem from "./BulkyListItem";
 export default function BulkyList(props: { bulkyList: BulkyItem[] }) {
   const [selected, setSelected] = useState<BulkyItem | null>(null);
   const { showActionSheetWithOptions } = useActionSheet();
@@ -98,54 +99,15 @@ export default function BulkyList(props: { bulkyList: BulkyItem[] }) {
         {cols.map((list, i) => (
           <VStack key={i} className="w-1/2">
             {list.map((bulky) => {
+              const isEditable = bulky.user_uid === authUser?.uid || isHost;
               return (
-                <Pressable
-                  onPress={() => setSelected(bulky)}
-                  onLongPress={
-                    bulky.user_uid === authUser?.uid || isHost
-                      ? () => bulkyOptionsHandler(bulky)
-                      : undefined
-                  }
+                <BulkyListItem
+                  bulky={bulky}
                   key={bulky.id}
-                >
-                  <Card
-                    className="relative bg-transparent p-1"
-                    id={"bulky-" + bulky.id}
-                  >
-                    {bulky.user_uid === authUser?.uid || isHost ? (
-                      <Pressable
-                        className="absolute right-2 top-2 z-10 flex rounded-full bg-black/30 p-1"
-                        onPress={() => bulkyOptionsHandler(bulky)}
-                      >
-                        <EllipsisIcon color="#fff" className=""></EllipsisIcon>
-                      </Pressable>
-                    ) : null}
-                    {bulky.image_url ? (
-                      <Box className="aspect-square">
-                        <Image
-                          className="h-full w-full rounded-t-md"
-                          alt=""
-                          source={{
-                            uri: bulky.image_url,
-                          }}
-                        />
-                      </Box>
-                    ) : null}
-                    <VStack
-                      className={`bg-background-0 p-3 ${bulky.image_url ? "rounded-b-md" : "rounded-md"}`}
-                    >
-                      <Text className="text-typography-500" size="sm" bold>
-                        {dayjs(bulky.created_at).toDate().toLocaleDateString()}
-                      </Text>
-                      <Text className="text-3xl">{bulky.title}</Text>
-                      <Text>
-                        {bulky.message.length > 100
-                          ? bulky.message.slice(0, 100) + "..."
-                          : bulky.message}
-                      </Text>
-                    </VStack>
-                  </Card>
-                </Pressable>
+                  setSelected={() => setSelected(bulky)}
+                  isEditable={isEditable}
+                  onOpenOptions={() => bulkyOptionsHandler(bulky)}
+                />
               );
             })}
           </VStack>

@@ -124,6 +124,7 @@ export default function BulkyList(props: { bulkyList: BulkyItem[] }) {
                       <Box className="aspect-square">
                         <Image
                           className="h-full w-full rounded-t-md"
+                          alt=""
                           source={{
                             uri: bulky.image_url,
                           }}
@@ -180,6 +181,7 @@ export default function BulkyList(props: { bulkyList: BulkyItem[] }) {
                     {selected.image_url && (
                       <Image
                         className="mb-2 h-96 w-full"
+                        alt=""
                         source={{
                           uri: selected.image_url,
                         }}

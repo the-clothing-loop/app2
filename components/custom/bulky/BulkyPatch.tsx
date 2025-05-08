@@ -199,6 +199,7 @@ export default function BulkyPatch(props: { BulkyItem: BulkyItem | null }) {
                           resizeMode: "contain",
                         }}
                         className="mx-auto mt-4"
+                        alt="Current bulky item image"
                       />
                     )}
                   </FormLabel>

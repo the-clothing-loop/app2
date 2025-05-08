@@ -95,7 +95,7 @@ export default function RouteOrderDialog(props: {
         <AlertDialogBody className="py-3">
           <RadioGroup onChange={setSelected} value={selected}>
             {orderList.map((v) => (
-              <Radio value={v.userSort} key={v.userSort}>
+              <Radio value={v.userSort} key={v.userSort} className="py-2">
                 <RadioIndicator>
                   <RadioIcon as={CircleIcon} />
                 </RadioIndicator>

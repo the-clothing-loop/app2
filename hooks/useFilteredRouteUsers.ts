@@ -21,10 +21,10 @@ export default function useFilteredRouteUsers(
     let result = [...(routeUsers || [])].map((routeUser) => {
       const bags = bagsPerUser[routeUser.user.uid] || [];
       const latestBagUpdate = bags.reduce<number>((acc, value) => {
-        const updatedAtMilli = dayjs(value.updated_at).toDate().valueOf();
+        const updatedAtMilli = dayjs(value.updated_at).toDate().valueOf() || 0;
         if (acc < updatedAtMilli) return updatedAtMilli;
         return acc;
-      }, 0);
+      }, -1);
       return {
         bags,
         routeUser,
@@ -63,19 +63,35 @@ export default function useFilteredRouteUsers(
         result.sort((a, b) =>
           a.routeUser.user.name.localeCompare(b.routeUser.user.name),
         );
-      } else if (sort == "dateLastSwapped" || sort == "dateLastSwappedRev") {
+        if (sort == "zToA") {
+          result.reverse();
+        }
+      } else if (sort == "dateLastSwapped") {
         result.sort((a, b) =>
-          b.latestBagUpdate === 0
+          a.latestBagUpdate === -1
             ? 1
-            : a.latestBagUpdate > b.latestBagUpdate
+            : b.latestBagUpdate === -1
               ? -1
-              : 0,
+              : a.latestBagUpdate > b.latestBagUpdate
+                ? -1
+                : a.latestBagUpdate < b.latestBagUpdate
+                  ? 1
+                  : 0,
+        );
+      } else if (sort == "dateLastSwappedRev") {
+        result.sort((a, b) =>
+          a.latestBagUpdate === -1
+            ? 1
+            : b.latestBagUpdate === -1
+              ? -1
+              : a.latestBagUpdate < b.latestBagUpdate
+                ? -1
+                : a.latestBagUpdate > b.latestBagUpdate
+                  ? 1
+                  : 0,
         );
       } else if (sort == "route1toN") {
         result.sort((a, b) => a.routeUser.routeIndex - b.routeUser.routeIndex);
-      }
-      if (sort == "zToA" || sort == "dateLastSwappedRev") {
-        result.reverse();
       }
     }
 

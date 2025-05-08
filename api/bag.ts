@@ -66,14 +66,3 @@ export function bagHistory(chainUID: UID) {
     params: { chain_uid: chainUID },
   });
 }
-
-export function bulkyItemPut(body: {
-  id?: number;
-  chain_uid: UID;
-  user_uid: UID;
-  title?: string;
-  message?: string;
-  image_url?: string;
-}) {
-  return axios.put("/v2/bulky-item", body);
-}

@@ -48,7 +48,7 @@ export default function BulkyList(props: { bulkyList: BulkyItem[] }) {
   }, [props.bulkyList]);
 
   function bulkyOptionsHandler(bulky: BulkyItem) {
-    if (bulky?.user_uid !== authUser?.uid) return;
+    if (!(bulky?.user_uid === authUser?.uid || isHost)) return;
 
     const options = ["Cancel", "Edit", "Delete"];
 
@@ -105,32 +105,31 @@ export default function BulkyList(props: { bulkyList: BulkyItem[] }) {
                       ? () => bulkyOptionsHandler(bulky)
                       : undefined
                   }
+                  key={bulky.id}
                 >
                   <Card
-                    key={bulky.id}
-                    className="bg-transparent p-1"
+                    className="relative bg-transparent p-1"
                     id={"bulky-" + bulky.id}
                   >
+                    {bulky.user_uid === authUser?.uid || isHost ? (
+                      <Pressable
+                        className="absolute right-2 top-2 z-10 flex rounded-full bg-typography-100/80 p-1"
+                        onPress={() => bulkyOptionsHandler(bulky)}
+                      >
+                        <EllipsisVertical
+                          color="#5f9c8a"
+                          className=""
+                        ></EllipsisVertical>
+                      </Pressable>
+                    ) : null}
                     {bulky.image_url ? (
-                      <Box className="relative aspect-square">
+                      <Box className="aspect-square">
                         <Image
                           className="h-full w-full rounded-t-md"
                           source={{
                             uri: bulky.image_url,
                           }}
                         />
-                        {bulky.user_uid === authUser?.uid || isHost ? (
-                          <Box className="absolute right-2 top-2 rounded-2xl bg-white p-1">
-                            <Pressable
-                              onPress={() => bulkyOptionsHandler(bulky)}
-                            >
-                              <EllipsisVertical
-                                color="#5f9c8a"
-                                className=""
-                              ></EllipsisVertical>
-                            </Pressable>
-                          </Box>
-                        ) : null}
                       </Box>
                     ) : null}
                     <VStack

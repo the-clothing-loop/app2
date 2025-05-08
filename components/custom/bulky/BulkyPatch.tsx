@@ -16,19 +16,18 @@ import { useForm, useStore } from "@tanstack/react-form";
 import { authStore } from "@/store/auth";
 import { Input, InputField } from "@/components/ui/input";
 import { Button, ButtonText } from "@/components/ui/button";
-import { bulkyItemPut } from "@/api/bag";
-import { savedStore } from "@/store/saved";
 import { useQueryClient } from "@tanstack/react-query";
 import { BulkyItem } from "@/api/typex2";
 import * as ImagePicker from "expo-image-picker";
 import { uploadImage } from "@/api/imgbb";
 import { Textarea, TextareaInput } from "@/components/ui/textarea";
+import { bulkyItemPut } from "@/api/bulky";
 
 export default function BulkyPatch(props: { BulkyItem: BulkyItem | null }) {
   const { t } = useTranslation();
 
   const authUser = useStore(authStore, (s) => s.authUser);
-  const chainUid = useStore(savedStore, (s) => s.chainUID);
+  const currentChain = useStore(authStore, (s) => s.currentChain);
   const queryClient = useQueryClient();
   const navigation = useNavigation();
   const [loading, setLoading] = useState(false);
@@ -43,24 +42,25 @@ export default function BulkyPatch(props: { BulkyItem: BulkyItem | null }) {
 
     async onSubmit({ value }) {
       if (!value.image) return;
-      console.log(value.image);
-      try {
-        await bulkyItemPut({
-          id: props.BulkyItem?.id,
-          chain_uid: chainUid,
-          user_uid: authUser!.uid,
-          title: value.title,
-          message: value.message,
-          image_url: value.image,
+      await bulkyItemPut({
+        id: props.BulkyItem?.id,
+        chain_uid: currentChain!.uid,
+        user_uid: authUser!.uid,
+        title: value.title,
+        message: value.message,
+        image_url: value.image,
+      })
+        .catch((err) => {
+          console.error("Error during form submission", err);
+          throw err;
+        })
+        .finally(() => {
+          setAfterSubmit(true);
+          queryClient.refetchQueries({
+            queryKey: ["auth", "chain-bags", currentChain!.uid],
+            exact: true,
+          });
         });
-        setAfterSubmit(true);
-      } catch (error) {
-        console.error("Error during form submission", error);
-      }
-      queryClient.invalidateQueries({
-        queryKey: ["auth", "chain-bags", chainUid],
-        exact: true,
-      });
 
       navigation.goBack();
     },
@@ -130,7 +130,7 @@ export default function BulkyPatch(props: { BulkyItem: BulkyItem | null }) {
             >
               {(field) => (
                 <FormLabel
-                  label={t("bulkyItemsTitle")}
+                  label={t("title")}
                   error={field.state.meta.errors[0]}
                 >
                   <>
@@ -179,7 +179,7 @@ export default function BulkyPatch(props: { BulkyItem: BulkyItem | null }) {
               >
                 {(field) => (
                   <FormLabel
-                    label={t("description")}
+                    label={t("image")}
                     error={field.state.meta.errors[0]}
                   >
                     <Button onPress={() => pickImage(field.setValue)}>

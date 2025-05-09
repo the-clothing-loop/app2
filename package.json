@@ -10,7 +10,7 @@
     "prebuild": "expo prebuild --clean",
     "prebuild:remove": "rm -rf ios/ android/",
     "android": "DARK_MODE=media expo start --android",
-    "doctor": "expo doctor",
+    "doctor": "npx expo-doctor",
     "build:local:acceptance:android": "eas build --platform android --profile acceptance --local",
     "build:local:acceptance:ios": "eas build --platform ios --profile acceptance --local",
     "build:local:production:android": "eas build --platform android --profile production --local",

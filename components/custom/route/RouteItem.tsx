@@ -4,13 +4,14 @@ import { HStack } from "@/components/ui/hstack";
 import { Icon } from "@/components/ui/icon";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
-import { Link, router } from "expo-router";
+import { Link } from "expo-router";
 import {
+  ArrowBigUpIcon,
   ChevronRight,
   Flag,
   Pause,
   Shield,
-  ShoppingBag,
+  ShoppingBagIcon,
 } from "lucide-react-native";
 
 interface Props {
@@ -94,11 +95,23 @@ export default function RouteItem(props: Props) {
             <Icon as={ChevronRight} className="ms-2" />
           )}
           <VStack className="max-h-12 flex-wrap-reverse gap-0.5">
-            {props.bags.map((b) => (
-              <Box key={b.id}>
-                <Icon as={ShoppingBag} color={b.color} />
-              </Box>
-            ))}
+            {props.bags.map((b) => {
+              const isReverse =
+                b.number.includes("👻") || b.number.includes("⬆️");
+
+              return (
+                <Box key={b.id} className="relative">
+                  <Icon as={ShoppingBagIcon} color={b.color} />
+                  {isReverse ? (
+                    <Icon
+                      as={ArrowBigUpIcon}
+                      className="absolute -bottom-1 -right-0.5 z-10 fill-slate-300"
+                      size="sm"
+                    />
+                  ) : null}
+                </Box>
+              );
+            })}
           </VStack>
         </HStack>
       </HStack>

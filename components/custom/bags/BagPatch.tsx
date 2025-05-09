@@ -1,19 +1,17 @@
 import FormLabel from "@/components/custom/FormLabel";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
-import { Link, useNavigation } from "expo-router";
-import { useEffect, useLayoutEffect } from "react";
+import { useNavigation } from "expo-router";
+import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 
 import { NativeStackNavigationOptions } from "@react-navigation/native-stack/src/types";
 import { Pressable, ScrollView } from "react-native";
 import { useForm, useStore } from "@tanstack/react-form";
-import { authStore, authStoreListBags } from "@/store/auth";
+import { authStore } from "@/store/auth";
 import { Input, InputField } from "@/components/ui/input";
 import { HStack } from "@/components/ui/hstack";
-import { Button } from "@/components/ui/button";
-import { Icon } from "@/components/ui/icon";
-import { CheckIcon } from "lucide-react-native";
+import { Button, ButtonText } from "@/components/ui/button";
 import { bagPut } from "@/api/bag";
 import { savedStore } from "@/store/saved";
 import { useQueryClient } from "@tanstack/react-query";
@@ -39,6 +37,8 @@ const bagColors = [
   "#7D7D7D",
   "#3C3C3B",
 ];
+
+const emojis = ["👻", "🐰", "👟", "📖", "⬆️"];
 
 export default function BagPatch(props: { bag: Bag | null }) {
   const { t } = useTranslation();
@@ -91,21 +91,57 @@ export default function BagPatch(props: { bag: Bag | null }) {
       ),
     } satisfies NativeStackNavigationOptions);
   }, [navigation, t, props.bag]);
+
+  function handlePressEmoji(
+    emoji: string,
+    setValue: (fn: (s: string) => string) => void,
+  ) {
+    setValue((s) => {
+      if (s.includes(" " + emoji)) {
+        return s.replace(" " + emoji, "");
+      } else if (s.includes(emoji)) {
+        return s.replace(emoji, "");
+      } else {
+        return s + " " + emoji;
+      }
+    });
+  }
+
   return (
     <ScrollView className="bg-background-0">
       <VStack className="gap-3 p-3">
         <form.Field name="number">
           {(field) => (
-            <FormLabel label={t("bagName")}>
-              <>
-                <Input>
-                  <InputField
-                    value={field.state.value}
-                    onChangeText={field.setValue}
-                  />
-                </Input>
-              </>
-            </FormLabel>
+            <>
+              <FormLabel label={t("bagName")}>
+                <>
+                  <Input>
+                    <InputField
+                      value={field.state.value}
+                      onChangeText={field.setValue}
+                    />
+                  </Input>
+                </>
+              </FormLabel>
+              <HStack className="gap-2">
+                {emojis.map((emoji) => {
+                  const isSelected = field.state.value.includes(emoji);
+                  return (
+                    <Button
+                      key={emoji}
+                      className="h-10 w-10 rounded-full bg-typography-50 p-0"
+                      onPress={() => handlePressEmoji(emoji, field.setValue)}
+                      // isPressed
+                      // variant="outline"
+                      isDisabled={isSelected}
+                      action="default"
+                    >
+                      <ButtonText>{emoji}</ButtonText>
+                    </Button>
+                  );
+                })}
+              </HStack>
+            </>
           )}
         </form.Field>
         <FormLabel label={t("bagColor")}>

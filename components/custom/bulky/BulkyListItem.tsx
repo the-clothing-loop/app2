@@ -7,6 +7,10 @@ import dayjs from "dayjs";
 import { EllipsisIcon } from "lucide-react-native";
 import { useMemo } from "react";
 import { Image, Pressable } from "react-native";
+import BagsListItemUser from "../bags/BagListItemUser";
+import { useStore } from "@tanstack/react-store";
+import { authStoreListRouteUsers } from "@/store/auth";
+import { Icon } from "@/components/ui/icon";
 
 export default function BulkyListItem(props: {
   bulky: BulkyItem;
@@ -14,6 +18,11 @@ export default function BulkyListItem(props: {
   isEditable: boolean;
   onOpenOptions: () => void;
 }) {
+  const routeUsers = useStore(authStoreListRouteUsers);
+  const routeUser = useMemo(
+    () => routeUsers.find((u) => u.user.uid == props.bulky.user_uid),
+    [props.bulky.user_uid],
+  );
   const date = useMemo(() => {
     return dayjs(props.bulky.created_at).toDate();
   }, [props.bulky.created_at]);
@@ -24,20 +33,20 @@ export default function BulkyListItem(props: {
   }, [props.bulky.message]);
 
   return (
-    <Pressable
-      onPress={() => props.setSelected()}
-      onLongPress={props.isEditable ? () => props.onOpenOptions() : undefined}
+    <Card
+      className="relative bg-transparent p-1"
+      id={"bulky-" + props.bulky.id}
     >
-      <Card
-        className="relative bg-transparent p-1"
-        id={"bulky-" + props.bulky.id}
+      <Pressable
+        onPress={() => props.setSelected()}
+        onLongPress={props.isEditable ? () => props.onOpenOptions() : undefined}
       >
         {props.isEditable ? (
           <Pressable
             className="absolute right-2 top-2 z-10 flex rounded-full bg-black/30 p-1"
             onPress={props.onOpenOptions}
           >
-            <EllipsisIcon color="#fff" className=""></EllipsisIcon>
+            <Icon as={EllipsisIcon} color="#fff" size="xl" />
           </Pressable>
         ) : null}
         {props.bulky.image_url ? (
@@ -52,7 +61,7 @@ export default function BulkyListItem(props: {
           </Box>
         ) : null}
         <VStack
-          className={`bg-background-0 p-3 ${props.bulky.image_url ? "rounded-b-md" : "rounded-md"}`}
+          className={`border-b border-b-typography-100 bg-background-0 p-3 ${props.bulky.image_url ? "" : "rounded-t-md"}`}
         >
           <Text className="text-typography-500" size="sm" bold>
             {date.toLocaleDateString()}
@@ -60,7 +69,12 @@ export default function BulkyListItem(props: {
           <Text className="text-3xl">{props.bulky.title}</Text>
           <Text>{message}</Text>
         </VStack>
-      </Card>
-    </Pressable>
+      </Pressable>
+      <BagsListItemUser
+        isPrivate={routeUser?.isPrivate || true}
+        routeIndex={routeUser?.routeIndex}
+        user={routeUser?.user}
+      />
+    </Card>
   );
 }

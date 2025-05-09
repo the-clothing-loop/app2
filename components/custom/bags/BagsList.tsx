@@ -9,10 +9,11 @@ import { authStore, ListBag } from "@/store/auth";
 import { useActionSheet } from "@expo/react-native-action-sheet";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { router } from "expo-router";
-import { ShoppingBag, ArrowRight, EllipsisIcon } from "lucide-react-native";
+import { ShoppingBag, EllipsisIcon } from "lucide-react-native";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { Alert, Pressable } from "react-native";
+import BagsListItemUser from "./BagListItemUser";
 
 export default function BagsList(props: {
   listBags: ListBag[];
@@ -99,13 +100,13 @@ export default function BagsList(props: {
                   onPress={() => openBagOptionsActionsheet(item.bag)}
                 >
                   <Box className="h-10 w-10 items-center justify-center">
-                    <Icon as={EllipsisIcon} color="#fff" size="xl"></Icon>
+                    <Icon as={EllipsisIcon} color="#fff" size="xl" />
                   </Box>
                 </Pressable>
               ) : null}
               <Box className="relative">
                 <Pressable
-                  className="flex aspect-square flex-col items-center justify-center gap-1 rounded-t-md p-4"
+                  className={`flex aspect-square flex-col items-center justify-center gap-1 p-4 ${props.showUser ? "rounded-t-md" : "rounded-md"}`}
                   onPress={() => props.onPressBag(item)}
                   style={{ backgroundColor: item.bag.color }}
                 >
@@ -144,47 +145,11 @@ export default function BagsList(props: {
                 </Pressable>
               </Box>
               {props.showUser ? (
-                item.routeUser?.isPrivate ? (
-                  <HStack className="border-1 w-full rounded-b-md border-background-200 bg-background-0 px-2 py-3">
-                    {item.routeUser ? (
-                      <>
-                        <Text>{"#" + (item.routeUser.routeIndex + 1)}</Text>
-                        <Text numberOfLines={1} className="mx-1 flex-grow" bold>
-                          {item.routeUser.user.name}
-                        </Text>
-                      </>
-                    ) : (
-                      <Text>Bag user not found</Text>
-                    )}
-                  </HStack>
-                ) : (
-                  <Pressable
-                    onPress={() => {
-                      router.replace(`/(auth)/(tabs)/route/`);
-                      router.push(
-                        `/(auth)/(tabs)/route/${item.routeUser?.user?.uid || 0}`,
-                      );
-                    }}
-                  >
-                    <HStack className="border-1 w-full rounded-b-md border-background-200 bg-background-0 px-2 py-3">
-                      {item.routeUser ? (
-                        <>
-                          <Text>{"#" + (item.routeUser.routeIndex + 1)}</Text>
-                          <Text
-                            numberOfLines={1}
-                            className="mx-1 flex-grow"
-                            bold
-                          >
-                            {item.routeUser.user.name}
-                          </Text>
-                          <Icon as={ArrowRight} className="text-primary-500" />
-                        </>
-                      ) : (
-                        <Text>Bag user not found</Text>
-                      )}
-                    </HStack>
-                  </Pressable>
-                )
+                <BagsListItemUser
+                  isPrivate={item.routeUser?.isPrivate || false}
+                  routeIndex={item.routeUser?.routeIndex}
+                  user={item.routeUser?.user}
+                />
               ) : null}
             </Card>
           );

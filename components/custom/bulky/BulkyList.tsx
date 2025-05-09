@@ -1,9 +1,7 @@
 import { BulkyItem } from "@/api/typex2";
-import { Card } from "@/components/ui/card";
 import { Image } from "@/components/ui/image";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
-import { Box } from "@/components/ui/box";
 import { useMemo, useState } from "react";
 import { HStack } from "@/components/ui/hstack";
 import {
@@ -22,8 +20,6 @@ import { router } from "expo-router";
 import { bulkyItemRemove } from "@/api/bulky";
 import { useQueryClient } from "@tanstack/react-query";
 import { t } from "i18next";
-import { EllipsisIcon } from "lucide-react-native";
-import dayjs from "@/utils/dayjs";
 import BulkyListItem from "./BulkyListItem";
 export default function BulkyList(props: { bulkyList: BulkyItem[] }) {
   const [selected, setSelected] = useState<BulkyItem | null>(null);

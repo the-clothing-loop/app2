@@ -70,9 +70,10 @@ export default function RouteItem(props: Props) {
           </Box>
         </Box>
 
-        <VStack className="grow">
+        <VStack className="flex-shrink grow">
           <Text
-            className={`font-semibold ${props.isMe ? "text-info-700" : ""}`}
+            numberOfLines={1}
+            className={`flex-shrink font-semibold ${props.isMe ? "text-info-700" : ""}`}
           >
             {props.user.name}
           </Text>

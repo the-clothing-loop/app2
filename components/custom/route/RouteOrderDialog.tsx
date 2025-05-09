@@ -3,10 +3,8 @@ import {
   AlertDialogBackdrop,
   AlertDialogBody,
   AlertDialogContent,
-  AlertDialogFooter,
   AlertDialogHeader,
 } from "@/components/ui/alert-dialog";
-import { Button, ButtonText } from "@/components/ui/button";
 import { Text } from "@/components/ui/text";
 import {
   Dispatch,
@@ -16,7 +14,6 @@ import {
   useState,
 } from "react";
 import { useTranslation } from "react-i18next";
-import { useDefaultStyles } from "react-native-ui-datepicker";
 import { FilteredRouteUsersSort } from "@/hooks/useFilteredRouteUsers";
 import {
   Radio,
@@ -26,6 +23,7 @@ import {
   RadioLabel,
 } from "@/components/ui/radio";
 import { CircleIcon } from "lucide-react-native";
+import Sleep from "@/utils/sleep";
 
 export default function RouteOrderDialog(props: {
   open: boolean;
@@ -75,16 +73,15 @@ export default function RouteOrderDialog(props: {
     props.setOpen(false);
     props.onSubmit(selected);
   }
-  const defaultStyles = useDefaultStyles();
+
+  async function handlePressItem(item: FilteredRouteUsersSort) {
+    props.onSubmit(item);
+    await Sleep(200);
+    props.setOpen(false);
+  }
 
   return (
-    <AlertDialog
-      useRNModal
-      closeOnOverlayClick={false}
-      isOpen={props.open}
-      onClose={handleClose}
-      size="md"
-    >
+    <AlertDialog useRNModal isOpen={props.open} onClose={handleClose} size="md">
       <AlertDialogBackdrop />
       <AlertDialogContent>
         <AlertDialogHeader>
@@ -95,7 +92,12 @@ export default function RouteOrderDialog(props: {
         <AlertDialogBody className="py-3">
           <RadioGroup onChange={setSelected} value={selected}>
             {orderList.map((v) => (
-              <Radio value={v.userSort} key={v.userSort} className="py-2">
+              <Radio
+                value={v.userSort}
+                key={v.userSort}
+                className="py-2"
+                onPress={() => handlePressItem(v.userSort)}
+              >
                 <RadioIndicator>
                   <RadioIcon as={CircleIcon} />
                 </RadioIndicator>
@@ -104,16 +106,6 @@ export default function RouteOrderDialog(props: {
             ))}
           </RadioGroup>
         </AlertDialogBody>
-        <AlertDialogFooter className="mt-3 flex-col items-stretch gap-4">
-          <Button
-            size="lg"
-            variant="outline"
-            action="secondary"
-            onPress={handleClose}
-          >
-            <ButtonText>Close</ButtonText>
-          </Button>
-        </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
   );

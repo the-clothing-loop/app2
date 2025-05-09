@@ -10,7 +10,7 @@ import { useDebounce } from "@uidotdev/usehooks";
 import { useLayoutEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 // import { Map } from "lucide-react-native";
-import { Pressable, ScrollView } from "react-native";
+import { Platform, Pressable, ScrollView } from "react-native";
 import {
   BottomTabNavigationOptions,
   useBottomTabBarHeight,
@@ -26,6 +26,8 @@ import useFilteredRouteUsers, {
   FilteredRouteUsersSort,
 } from "@/hooks/useFilteredRouteUsers";
 import RouteOrderDialog from "@/components/custom/route/RouteOrderDialog";
+import { Icon } from "@/components/ui/icon";
+import { SortDescIcon } from "lucide-react-native";
 
 export default function Route() {
   const { currentChain } = useStore(authStore);
@@ -38,6 +40,15 @@ export default function Route() {
   const pausedUserUids = useStore(authStoreListPausedUsers);
   const { t } = useTranslation();
   const navigation = useNavigation();
+  const btnRouteOrder = () => (
+    <Pressable onPress={handleHeaderLeft}>
+      {Platform.OS == "android" ? (
+        <Icon as={SortDescIcon} aria-label={t("order")} />
+      ) : (
+        <Text className="text-lg">{t("order")}</Text>
+      )}
+    </Pressable>
+  );
   useLayoutEffect(() => {
     navigation.setOptions({
       headerSearchBarOptions: {
@@ -46,11 +57,8 @@ export default function Route() {
         placeholder: t("search"),
         onChangeText: (e) => setSearch(e.nativeEvent.text),
       } as SearchBarProps,
-      headerLeft: () => (
-        <Pressable onPress={handleHeaderLeft}>
-          <Text className="text-lg">{t("order")}</Text>
-        </Pressable>
-      ),
+      headerLeft: Platform.OS != "android" ? btnRouteOrder : undefined,
+      headerRight: Platform.OS == "android" ? btnRouteOrder : undefined,
     } as BottomTabNavigationOptions);
   }, [navigation, t, routeUsers]);
 

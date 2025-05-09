@@ -50,7 +50,7 @@ export default function Bags() {
         <Text className="text-lg font-semibold text-typography-800">
           {t("bulkyItems")}
         </Text>
-        <Link href="./bags/createBulky" className="px-2">
+        <Link href="./bags/bulky/create" className="px-2">
           <Text size="md" className="text-primary-500">
             {t("createBulkyItem")}
           </Text>

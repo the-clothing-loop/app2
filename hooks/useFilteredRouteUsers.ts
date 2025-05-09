@@ -42,23 +42,24 @@ export default function useFilteredRouteUsers(
 
     if (sort) {
       if (sort == "routeForMe") {
-        result.sort((a, b) => a.routeUser.routeIndex - b.routeUser.routeIndex);
-        const routeIndexOfMe =
-          result.find(({ routeUser }) => routeUser.isMe)?.routeUser
-            .routeIndex || 0;
-        let routeIndexStarter = routeIndexOfMe;
+        result.sort((a, b) =>
+          a.routeUser.routeIndex > b.routeUser.routeIndex ? 1 : 0,
+        );
         if (result.length > 5) {
+          const routeIndexOfMe =
+            result.findIndex(({ routeUser }) => routeUser.isMe) || 0;
+          let routeIndexStarter = routeIndexOfMe;
           routeIndexStarter = routeIndexOfMe - 2;
           if (routeIndexStarter < 0) {
             routeIndexStarter = result.length + routeIndexStarter;
           }
-        }
 
-        if (routeIndexStarter !== 0)
-          result = [
-            ...result.slice(routeIndexStarter),
-            ...result.slice(0, routeIndexStarter - 1),
-          ];
+          if (routeIndexStarter !== 0)
+            result = [
+              ...result.slice(routeIndexStarter, undefined),
+              ...result.slice(0, routeIndexStarter - 1),
+            ];
+        }
       } else if (sort == "aToZ" || sort == "zToA") {
         result.sort((a, b) =>
           a.routeUser.user.name.localeCompare(b.routeUser.user.name),

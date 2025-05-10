@@ -32,6 +32,7 @@ import { HStack } from "@/components/ui/hstack";
 import { Button, ButtonIcon, ButtonText } from "@/components/ui/button";
 import RefreshControl from "@/components/custom/RefreshControl";
 import Donate from "@/components/custom/Donate";
+import { useFaqCustom, useFaqDefault } from "@/components/custom/rules/shared";
 
 interface MediaIcon {
   icon: LucideIcon;
@@ -66,59 +67,10 @@ const mediaIcons: MediaIcon[] = [
   },
 ];
 
-export const faqListKeys = [
-  "howDoesItWork",
-  "whereAreTheBags",
-  "whoDoIGiveTheBagTo",
-  "whatCanYouTakeFromTheBag",
-  "whatCantYouTakeFromTheBag",
-  "whatToDoWithBulkyItems",
-  "awayOrBusy",
-  "foundSomethingYouLike",
-  "newMembers",
-  "privacy",
-  "feedback",
-];
-
-export interface FaqListItem {
-  title: string;
-  content: string;
-}
-
-const faqI18nOptions: TOptionsBase = {
-  ns: "faq",
-  returnObjects: true,
-  defaultValue: {
-    title: "🔴 Error",
-    content: "Translation not found",
-  },
-};
-function useFaqDefault(t: TFunction<"faq">) {
-  return useMemo(() => {
-    return faqListKeys.map((k) => {
-      return t(k, faqI18nOptions as string) as any as FaqListItem;
-    });
-  }, [t]);
-}
-
-function useFaqCustom(): undefined | FaqListItem[] {
-  const currentChain = useStore(authStore, (s) => s.currentChain);
-  return useMemo(() => {
-    if (!currentChain?.rules_override) return undefined;
-    const json = JSON.parse(currentChain.rules_override);
-    if (Array.isArray(json)) {
-      return json as FaqListItem[];
-    }
-    return undefined;
-  }, [currentChain]);
-}
-
 export default function HomeScreen(props: {}) {
-  const isDarkTheme = useColorScheme() == "dark";
-  const { t: tFaq } = useTranslation("faq");
   const hosts = useStore(authStoreCurrentChainAdmin);
   const { t } = useTranslation();
-  const rulesDefault = useFaqDefault(tFaq);
+  const rulesDefault = useFaqDefault();
   const rulesCustom = useFaqCustom();
   const rules = useMemo(() => {
     return (rulesCustom || rulesDefault).map((r, i) => ({

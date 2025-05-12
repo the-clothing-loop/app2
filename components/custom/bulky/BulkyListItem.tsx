@@ -19,10 +19,9 @@ export default function BulkyListItem(props: {
   onOpenOptions: () => void;
 }) {
   const routeUsers = useStore(authStoreListRouteUsers);
-  const routeUser = useMemo(
-    () => routeUsers.find((u) => u.user.uid == props.bulky.user_uid),
-    [props.bulky.user_uid],
-  );
+  const routeUser = useMemo(() => {
+    return routeUsers.find((u) => u.user.uid == props.bulky.user_uid);
+  }, [props.bulky.user_uid, routeUsers]);
   const date = useMemo(() => {
     return dayjs(props.bulky.created_at).toDate();
   }, [props.bulky.created_at]);
@@ -71,7 +70,7 @@ export default function BulkyListItem(props: {
         </VStack>
       </Pressable>
       <BagsListItemUser
-        isPrivate={routeUser?.isPrivate || true}
+        isPrivate={routeUser?.isPrivate || false}
         routeIndex={routeUser?.routeIndex}
         user={routeUser?.user}
       />

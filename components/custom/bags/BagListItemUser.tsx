@@ -11,7 +11,7 @@ export default function BagsListItemUser(props: {
   routeIndex?: number;
   user?: User;
 }) {
-  const render = (showArrow: boolean) => (
+  const render = () => (
     <HStack className="border-1 w-full flex-shrink rounded-b-md border-background-200 bg-background-0 px-2 py-3">
       {props.routeIndex != undefined && props.user ? (
         <>
@@ -19,9 +19,13 @@ export default function BagsListItemUser(props: {
           <Text numberOfLines={1} className="mx-1 flex-shrink flex-grow" bold>
             {props.user.name}
           </Text>
-          {showArrow ? (
-            <Icon as={ArrowRightIcon} className="text-primary-500" />
-          ) : null}
+          {props.isPrivate ? null : (
+            <Icon
+              as={ArrowRightIcon}
+              key="arrow"
+              className="text-primary-500"
+            />
+          )}
         </>
       ) : (
         <Text className="text-typography-500" bold>
@@ -31,7 +35,7 @@ export default function BagsListItemUser(props: {
     </HStack>
   );
 
-  if (props.isPrivate) return render(false);
+  if (props.isPrivate) return render();
   return (
     <Pressable
       onPress={() => {
@@ -40,7 +44,7 @@ export default function BagsListItemUser(props: {
           router.push(`/(auth)/(tabs)/route/${props.user.uid}`);
       }}
     >
-      {render(true)}
+      {render()}
     </Pressable>
   );
 }

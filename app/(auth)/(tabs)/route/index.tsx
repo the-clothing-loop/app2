@@ -120,6 +120,7 @@ export default function Route() {
         open={openRouteOrderDialog}
         setOpen={setOpenRouteOrderDialog}
         selected={sort}
+        isHost={authUserRoles.isHost}
         onSubmit={(v) => {
           setSort(v);
         }}

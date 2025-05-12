@@ -30,13 +30,12 @@ export default function RouteOrderDialog(props: {
   setOpen: Dispatch<SetStateAction<boolean>>;
   selected: FilteredRouteUsersSort;
   onSubmit: (o: FilteredRouteUsersSort) => void;
+  isHost: boolean;
   routeUsersLen: number;
 }) {
   const { t } = useTranslation();
-  const orderList = useMemo<
-    { userSort: FilteredRouteUsersSort; textI18n: string }[]
-  >(
-    () => [
+  const orderList = useMemo(() => {
+    let o: { userSort: FilteredRouteUsersSort; textI18n: string }[] = [
       {
         userSort: "routeForMe",
         textI18n: t("routeForMe"),
@@ -61,9 +60,13 @@ export default function RouteOrderDialog(props: {
         userSort: "dateLastSwappedRev",
         textI18n: t("dateLastSwappedRev"),
       },
-    ],
-    [t, props.routeUsersLen],
-  );
+    ];
+    if (!props.isHost) {
+      // remove dateLastSwapped & dateLastSwappedRev
+      o = o.toSpliced(4, 2);
+    }
+    return o;
+  }, [t, props.routeUsersLen, props.isHost]);
 
   const [selected, setSelected] = useState(() => props.selected);
   useLayoutEffect(() => {

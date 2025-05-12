@@ -144,7 +144,14 @@ export default function ChatTypeEdit() {
       </form.Field>
       <form.Field name="appInAppDisabled">
         {(field) => (
-          <FormLabel label={t("In-app chat")} horizontal>
+          <FormLabel
+            label={
+              field.state.value
+                ? t("inAppChatIsDisabled")
+                : t("inAppChatIsEnabled")
+            }
+            horizontal
+          >
             <Switch
               value={!field.state.value}
               onToggle={() => field.setValue((s) => !s)}

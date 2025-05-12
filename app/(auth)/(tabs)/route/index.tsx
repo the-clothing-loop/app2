@@ -40,13 +40,17 @@ export default function Route() {
   const pausedUserUids = useStore(authStoreListPausedUsers);
   const { t } = useTranslation();
   const navigation = useNavigation();
+  const [sort, setSort] = useState<FilteredRouteUsersSort>("routeForMe");
   const btnRouteOrder = () => (
-    <Pressable onPress={handleHeaderLeft}>
+    <Pressable onPress={handleHeaderLeft} className="relative">
       {Platform.OS == "android" ? (
         <Icon as={SortDescIcon} aria-label={t("order")} />
       ) : (
         <Text className="text-lg">{t("order")}</Text>
       )}
+      {sort !== "routeForMe" ? (
+        <Box className="absolute -right-2 top-0 h-2 w-2 rounded-full bg-error-600" />
+      ) : null}
     </Pressable>
   );
   useLayoutEffect(() => {
@@ -60,10 +64,9 @@ export default function Route() {
       headerLeft: Platform.OS != "android" ? btnRouteOrder : undefined,
       headerRight: Platform.OS == "android" ? btnRouteOrder : undefined,
     } as BottomTabNavigationOptions);
-  }, [navigation, t, routeUsers]);
+  }, [navigation, t, routeUsers, sort]);
 
   const debounceSearch = useDebounce(search, 500);
-  const [sort, setSort] = useState<FilteredRouteUsersSort>("routeForMe");
   const sortedListRouteUsers = useFilteredRouteUsers(
     routeUsers,
     bagsPerUser,
@@ -89,6 +92,7 @@ export default function Route() {
   return (
     <>
       <SearchBar></SearchBar>
+
       <ScrollView
         contentInsetAdjustmentBehavior="automatic"
         style={{ paddingBottom: tabBarHeight }}

@@ -29,17 +29,21 @@ export default function BulkyList(props: { bulkyList: BulkyItem[] }) {
   const isHost = useStore(authStoreAuthUserRoles, (s) => s.isHost);
   const cols = useMemo(() => {
     const col1: BulkyItem[] = [];
+    let col1mass = 0;
     const col2: BulkyItem[] = [];
+    let col2mass = 0;
     props.bulkyList
       .sort(
         (a, b) =>
           new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
       )
       .forEach((bulky, i) => {
-        if (i % 2 == 0) {
-          col1.push(bulky);
-        } else {
+        if (col1mass > col2mass) {
           col2.push(bulky);
+          col2mass += bulky.image_url ? 2 : 1;
+        } else {
+          col1.push(bulky);
+          col1mass += bulky.image_url ? 2 : 1;
         }
       });
     return [col1, col2];

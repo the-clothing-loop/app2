@@ -1,7 +1,6 @@
 import { HStack } from "@/components/ui/hstack";
-import { RefObject, useMemo } from "react";
+import { useMemo } from "react";
 import { Dimensions, ScrollView } from "react-native";
-import ActionSheet, { ActionSheetRef } from "react-native-actions-sheet";
 import ChatTypeEdit from "./ChatTypeEdit";
 import { useTranslation } from "react-i18next";
 import { useStore } from "@tanstack/react-store";
@@ -18,7 +17,7 @@ import { MessageCircleQuestionIcon } from "lucide-react-native";
 
 const windowDimensions = Dimensions.get("window");
 
-export default function ChatTypeList(props: { hideInAppLink?: boolean }) {
+export default function ChatTypeList(props: { onPressEnterInApp: () => void }) {
   const { t } = useTranslation();
   const authUserRoles = useStore(authStoreAuthUserRoles);
   const { appType, chatUrl, chatInAppDisabled } = useStore(chatStore);
@@ -102,19 +101,16 @@ export default function ChatTypeList(props: { hideInAppLink?: boolean }) {
                   {t("imChatMessage", { chat: messageAppMattermost.title })}
                 </Text>
               </Box>
-              {!props.hideInAppLink ? (
-                <Link href="/(auth)/(tabs)/chat/clothingloop" replace asChild>
-                  <Button
-                    style={{ backgroundColor: messageAppMattermost.bgColor }}
-                    className="rounded-pill"
-                    size="xl"
-                  >
-                    <ButtonText style={{ color: messageAppMattermost.fgColor }}>
-                      {t("enter")}
-                    </ButtonText>
-                  </Button>
-                </Link>
-              ) : null}
+              <Button
+                onPress={props.onPressEnterInApp}
+                style={{ backgroundColor: messageAppMattermost.bgColor }}
+                className="rounded-pill"
+                size="xl"
+              >
+                <ButtonText style={{ color: messageAppMattermost.fgColor }}>
+                  {t("enter")}
+                </ButtonText>
+              </Button>
             </HStack>
           ) : null}
         </ScrollView>

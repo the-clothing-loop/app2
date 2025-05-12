@@ -1,45 +1,43 @@
 import { chatTypePatch } from "@/api/chat";
-import { Chain } from "@/api/types";
-import { ChainResponse, ChatPatchTypeRequest } from "@/api/typex2";
+import { ChatPatchTypeRequest } from "@/api/typex2";
 import { AppType, chatStore } from "@/store/chat";
 import * as Clipboard from "expo-clipboard";
 import { useForm, useStore } from "@tanstack/react-form";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useEffect, useLayoutEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { VStack } from "@/components/ui/vstack";
 import FormLabel from "../FormLabel";
-import { Button, ButtonIcon, ButtonText } from "@/components/ui/button";
-import {
-  ChevronDownIcon,
-  ChevronUpIcon,
-  ClipboardIcon,
-} from "lucide-react-native";
+import { Button, ButtonText } from "@/components/ui/button";
+import { CircleIcon, ClipboardIcon } from "lucide-react-native";
 import { HStack } from "@/components/ui/hstack";
 import { Input, InputField } from "@/components/ui/input";
 import { Icon } from "@/components/ui/icon";
 import { Switch } from "@/components/ui/switch";
 import { useTranslation } from "react-i18next";
-import { useActionSheet } from "@expo/react-native-action-sheet";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionHeader,
-  AccordionIcon,
-  AccordionItem,
-  AccordionTitleText,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
-import { Text } from "@/components/ui/text";
 import { authStore } from "@/store/auth";
-import { useNavigation } from "expo-router";
+import {
+  Radio,
+  RadioGroup,
+  RadioIcon,
+  RadioIndicator,
+  RadioLabel,
+} from "@/components/ui/radio";
 
 export default function ChatTypeEdit() {
   const currentChain = useStore(authStore, (s) => s.currentChain);
   const { appType, chatUrl, chatInAppDisabled } = useStore(chatStore);
   const queryClient = useQueryClient();
-
-  const { showActionSheetWithOptions } = useActionSheet();
   const { t } = useTranslation();
+  const appTypes = useMemo(
+    () => [
+      { value: "off", label: t("disabled") },
+      { value: "signal", label: "Signal" },
+      { value: "whatsapp", label: "WhatsApp" },
+      { value: "telegram", label: "Telegram" },
+    ],
+    [t],
+  );
+
   useEffect(() => {
     if (appType) {
       form.setFieldValue("appType", appType as any);
@@ -87,42 +85,6 @@ export default function ChatTypeEdit() {
     form.setFieldValue("appInAppDisabled", false);
   }
 
-  function openChatAppDialogOptions() {
-    showActionSheetWithOptions(
-      {
-        title: t("imSelectChatApp"),
-        options: [
-          t("disabled"),
-          "Signal",
-          "WhatsApp",
-          "Telegram",
-          "Clothing Loop",
-          t("cancel"),
-        ],
-        cancelButtonIndex: 5,
-      },
-      (selectedIndex) => {
-        let value: AppType;
-        switch (selectedIndex) {
-          case 0:
-            value = "off";
-            break;
-          case 1:
-            value = "signal";
-            break;
-          case 2:
-            value = "whatsapp";
-            break;
-          case 3:
-            value = "telegram";
-            break;
-          default:
-            return;
-        }
-        form.setFieldValue("appType", value);
-      },
-    );
-  }
   function appTypesValueToLabel(value: AppType) {
     switch (value) {
       case "signal":
@@ -143,16 +105,16 @@ export default function ChatTypeEdit() {
         {(field) => (
           <>
             <FormLabel label={t("imSelectChatApp")}>
-              <Button
-                variant="outline"
-                className="justify-between"
-                onPress={openChatAppDialogOptions}
-              >
-                <ButtonText>
-                  {appTypesValueToLabel(field.state.value)}
-                </ButtonText>
-                <ButtonIcon as={ChevronDownIcon}></ButtonIcon>
-              </Button>
+              <RadioGroup value={field.state.value} onChange={field.setValue}>
+                {appTypes.map((at) => (
+                  <Radio value={at.value} size="md">
+                    <RadioIndicator>
+                      <RadioIcon as={CircleIcon} />
+                    </RadioIndicator>
+                    <RadioLabel>{at.label}</RadioLabel>
+                  </Radio>
+                ))}
+              </RadioGroup>
             </FormLabel>
             {field.state.value == "off" ? null : (
               <form.Field name="appUrl">

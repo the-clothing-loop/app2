@@ -69,7 +69,7 @@ export default function useQueryChatMessages(
   }
 
   async function addPagePrev() {
-    console.log("addPagePrev");
+    // console.log("addPagePrev");
     const prevOldestMessagesLength =
       history.find((mp) => mp.page == page.oldest)?.messages.length || 0;
     if (prevOldestMessagesLength < CHAT_MESSAGE_MAX) {
@@ -94,7 +94,7 @@ export default function useQueryChatMessages(
   }
 
   async function addPagesTillNewest() {
-    console.log("addPagesTillNewest");
+    // console.log("addPagesTillNewest");
     let newest = page.newest;
     let isLatestPage = await addPageCurrOrNext(newest);
     while (!isLatestPage) {
@@ -105,7 +105,7 @@ export default function useQueryChatMessages(
   }
   // returns if reached latest message
   async function addPageCurrOrNext(newest: number): Promise<boolean> {
-    console.log("addPageCurrOrNext");
+    // console.log("addPageCurrOrNext");
     const messages = await chatChannelMessageList({
       chain_uid: chainUID!,
       chat_channel_id: chatChannelID!,

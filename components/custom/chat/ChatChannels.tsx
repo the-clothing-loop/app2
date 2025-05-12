@@ -5,6 +5,7 @@ import { Icon } from "@/components/ui/icon";
 import { Text } from "@/components/ui/text";
 import { PlusIcon } from "lucide-react-native";
 import { useCallback } from "react";
+import { useTranslation } from "react-i18next";
 import { Pressable, ScrollView } from "react-native";
 
 export default function ChatChannels(props: {
@@ -15,6 +16,7 @@ export default function ChatChannels(props: {
   showCreateChannel: boolean;
   onPressCreateChannel?: () => void;
 }) {
+  const { t } = useTranslation();
   const renderChannel = useCallback(
     (channel: ChatChannel) => {
       const isSelected = props.selectedId == channel.id;
@@ -68,6 +70,12 @@ export default function ChatChannels(props: {
             </Avatar>
           </Box>
         </Pressable>
+      ) : props.channels.length == 0 ? (
+        <Box className="w-screen items-center justify-center">
+          <Text className="text-typography-500" bold>
+            {t("askHostToAddChatChannel")}
+          </Text>
+        </Box>
       ) : null}
     </ScrollView>
   );

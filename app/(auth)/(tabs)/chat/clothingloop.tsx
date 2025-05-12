@@ -18,13 +18,14 @@ import { authStore, authStoreAuthUserRoles } from "@/store/auth";
 import { chatStore } from "@/store/chat";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useStore } from "@tanstack/react-store";
-import { MessageCircleQuestionIcon } from "lucide-react-native";
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { EllipsisIcon, MessageCircleQuestionIcon } from "lucide-react-native";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   Alert,
   AlertButton,
   KeyboardAvoidingView,
+  Platform,
   Pressable,
 } from "react-native";
 import { ActionSheetRef } from "react-native-actions-sheet";
@@ -33,6 +34,7 @@ import ChatTypeSheet from "@/components/custom/chat/ChatTypeSheet";
 import { Redirect, useNavigation } from "expo-router";
 import { useInterval } from "usehooks-ts";
 import useQueryChatMessages from "@/components/custom/chat/UseQueryChatMessages";
+import { messagingApps } from "@/constants/MessagingApps";
 
 export default function ChatClothingloop() {
   const { currentChain, authUser } = useStore(authStore);
@@ -45,15 +47,32 @@ export default function ChatClothingloop() {
   const refSheet = useRef<ActionSheetRef>(null);
   const refTypeSheet = useRef<ActionSheetRef>(null);
   const navigation = useNavigation();
+  const messagingIcon = useMemo(
+    () => messagingApps.find((m) => m.key == chat.appType),
+    [chat.appType],
+  );
   useLayoutEffect(() => {
     navigation.setOptions({
-      headerRight: () => (
-        <Pressable onPress={() => refTypeSheet.current?.show()}>
-          <Text>Options</Text>
-        </Pressable>
-      ),
+      headerRight:
+        isHost || chat.appType !== "off"
+          ? () => (
+              <Pressable onPress={() => refTypeSheet.current?.show()}>
+                {messagingIcon ? (
+                  <messagingIcon.source
+                    width={32}
+                    height={32}
+                    color={messagingIcon.bgColor}
+                  />
+                ) : Platform.OS == "android" ? (
+                  <Icon as={EllipsisIcon} />
+                ) : (
+                  <Text>{t("options")}</Text>
+                )}
+              </Pressable>
+            )
+          : undefined,
     });
-  }, []);
+  }, [t, messagingIcon]);
 
   useEffect(() => {
     if (!authUser) return;
@@ -77,7 +96,8 @@ export default function ChatClothingloop() {
   );
 
   useInterval(() => {
-    if (navigation.isFocused()) queryChatHistory.addPagesTillNewest();
+    if (selectedChannelId && navigation.isFocused())
+      queryChatHistory.addPagesTillNewest();
   }, 10000);
 
   useEffect(() => {

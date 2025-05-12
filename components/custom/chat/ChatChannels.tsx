@@ -1,12 +1,11 @@
 import { ChatChannel } from "@/api/typex2";
 import { Avatar, AvatarFallbackText } from "@/components/ui/avatar";
 import { Box } from "@/components/ui/box";
-import { HStack } from "@/components/ui/hstack";
 import { Icon } from "@/components/ui/icon";
 import { Text } from "@/components/ui/text";
 import { PlusIcon } from "lucide-react-native";
 import { useCallback } from "react";
-import { Pressable } from "react-native";
+import { Pressable, ScrollView } from "react-native";
 
 export default function ChatChannels(props: {
   channels: ChatChannel[];
@@ -19,10 +18,6 @@ export default function ChatChannels(props: {
   const renderChannel = useCallback(
     (channel: ChatChannel) => {
       const isSelected = props.selectedId == channel.id;
-      const initials = channel.name
-        .split(" ")
-        .map((word) => word[0])
-        .join("");
       function handleLongPressChannel() {
         // do not selected do nothing
         if (props.selectedId !== channel.id) return;
@@ -36,15 +31,17 @@ export default function ChatChannels(props: {
       }
       return (
         <Pressable
-          className={`flex h-full items-center justify-center px-2 ${isSelected ? "bg-background-0" : ""}`}
+          className={`flex h-full items-center px-2 ${isSelected ? "bg-background-0" : ""}`}
           onPress={handlePressChannel}
           onLongPress={handleLongPressChannel}
           key={channel.id}
         >
-          <Avatar style={{ backgroundColor: channel.color }}>
-            <AvatarFallbackText>{initials}</AvatarFallbackText>
-          </Avatar>
-          <Text className="w-22" isTruncated={true}>
+          <Box className="flex-grow justify-center">
+            <Avatar style={{ backgroundColor: channel.color }}>
+              <AvatarFallbackText>{channel.name}</AvatarFallbackText>
+            </Avatar>
+          </Box>
+          <Text className="mb-3" isTruncated={true}>
             {channel.name}
           </Text>
         </Pressable>
@@ -54,7 +51,10 @@ export default function ChatChannels(props: {
   );
 
   return (
-    <HStack className="h-32 border-b border-b-background-200 bg-background-50">
+    <ScrollView
+      horizontal
+      className="h-28 flex-grow-0 border-b border-b-background-200 bg-background-50"
+    >
       {props.channels.map(renderChannel)}
       {props.showCreateChannel ? (
         <Pressable onPress={props.onPressCreateChannel} key="create-channel">
@@ -69,6 +69,6 @@ export default function ChatChannels(props: {
           </Box>
         </Pressable>
       ) : null}
-    </HStack>
+    </ScrollView>
   );
 }

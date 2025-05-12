@@ -46,7 +46,7 @@ export default function Bags() {
         showUser
         showBagOptions={authUserRoles.isHost}
       />
-      <HStack className="relative items-center justify-between bg-background-0 p-3">
+      <HStack className="relative items-center justify-between border-b border-typography-200 bg-background-0 p-3">
         <Text className="text-lg font-semibold text-typography-800">
           {t("bulkyItems")}
         </Text>

@@ -85,7 +85,7 @@ export default function BagPatch(props: { bag: Bag | null }) {
       headerRight: () => (
         <Pressable onPress={form.handleSubmit} className="px-2">
           <Text size="xl" className="text-primary-500">
-            {props.bag ? t("save") : t("create")}
+            {props.bag ? t("save") : t("publish")}
           </Text>
         </Pressable>
       ),

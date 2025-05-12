@@ -129,7 +129,7 @@ export default function ChatChannelCreateSheet(props: {
           onPress={form.handleSubmit}
         >
           <ButtonText className="text-primary-600">
-            {isEdit ? t("change") : t("create")}
+            {isEdit ? t("change") : t("publish")}
           </ButtonText>
         </Button>
       </HStack>

@@ -106,7 +106,7 @@ export default function BulkyPatch(props: { BulkyItem: BulkyItem | null }) {
             size="xl"
             className={`text-primary-500 ${loading ? "opacity-50" : ""}`}
           >
-            {props.BulkyItem ? t("save") : t("create")}
+            {props.BulkyItem ? t("save") : t("publish")}
           </Text>
         </Pressable>
       ),

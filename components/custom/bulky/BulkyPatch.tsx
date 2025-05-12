@@ -185,7 +185,11 @@ export default function BulkyPatch(props: { BulkyItem: BulkyItem | null }) {
                     <Button onPress={() => pickImage(field.setValue)}>
                       <ButtonText>
                         <Text className="text-white">
-                          {loading ? "" : t("upload")}
+                          {loading
+                            ? ""
+                            : field.state.value
+                              ? t("selectNewImage")
+                              : t("selectImage")}
                         </Text>
                       </ButtonText>
                       {loading && <ActivityIndicator color="#ffffff" />}

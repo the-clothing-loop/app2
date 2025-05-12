@@ -48,7 +48,7 @@ export default function BulkyList(props: { bulkyList: BulkyItem[] }) {
   function bulkyOptionsHandler(bulky: BulkyItem) {
     if (!(bulky?.user_uid === authUser?.uid || isHost)) return;
 
-    const options = ["Cancel", "Edit", "Delete"];
+    const options = [t("cancel"), t("edit"), t("delete")];
 
     showActionSheetWithOptions(
       {

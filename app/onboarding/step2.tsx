@@ -36,17 +36,10 @@ export default function Step2() {
             </Text>
             <Text className="text-center text-2xl">find a loop first!</Text>
           </VStack>
-          <Link asChild href="https://www.clothingloop.org/loops/find">
-            <Button>
-              <ButtonIcon className="me-2" as={MapPin} />
-
-              <ButtonText>{t("map")}</ButtonText>
-            </Button>
-          </Link>
         </VStack>
         <OnboardingArrows
           onPressPrev={() => router.dismissTo("./step1")}
-          onPressNext={() => router.push("./login")}
+          showNextLoginOrSignup
         />
       </VStack>
     </SafeAreaView>

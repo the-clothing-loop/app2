@@ -138,6 +138,7 @@ export default function TabLayout() {
         name="info"
         options={{
           title: t("info"),
+          headerShown: false,
           tabBarIcon: ({ color }) => (
             <UserCircle2 size={28} color={color as any} />
           ),

@@ -4,13 +4,9 @@ import { useTranslation } from "react-i18next";
 
 import { useStore } from "@tanstack/react-store";
 import { authStore, authStoreListBags } from "@/store/auth";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { chainGet } from "@/api/chain";
 import { savedStore } from "@/store/saved";
-import { userGetAllByChain } from "@/api/user";
-import { catchErrThrow401 } from "@/utils/handleRequests";
-import { bagGetAllByChain } from "@/api/bag";
-import { routeGetOrder } from "@/api/route";
 import {
   BookOpen,
   MessageCircle,
@@ -18,18 +14,18 @@ import {
   ShoppingBag,
   UserCircle2,
 } from "lucide-react-native";
-import { useColorScheme } from "react-native";
+// import { useColorScheme } from "react-native";
 import { Box } from "@/components/ui/box";
 import { Text } from "@/components/ui/text";
 import { AuthStatus } from "@/types/auth_status";
 
 export default function TabLayout() {
-  const queryClient = useQueryClient();
+  // const queryClient = useQueryClient();
   const { t } = useTranslation();
   const auth = useStore(authStore);
   const listBags = useStore(authStoreListBags);
   const selectedChainUID = useStore(savedStore, (s) => s.chainUID);
-  const colorScheme = useColorScheme() ?? "light";
+  // const colorScheme = useColorScheme() ?? "light";
 
   useEffect(() => {
     if (auth.authUser) {
@@ -49,53 +45,6 @@ export default function TabLayout() {
     }
   }, [selectedChainUID, auth.authStatus]);
 
-  const { error } = useQuery({
-    queryKey: ["auth", "chain", selectedChainUID],
-    async queryFn() {
-      if (!selectedChainUID || !auth.authUser) return null;
-      // test with one request before asking for the rest
-      const resChain = await chainGet(selectedChainUID, {
-        addHeaders: true,
-        addIsAppDisabled: true,
-        addRoutePrivacy: true,
-        addRules: true,
-        addTheme: true,
-        addTotals: true,
-      })
-        .then((res) => res.data)
-        .catch(catchErrThrow401);
-      const [resChainUsers, resBags, resChainRoute] = await Promise.all([
-        userGetAllByChain(selectedChainUID)
-          .then((res) => res.data)
-          .catch(catchErrThrow401),
-        bagGetAllByChain(selectedChainUID, auth.authUser.uid)
-          .then((res) => res.data)
-          .catch(catchErrThrow401),
-        routeGetOrder(selectedChainUID)
-          .then((res) => res.data)
-          .catch(catchErrThrow401),
-      ]);
-      if (
-        typeof resChain === "string" ||
-        typeof resChainUsers === "string" ||
-        typeof resBags === "string" ||
-        typeof resChainRoute === "string"
-      )
-        throw "Server is responding incorrectly";
-      authStore.setState((s) => ({
-        ...s,
-        currentChain: resChain,
-        currentChainUsers: resChainUsers,
-        currentBags: resBags,
-        currentChainRoute: resChainRoute,
-      }));
-
-      return [resChain, resChainUsers];
-    },
-  });
-  useEffect(() => {
-    if (error) queryClient.clear();
-  }, [error]);
   useQuery({
     queryKey: [
       "auth",

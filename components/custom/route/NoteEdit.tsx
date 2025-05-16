@@ -1,23 +1,18 @@
 import { HStack } from "@/components/ui/hstack";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useMemo, useState } from "react";
 import FormattedText from "../FormattedText";
 import { Box } from "@/components/ui/box";
 import { Button, ButtonText } from "@/components/ui/button";
 import { UID } from "@/api/types";
 import { chainChangeUserNote, chainGetUserNote } from "@/api/chain";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 
 import { useDebounceCallback } from "usehooks-ts";
-import { Input } from "@/components/ui/input";
 import { Textarea, TextareaInput } from "@/components/ui/textarea";
 import { useForm } from "@tanstack/react-form";
-import { Icon } from "@/components/ui/icon";
-import { CircleCheckBigIcon, CircleDashedIcon } from "lucide-react-native";
-import { TextareaContext } from "@gluestack-ui/textarea/lib/types";
-import { TextInputProps } from "react-native";
 
 export default function NoteEdit(props: {
   currentChainUid: undefined | UID;

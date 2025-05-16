@@ -47,7 +47,7 @@ export default function ChatTypeEdit() {
   }, [chatUrl, appType, chatInAppDisabled]);
   const mutateChatType = useMutation({
     mutationFn(body: ChatPatchTypeRequest) {
-      console.log("body", body);
+      // console.log("body", body);
       return chatTypePatch(body);
     },
     async onSettled() {

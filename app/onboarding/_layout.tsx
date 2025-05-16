@@ -9,10 +9,10 @@ export default function OnboardingStackLayout() {
   const currentChainUID = useStore(savedStore, (s) => s.chainUID);
   if (authStatus === AuthStatus.LoggedIn) {
     if (currentChainUID) {
-      console.log("back to home");
+      console.info("back to home");
       return <Redirect href="/(auth)/(tabs)/(index)" />;
     } else {
-      console.log("back to select-chain");
+      console.info("back to select-chain");
       return <Redirect href="/(auth)/select-chain" />;
     }
   }

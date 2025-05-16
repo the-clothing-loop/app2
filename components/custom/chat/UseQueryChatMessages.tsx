@@ -27,7 +27,7 @@ export default function useQueryChatMessages(
       return;
     }
 
-    console.log("change", chatChannelID);
+    console.info("change", chatChannelID);
     resetToNow();
   }, [chainUID, chatChannelID]);
 
@@ -51,7 +51,7 @@ export default function useQueryChatMessages(
   }
 
   async function resetToNow() {
-    console.log("resetToNow");
+    // console.log("resetToNow");
     const seed = new Date().valueOf();
     const messages = await chatChannelMessageList({
       chain_uid: chainUID!,
@@ -73,7 +73,7 @@ export default function useQueryChatMessages(
     const prevOldestMessagesLength =
       history.find((mp) => mp.page == page.oldest)?.messages.length || 0;
     if (prevOldestMessagesLength < CHAT_MESSAGE_MAX) {
-      console.log("end of channel reached", page.oldest);
+      console.info("end of channel reached", page.oldest);
       return;
     }
     const oldest = page.oldest + 1;
@@ -124,7 +124,7 @@ export default function useQueryChatMessages(
   }
 
   async function afterMessageAltered(messageID: number) {
-    console.log("afterMessageAltered");
+    // console.log("afterMessageAltered");
     const oldest = findPageOfMessageID(messageID);
     if (Number.isNaN(oldest)) return resetToNow();
     // console.log("afterMessageAltered", "page", oldest, "messageID", messageID);

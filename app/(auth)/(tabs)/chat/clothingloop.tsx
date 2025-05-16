@@ -86,7 +86,7 @@ export default function ChatClothingloop() {
   const queryChannelList = useQuery({
     queryKey: ["auth", "chat", "channels", currentChain?.uid],
     queryFn() {
-      console.log("get chat channel list", currentChain?.uid);
+      // console.log("get chat channel list", currentChain?.uid);
       return chatChannelList(currentChain!.uid).then((res) => res.data.list);
     },
     enabled: Boolean(currentChain),

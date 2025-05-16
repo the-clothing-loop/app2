@@ -115,7 +115,7 @@ export default function TabLayout() {
   }, [auth.authUser]);
 
   if (auth.authStatus === AuthStatus.LoggedOut) {
-    console.log("back to onboarding");
+    console.info("back to onboarding");
     return <Redirect href="/onboarding/step1" />;
   }
 

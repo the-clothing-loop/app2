@@ -76,7 +76,7 @@ export default function Change() {
   }
 
   function handleHeaderSave() {
-    console.log("save", rules.length);
+    // console.log("save", rules.length);
     saveAndReturn(rules);
   }
 

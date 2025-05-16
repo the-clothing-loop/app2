@@ -91,9 +91,9 @@ export default function Step2() {
         .mutateAsync(value.email)
         .then((res) => {
           Sleep(5000).then(() => setEmailSent(false));
-          setTimeout(() => {
-            console.log("refInputFieldPasscode", refInputFieldPasscode.current);
-          }, 200);
+          // setTimeout(() => {
+          //   console.log("refInputFieldPasscode", refInputFieldPasscode.current);
+          // }, 200);
           return res;
         })
         .catch((err) => {

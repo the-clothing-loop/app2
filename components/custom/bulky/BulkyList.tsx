@@ -1,19 +1,8 @@
 import { BulkyItem } from "@/api/typex2";
-import { Image } from "@/components/ui/image";
-import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { HStack } from "@/components/ui/hstack";
-import {
-  Alert,
-  Modal,
-  Platform,
-  Pressable,
-  SafeAreaView,
-  ScrollView,
-  View,
-} from "react-native";
-import { SafeAreaProvider } from "react-native-safe-area-context";
+import { Alert } from "react-native";
 import { useActionSheet } from "@expo/react-native-action-sheet";
 import { useStore } from "@tanstack/react-store";
 import { authStore, authStoreAuthUserRoles } from "@/store/auth";
@@ -22,8 +11,7 @@ import { bulkyItemRemove } from "@/api/bulky";
 import { useQueryClient } from "@tanstack/react-query";
 import { t } from "i18next";
 import BulkyListItem from "./BulkyListItem";
-import { Icon } from "@/components/ui/icon";
-import { XCircleIcon } from "lucide-react-native";
+import BulkySelectedModal from "./BulkySelectedModal";
 export default function BulkyList(props: { bulkyList: BulkyItem[] }) {
   const [selected, setSelected] = useState<BulkyItem | null>(null);
   const { showActionSheetWithOptions } = useActionSheet();
@@ -96,6 +84,10 @@ export default function BulkyList(props: { bulkyList: BulkyItem[] }) {
       },
     );
   }
+  const renderSelectedModal = useCallback(() => {
+    if (!selected) return null;
+    return <BulkySelectedModal selected={selected} setSelected={setSelected} />;
+  }, [selected]);
   return (
     <>
       <HStack className="pb-6 pt-1">
@@ -116,63 +108,7 @@ export default function BulkyList(props: { bulkyList: BulkyItem[] }) {
           </VStack>
         ))}
       </HStack>
-      {selected && (
-        <SafeAreaProvider>
-          <SafeAreaView className="flex-1 justify-center align-middle">
-            <Modal
-              animationType="fade"
-              transparent={true}
-              visible={!!selected}
-              onRequestClose={(open) => !open && setSelected(null)}
-            >
-              <Pressable
-                onPress={() => setSelected(null)}
-                className="flex-1 items-center justify-center bg-white/70"
-              >
-                <Pressable
-                  onPress={() => {}} // prevent closing when tapping inside the modal
-                  className="m-5 w-[90%] max-w-xl rounded-2xl bg-white p-8 shadow-lg"
-                >
-                  <Pressable
-                    onPress={() => setSelected(null)}
-                    className={`self-end ${Platform.OS == "android" ? "mb-4" : "mb-2"}`}
-                  >
-                    {Platform.OS == "android" ? (
-                      <Icon as={XCircleIcon} />
-                    ) : (
-                      <Text className="text-md mb-2 text-right text-primary-500">
-                        {t("close")}
-                      </Text>
-                    )}
-                  </Pressable>
-
-                  <VStack>
-                    {selected.image_url && (
-                      <Image
-                        className="mb-2 h-96 w-full"
-                        alt=""
-                        source={{
-                          uri: selected.image_url,
-                        }}
-                      />
-                    )}
-                    <Text className="mb-2 text-2xl font-bold">
-                      {selected.title}
-                    </Text>
-                    <View className="grow-1 max-h-80">
-                      <ScrollView>
-                        <Pressable>
-                          <Text>{selected.message}</Text>
-                        </Pressable>
-                      </ScrollView>
-                    </View>
-                  </VStack>
-                </Pressable>
-              </Pressable>
-            </Modal>
-          </SafeAreaView>
-        </SafeAreaProvider>
-      )}
+      {renderSelectedModal()}
     </>
   );
 }

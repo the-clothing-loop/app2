@@ -24,8 +24,7 @@ import LogoutLink from "@/components/custom/LogoutLink";
 import LegalLinks from "@/components/custom/LegalLinks";
 import RefreshControl from "@/components/custom/RefreshControl";
 import { VStack } from "@/components/ui/vstack";
-import { Switch } from "@/components/ui/switch";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import usePauseDialog, { SetPause } from "@/components/custom/info/PauseDialog";
 import { IsPausedHow, SetPauseRequestBody } from "@/utils/user";
 import dayjs from "dayjs";
@@ -33,6 +32,7 @@ import { Badge, BadgeIcon, BadgeText } from "@/components/ui/badge";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { userUpdate } from "@/api/user";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
+import ReadOnlySwitch from "@/components/custom/ReadOnlySwitch";
 
 export default function Info() {
   const { t } = useTranslation();
@@ -135,10 +135,11 @@ export default function Info() {
                   </Badge>
                 ) : null}
               </VStack>
-              <Switch
+              <ReadOnlySwitch
                 value={pauseState.isUserPausedHow.sum}
                 trackColor={{ true: "#EF4444", false: null }}
-              ></Switch>
+                thumbColor={"#ECECEC"}
+              />
             </HStack>
           </Pressable>
 

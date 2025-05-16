@@ -1,19 +1,17 @@
 import { HStack } from "@/components/ui/hstack";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
-
 import { useEffect, useState } from "react";
 import { UID } from "@/api/types";
 import { chainChangeUserWarden } from "@/api/chain";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
-
 import { useDebounceCallback } from "usehooks-ts";
 import { useForm } from "@tanstack/react-form";
-import { ActivityIndicator } from "react-native";
-import { Switch } from "@/components/ui/switch";
+import { ActivityIndicator, Pressable } from "react-native";
 import { Icon } from "@/components/ui/icon";
 import { FlagIcon } from "lucide-react-native";
+import ReadOnlySwitch from "../ReadOnlySwitch";
 
 export default function WardenEdit(props: {
   currentChainUid: undefined | UID;
@@ -55,8 +53,8 @@ export default function WardenEdit(props: {
   const delayedFormSubmit = useDebounceCallback(() => {
     form.handleSubmit().finally(() => setDelayedFormSubmitLoading(false));
   }, 2000);
-  async function handleToggle(value: boolean) {
-    form.setFieldValue("checked", value);
+  async function handleToggle() {
+    form.setFieldValue("checked", (s) => !s);
     setDelayedFormSubmitLoading(true);
     delayedFormSubmit();
   }
@@ -76,22 +74,19 @@ export default function WardenEdit(props: {
     );
   }
   return (
-    <HStack className="items-center gap-3 px-4 py-2">
-      <VStack className="shrink flex-grow items-start">
-        <Text bold size="sm">
-          {t("assignWardenTitle")}
-        </Text>
-        <Text size="sm">{t("assignWardenBody")}</Text>
-      </VStack>
-      {delayedFormSubmitLoading ? <ActivityIndicator /> : null}
-      <form.Field name="checked">
-        {(field) => (
-          <Switch
-            value={field.state.value}
-            onValueChange={handleToggle}
-          ></Switch>
-        )}
-      </form.Field>
-    </HStack>
+    <Pressable onPress={handleToggle}>
+      <HStack className="items-center gap-3 px-4 py-2">
+        <VStack className="shrink flex-grow items-start">
+          <Text bold size="sm">
+            {t("assignWardenTitle")}
+          </Text>
+          <Text size="sm">{t("assignWardenBody")}</Text>
+        </VStack>
+        {delayedFormSubmitLoading ? <ActivityIndicator /> : null}
+        <form.Field name="checked">
+          {(field) => <ReadOnlySwitch value={field.state.value} />}
+        </form.Field>
+      </HStack>
+    </Pressable>
   );
 }

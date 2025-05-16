@@ -1,5 +1,4 @@
 import { ScrollView } from "react-native";
-
 import { useStore } from "@tanstack/react-store";
 import {
   authStore,

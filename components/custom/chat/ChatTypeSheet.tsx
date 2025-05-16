@@ -1,5 +1,5 @@
 import { RefObject } from "react";
-import { Dimensions, ScrollView } from "react-native";
+import { ScrollView } from "react-native";
 import ActionSheet, { ActionSheetRef } from "react-native-actions-sheet";
 import ChatTypeList from "./ChatTypeList";
 

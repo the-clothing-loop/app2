@@ -38,7 +38,6 @@ import { useTranslation } from "react-i18next";
 import { Alert, Pressable, ScrollView, Text } from "react-native";
 
 export default function Change() {
-  const hosts = useStore(authStoreCurrentChainAdmin);
   const currentChain = useStore(authStore, (s) => s.currentChain);
   const { t } = useTranslation();
   const navigation = useNavigation();

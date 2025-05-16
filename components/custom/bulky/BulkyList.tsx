@@ -12,6 +12,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { t } from "i18next";
 import BulkyListItem from "./BulkyListItem";
 import BulkySelectedModal from "./BulkySelectedModal";
+
 export default function BulkyList(props: { bulkyList: BulkyItem[] }) {
   const [selected, setSelected] = useState<BulkyItem | null>(null);
   const { showActionSheetWithOptions } = useActionSheet();

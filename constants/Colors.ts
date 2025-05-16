@@ -1,4 +1,4 @@
-import colors from "tailwindcss/colors";
+// import colors from "tailwindcss/colors";
 
 import { DefaultTheme, DarkTheme } from "@react-navigation/native";
 

@@ -1,9 +1,7 @@
 import { Redirect, Stack } from "expo-router";
 import React, { useEffect } from "react";
-
 // import { useColorScheme } from "@/hooks/useColorScheme";
 import { useTranslation } from "react-i18next";
-
 // import { LogLevel, OneSignal } from "react-native-onesignal";
 import { useStore } from "@tanstack/react-store";
 import { authStore } from "@/store/auth";

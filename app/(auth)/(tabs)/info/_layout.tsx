@@ -1,27 +1,19 @@
 import { Stack } from "expo-router";
 import { useTranslation } from "react-i18next";
 
-export default function RulesStackLayout() {
+export default function InfoStackLayout() {
   const { t } = useTranslation();
   return (
     <Stack
       screenOptions={{
         headerBackVisible: true,
-        headerBackTitle: t("addresses"),
+        headerBackTitle: t("info"),
       }}
     >
       <Stack.Screen
         name="index"
         options={{
-          headerLargeTitle: true,
-          title: t("addresses"),
-        }}
-      />
-      <Stack.Screen
-        name="[user]"
-        options={{
-          headerLargeTitle: true,
-          title: t("loading"),
+          title: t("info"),
         }}
       />
     </Stack>

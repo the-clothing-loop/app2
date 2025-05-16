@@ -19,13 +19,12 @@ import {
   Platform,
   SafeAreaView,
   ScrollView,
-  TextInput,
   useColorScheme,
 } from "react-native";
 import { Input, InputField } from "@/components/ui/input";
 import { Box } from "@/components/ui/box";
 import LegalLinks from "@/components/custom/LegalLinks";
-import { createRef, LegacyRef, RefAttributes, useRef, useState } from "react";
+import { createRef, useState } from "react";
 import Sleep from "@/utils/sleep";
 
 export default function Step2() {

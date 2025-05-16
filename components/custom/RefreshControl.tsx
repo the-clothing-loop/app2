@@ -3,7 +3,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useCallback, useState } from "react";
 import { RefreshControl } from "react-native";
 
-export default function CustomRefreshControl(props: { queryKey?: any[] }) {
+export default function CustomRefreshControl(props?: { queryKey?: any[] }) {
   const [refreshing, setRefreshing] = useState(false);
   const queryClient = useQueryClient();
 

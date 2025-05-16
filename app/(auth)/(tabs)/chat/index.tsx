@@ -2,7 +2,6 @@ import { Box } from "@/components/ui/box";
 import { Text } from "@/components/ui/text";
 import { useStore } from "@tanstack/react-store";
 import { Redirect } from "expo-router";
-
 import { chatStore } from "@/store/chat";
 
 export default function ChatChange() {

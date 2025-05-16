@@ -1,23 +1,15 @@
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import DateTimePicker, { useDefaultStyles } from "react-native-ui-datepicker";
-import {
-  DatePickerMultipleProps,
-  DatePickerRangeProps,
-  DatePickerSingleProps,
-} from "react-native-ui-datepicker/lib/typescript/datetime-picker";
-import { VStack } from "../ui/vstack";
+import { DatePickerSingleProps } from "react-native-ui-datepicker/lib/typescript/datetime-picker";
 import {
   Accordion,
   AccordionContent,
-  AccordionContentText,
   AccordionHeader,
   AccordionIcon,
   AccordionItem,
-  AccordionTitleText,
   AccordionTrigger,
 } from "../ui/accordion";
 import { ChevronDownIcon, ChevronUpIcon } from "lucide-react-native";
-import { useTranslation } from "react-i18next";
 import { HStack } from "../ui/hstack";
 import { Text } from "../ui/text";
 

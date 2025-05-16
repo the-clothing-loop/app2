@@ -107,7 +107,7 @@ export default function ChatTypeEdit() {
             <FormLabel label={t("imSelectChatApp")}>
               <RadioGroup value={field.state.value} onChange={field.setValue}>
                 {appTypes.map((at) => (
-                  <Radio value={at.value} size="md">
+                  <Radio value={at.value} size="md" key={at.value}>
                     <RadioIndicator>
                       <RadioIcon as={CircleIcon} />
                     </RadioIndicator>

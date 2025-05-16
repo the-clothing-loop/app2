@@ -7,6 +7,7 @@ import { HStack } from "@/components/ui/hstack";
 import {
   Alert,
   Modal,
+  Platform,
   Pressable,
   SafeAreaView,
   ScrollView,
@@ -21,6 +22,8 @@ import { bulkyItemRemove } from "@/api/bulky";
 import { useQueryClient } from "@tanstack/react-query";
 import { t } from "i18next";
 import BulkyListItem from "./BulkyListItem";
+import { Icon } from "@/components/ui/icon";
+import { XCircleIcon } from "lucide-react-native";
 export default function BulkyList(props: { bulkyList: BulkyItem[] }) {
   const [selected, setSelected] = useState<BulkyItem | null>(null);
   const { showActionSheetWithOptions } = useActionSheet();
@@ -132,11 +135,15 @@ export default function BulkyList(props: { bulkyList: BulkyItem[] }) {
                 >
                   <Pressable
                     onPress={() => setSelected(null)}
-                    className="mb-2 self-end"
+                    className={`self-end ${Platform.OS == "android" ? "mb-4" : "mb-2"}`}
                   >
-                    <Text className="text-md mb-2 text-right text-primary-500">
-                      {t("close")}
-                    </Text>
+                    {Platform.OS == "android" ? (
+                      <Icon as={XCircleIcon} />
+                    ) : (
+                      <Text className="text-md mb-2 text-right text-primary-500">
+                        {t("close")}
+                      </Text>
+                    )}
                   </Pressable>
 
                   <VStack>

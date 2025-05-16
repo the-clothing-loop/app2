@@ -71,7 +71,7 @@ export default function UserCard(props: {
         <Pressable onPress={handleSharePhoneNumber} key="phone">
           <VStack className="px-4 py-2">
             <Text bold size="sm">
-              {t("phone")}
+              {t("phoneNumber")}
             </Text>
             <Text>{props.user.phone_number}</Text>
           </VStack>

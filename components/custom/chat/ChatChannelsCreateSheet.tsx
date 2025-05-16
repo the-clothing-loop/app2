@@ -68,7 +68,7 @@ export default function ChatChannelCreateSheet(props: {
       }
     },
     onSuccess(data) {
-      queryClient.refetchQueries({
+      queryClient.invalidateQueries({
         predicate(query) {
           return query.queryKey.join(".").startsWith("auth.chat.channels");
         },

@@ -31,7 +31,6 @@ export default function BagsList(props: {
         queryClient.invalidateQueries({
           queryKey: ["auth", "chain-bags", currentChain!.uid],
           exact: true,
-          refetchType: "all",
         });
       });
     },

@@ -30,7 +30,7 @@ export default function WardenEdit(props: {
         props.thisUserUid,
         checked,
       ).finally(async () => {
-        queryClient.refetchQueries({
+        queryClient.invalidateQueries({
           queryKey: ["auth", "chain", props.currentChainUid],
           exact: true,
         });

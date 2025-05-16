@@ -64,6 +64,7 @@ export default function BagsSheet() {
     onSuccess(data) {
       queryClient.invalidateQueries({
         queryKey: ["auth", "chain-bags", currentChain!.uid],
+        exact: true,
         refetchType: "all",
       });
     },

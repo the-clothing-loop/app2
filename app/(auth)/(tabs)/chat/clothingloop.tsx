@@ -125,7 +125,7 @@ export default function ChatClothingloop() {
             chain_uid: currentChain!.uid,
             chat_channel_id: channel.id,
           }).finally(() => {
-            queryClient.refetchQueries({
+            queryClient.invalidateQueries({
               queryKey: ["auth", "chat"],
             });
           });

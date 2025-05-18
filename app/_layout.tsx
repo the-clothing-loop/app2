@@ -117,6 +117,13 @@ export default function RootLayout() {
                           headerBackTitle: t("back"),
                         }}
                       />
+                      <Stack.Screen
+                        name="(modals)/bag-analytics"
+                        options={{
+                          presentation: "modal",
+                          title: t("bagAnalytics"),
+                        }}
+                      />
                       <Stack.Screen name="+not-found" />
                     </Stack>
                   </SheetProvider>

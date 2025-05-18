@@ -28,7 +28,11 @@ export default function BagsStackLayout() {
             ) : undefined,
           headerLeft: () =>
             authUserRoles.isHost ? (
-              <Link href="./bags/bag-analytics" className="px-2">
+              <Link
+                href="../../../../(modals)/bag-analytics"
+                className="px-2"
+                asChild
+              >
                 <Text size="xl" className="text-primary-500">
                   {t("bagAnalytics")}
                 </Text>
@@ -46,12 +50,6 @@ export default function BagsStackLayout() {
         name="create"
         options={{
           title: t("createBag"),
-        }}
-      />
-      <Stack.Screen
-        name="bagAnalytics"
-        options={{
-          title: t("bagAnalytics"),
         }}
       />
     </Stack>

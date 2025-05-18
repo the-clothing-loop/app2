@@ -5,7 +5,6 @@ import { ScrollView, View } from "react-native";
 import { bagHistory, BagHistoryItem } from "@/api/bag";
 import { useEffect, useState } from "react";
 import { Text } from "@/components/ui/text";
-import DatePickerSingleItem from "../DatePicker";
 export default function BagAnalyticsModal() {
   const { t } = useTranslation();
   const { currentChain, currentChainRoute } = useStore(authStore);

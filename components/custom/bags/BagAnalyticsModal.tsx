@@ -9,7 +9,6 @@ export default function BagAnalyticsModal() {
   const { t } = useTranslation();
   const { currentChain, currentChainRoute } = useStore(authStore);
   const [data, setData] = useState<BagHistoryItem[] | undefined>();
-  console.log("currentChain outside useEffect:", currentChain);
 
   useEffect(() => {
     if (!currentChain) return;
@@ -21,19 +20,15 @@ export default function BagAnalyticsModal() {
         console.error("Failed to fetch bag history", error);
       });
   }, [currentChain]);
-
+  console.log(data);
   return (
     <ScrollView className="p-4">
       <View>
         {data?.map((item) => (
-          <View
-            key={item.id}
-            className="mb-6 rounded border border-gray-300 p-3"
-          >
+          <View key={item.id} className="mb-6 p-3">
             <View>
               <Text className="mb-1 text-lg font-bold">{item.number}</Text>
-              <Text>{t("history")}:</Text>
-              <Text>{t("dateReceived")}</Text>
+              <Text size="xl">{t("history")}:</Text>
               {item.history.map((histItem, i) => {
                 const routeUserIndex: number = histItem.uid
                   ? currentChainRoute!.indexOf(histItem.uid)
@@ -43,17 +38,21 @@ export default function BagAnalyticsModal() {
 
                 return (
                   <View key={i}>
-                    <View className="tw-flex tw-items-center tw-text-medium-shade">
+                    <View className="tw-flex tw-items-center text-medium-shade">
                       {routeUserIndex === -1 ? null : (
-                        <Text className="!tw-font-bold">{`#${routeUserIndex + 1}`}</Text>
+                        <Text className="font-bold">{`#${routeUserIndex + 1}`}</Text>
                       )}
                     </View>
                     <View>
-                      <Text>Item Name: {histItem.name}</Text>
+                      <Text>{histItem.name}</Text>
                     </View>
                     {histItem.date ? (
-                      <Text className="tw-text-medium-shade">
-                        {date.toLocaleString().split(",")[0]}
+                      <Text size="md">
+                        {t("dateReceived")}
+                        {": "}
+                        <Text className="text-medium-shade">
+                          {date.toLocaleString().split(",")[0]}
+                        </Text>
                       </Text>
                     ) : null}
                   </View>

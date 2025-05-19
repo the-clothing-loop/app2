@@ -21,13 +21,15 @@ const resources = {
   },
 };
 
+export const supportedLngs = ["en", "nl", "de", "fr"];
+
 export default function InitI18n() {
   let locale = Localization.getLocales()[0]?.languageCode || "en";
   i18n.use(initReactI18next).init({
     resources,
     lng: locale,
     ns: ["translation", "faq"],
-    supportedLngs: ["en", "nl", "de", "fr"],
+    supportedLngs,
     fallbackLng: "en",
   });
 

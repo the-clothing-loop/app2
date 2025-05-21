@@ -11,6 +11,12 @@ export default function InfoStackLayout() {
           title: t("info"),
         }}
       />
+      <Stack.Screen
+        name="select-theme"
+        options={{
+          title: t("setLoopTheme"),
+        }}
+      />
     </Stack>
   );
 }

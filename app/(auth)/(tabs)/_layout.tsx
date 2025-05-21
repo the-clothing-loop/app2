@@ -18,6 +18,7 @@ import {
 import { Box } from "@/components/ui/box";
 import { Text } from "@/components/ui/text";
 import { AuthStatus } from "@/types/auth_status";
+import ThemeBackground from "@/components/custom/ThemeBackground";
 
 export default function TabLayout() {
   // const queryClient = useQueryClient();
@@ -80,14 +81,20 @@ export default function TabLayout() {
       screenOptions={{
         tabBarBackground: () => (
           <Box className="absolute inset-0 bg-background-100">
-            <Box
-              className="absolute w-full bg-primary-100"
+            <ThemeBackground
+              theme={auth.currentChain?.theme || ""}
+              className="absolute w-full"
               style={{ top: -14, height: 14 }}
             >
-              <Text size="xs" className="text-center" numberOfLines={1}>
+              <Text
+                size="xs"
+                bold
+                className="text-center text-white"
+                numberOfLines={1}
+              >
                 {auth.currentChain?.name || t("selectALoop")}
               </Text>
-            </Box>
+            </ThemeBackground>
           </Box>
         ),
       }}

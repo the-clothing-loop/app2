@@ -42,14 +42,17 @@ export default function Route() {
   const navigation = useNavigation();
   const [sort, setSort] = useState<FilteredRouteUsersSort>("routeForMe");
   const btnRouteOrder = () => (
-    <Pressable onPress={handleHeaderLeft} className="relative">
+    <Pressable
+      onPress={handleHeaderLeft}
+      className={`relative ${Platform.OS == "android" ? "me-1 p-1" : ""}`}
+    >
       {Platform.OS == "android" ? (
         <Icon as={SortDescIcon} aria-label={t("order")} />
       ) : (
         <Text className="text-lg">{t("order")}</Text>
       )}
       {sort !== "routeForMe" ? (
-        <Box className="absolute -right-2 top-0 h-2 w-2 rounded-full bg-error-600" />
+        <Box className="absolute -right-1 top-0 h-2 w-2 rounded-full bg-error-600" />
       ) : null}
     </Pressable>
   );

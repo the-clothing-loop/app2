@@ -6,6 +6,7 @@ import { bagHistory, BagHistoryItem } from "@/api/bag";
 import { useEffect, useState } from "react";
 import { Text } from "@/components/ui/text";
 import { Card } from "@/components/ui/card";
+import { FlatList } from "react-native-actions-sheet";
 export default function BagAnalyticsModal() {
   const { t } = useTranslation();
   const { currentChain, currentChainRoute } = useStore(authStore);
@@ -23,56 +24,62 @@ export default function BagAnalyticsModal() {
   }, [currentChain]);
 
   return (
-    <ScrollView className="p-4">
-      <View>
-        {data?.map((item) => (
-          <View key={item.id} className="mb-6 p-3">
-            <View>
-              <Text className="mb-1 text-lg font-bold">{item.number}</Text>
-              <View className="flex flex-row justify-between">
-                <View>
-                  <Text size="md">{t("history")}:</Text>
-                </View>
-                <View>
-                  <Text size="md">{t("dateReceived")}</Text>
-                </View>
+    <View className="">
+      <FlatList
+        data={data}
+        keyExtractor={(item, index) => `${item.id}-${index}`}
+        ItemSeparatorComponent={() => <View className="h-px bg-gray-300" />}
+        renderItem={({ item }) => (
+          <View className="p-5">
+            <Text className="pb-2 text-lg font-bold">{item.number}</Text>
+            <View className="mb-2 flex flex-row justify-between">
+              <View>
+                <Text size="md">{t("history")}:</Text>
               </View>
-              <Card className="mb-4">
-                {item.history.map((histItem, i) => {
+              <View>
+                <Text size="md">{t("dateReceived")}</Text>
+              </View>
+            </View>
+            <Card className="mb-4">
+              <FlatList
+                data={item.history}
+                keyExtractor={(item, index) =>
+                  item.uid ? `${item.uid}-${index}` : `history-${index}`
+                }
+                ItemSeparatorComponent={() => (
+                  <View className="my-3 h-px bg-gray-300" />
+                )}
+                renderItem={({ item: histItem }) => {
                   /** -1 if not present */
                   const routeUserIndex: number = histItem.uid
                     ? currentChainRoute!.indexOf(histItem.uid)
                     : -1;
                   const date = histItem.date ? new Date(histItem.date) : "";
-
                   return (
-                    <View key={i}>
-                      <View className="flex flex-row justify-between">
-                        {routeUserIndex === -1 ? null : (
-                          <View className="flex flex-row">
-                            <Text className="mr-3 font-bold">
-                              {`#${routeUserIndex + 1}`}
-                            </Text>
-
-                            <Text className="font-normal text-black">
-                              {histItem.name}
-                            </Text>
-                          </View>
-                        )}
-                        {histItem.date ? (
-                          <Text className="">
-                            {date.toLocaleString().split(",")[0]}
+                    <View className="flex flex-row justify-between">
+                      {routeUserIndex === -1 ? null : (
+                        <View className="flex flex-row">
+                          <Text className="mr-3 font-bold">
+                            {`#${routeUserIndex + 1}`}
                           </Text>
-                        ) : null}
-                      </View>
+                          <Text className="font-normal text-black">
+                            {histItem.name}
+                          </Text>
+                        </View>
+                      )}
+                      {histItem.date ? (
+                        <Text className="">
+                          {date.toLocaleString().split(",")[0]}
+                        </Text>
+                      ) : null}
                     </View>
                   );
-                })}
-              </Card>
-            </View>
+                }}
+              ></FlatList>
+            </Card>
           </View>
-        ))}
-      </View>
-    </ScrollView>
+        )}
+      ></FlatList>
+    </View>
   );
 }

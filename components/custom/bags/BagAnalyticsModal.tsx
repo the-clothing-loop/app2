@@ -5,6 +5,7 @@ import { ScrollView, View } from "react-native";
 import { bagHistory, BagHistoryItem } from "@/api/bag";
 import { useEffect, useState } from "react";
 import { Text } from "@/components/ui/text";
+import { Card } from "@/components/ui/card";
 export default function BagAnalyticsModal() {
   const { t } = useTranslation();
   const { currentChain, currentChainRoute } = useStore(authStore);
@@ -20,7 +21,7 @@ export default function BagAnalyticsModal() {
         console.error("Failed to fetch bag history", error);
       });
   }, [currentChain]);
-  console.log(data);
+
   return (
     <ScrollView className="p-4">
       <View>
@@ -28,36 +29,46 @@ export default function BagAnalyticsModal() {
           <View key={item.id} className="mb-6 p-3">
             <View>
               <Text className="mb-1 text-lg font-bold">{item.number}</Text>
-              <Text size="xl">{t("history")}:</Text>
-              {item.history.map((histItem, i) => {
-                const routeUserIndex: number = histItem.uid
-                  ? currentChainRoute!.indexOf(histItem.uid)
-                  : -1;
+              <View className="flex flex-row justify-between">
+                <View>
+                  <Text size="md">{t("history")}:</Text>
+                </View>
+                <View>
+                  <Text size="md">{t("dateReceived")}</Text>
+                </View>
+              </View>
+              <Card className="mb-4">
+                {item.history.map((histItem, i) => {
+                  /** -1 if not present */
+                  const routeUserIndex: number = histItem.uid
+                    ? currentChainRoute!.indexOf(histItem.uid)
+                    : -1;
+                  const date = histItem.date ? new Date(histItem.date) : "";
 
-                const date = histItem.date ? new Date(histItem.date) : "";
+                  return (
+                    <View key={i}>
+                      <View className="flex flex-row justify-between">
+                        {routeUserIndex === -1 ? null : (
+                          <View className="flex flex-row">
+                            <Text className="mr-3 font-bold">
+                              {`#${routeUserIndex + 1}`}
+                            </Text>
 
-                return (
-                  <View key={i}>
-                    <View className="tw-flex tw-items-center text-medium-shade">
-                      {routeUserIndex === -1 ? null : (
-                        <Text className="font-bold">{`#${routeUserIndex + 1}`}</Text>
-                      )}
+                            <Text className="font-normal text-black">
+                              {histItem.name}
+                            </Text>
+                          </View>
+                        )}
+                        {histItem.date ? (
+                          <Text className="">
+                            {date.toLocaleString().split(",")[0]}
+                          </Text>
+                        ) : null}
+                      </View>
                     </View>
-                    <View>
-                      <Text>{histItem.name}</Text>
-                    </View>
-                    {histItem.date ? (
-                      <Text size="md">
-                        {t("dateReceived")}
-                        {": "}
-                        <Text className="text-medium-shade">
-                          {date.toLocaleString().split(",")[0]}
-                        </Text>
-                      </Text>
-                    ) : null}
-                  </View>
-                );
-              })}
+                  );
+                })}
+              </Card>
             </View>
           </View>
         ))}

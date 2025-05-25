@@ -35,7 +35,7 @@ export default function BagAnalyticsModal() {
             <Text size="md">{t("history")}:</Text>
             <Text size="md">{t("dateReceived")}</Text>
           </View>
-          <Card className="mb-4 px-0">
+          <Card className="px-0">
             <FlatList
               data={item.history}
               keyExtractor={(item, index) =>
@@ -70,10 +70,10 @@ export default function BagAnalyticsModal() {
                   </View>
                 );
               }}
-            ></FlatList>
+            />
           </Card>
         </View>
       )}
-    ></FlatList>
+    />
   );
 }

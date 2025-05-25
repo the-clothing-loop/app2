@@ -35,7 +35,7 @@ export default function BagAnalyticsModal() {
             <Text size="md">{t("history")}:</Text>
             <Text size="md">{t("dateReceived")}</Text>
           </View>
-          <Card className="mb-4">
+          <Card className="mb-4 px-0">
             <FlatList
               data={item.history}
               keyExtractor={(item, index) =>
@@ -51,7 +51,7 @@ export default function BagAnalyticsModal() {
                   : -1;
                 const date = histItem.date ? new Date(histItem.date) : "";
                 return (
-                  <View className="flex flex-row justify-between">
+                  <View className="flex flex-row justify-between px-4">
                     {routeUserIndex === -1 ? null : (
                       <View className="flex flex-row">
                         <Text className="mr-3 font-bold">

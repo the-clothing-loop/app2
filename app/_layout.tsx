@@ -122,6 +122,7 @@ export default function RootLayout() {
                         options={{
                           presentation: "modal",
                           title: t("bagAnalytics"),
+                          headerShown: true,
                         }}
                       />
                       <Stack.Screen name="+not-found" />

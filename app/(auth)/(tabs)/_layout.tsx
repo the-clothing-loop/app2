@@ -19,6 +19,7 @@ import { Box } from "@/components/ui/box";
 import { Text } from "@/components/ui/text";
 import { AuthStatus } from "@/types/auth_status";
 import ThemeBackground from "@/components/custom/ThemeBackground";
+import { basicThemeColors } from "@/constants/Colors";
 
 export default function TabLayout() {
   // const queryClient = useQueryClient();
@@ -75,10 +76,21 @@ export default function TabLayout() {
     }, 0);
   }, [auth.authUser?.uid, listBags]);
 
+  const themeColor = useMemo(() => {
+    const theme = auth.currentChain?.theme || "";
+    const color =
+      (basicThemeColors as Record<string, string>)[theme] || "#5f9c8a";
+    return color + "33";
+  }, [auth.currentChain?.theme]);
+
   return (
     <Tabs
       backBehavior="initialRoute"
       screenOptions={{
+        tabBarInactiveBackgroundColor: themeColor,
+        tabBarActiveBackgroundColor: themeColor,
+        tabBarActiveTintColor: "#353535",
+        tabBarInactiveTintColor: "#6b6b6b",
         tabBarBackground: () => (
           <Box className="absolute inset-0 bg-background-100">
             <ThemeBackground

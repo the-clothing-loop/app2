@@ -20,7 +20,7 @@ export default function ThemeBackground({
       flagFlags[theme] ||
       //@ts-ignore
       basicThemeColors[theme] ||
-      "rgb(95, 156, 138)";
+      "#5f9c8a";
 
     if (typeof colors === "string") {
       return (

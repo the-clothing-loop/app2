@@ -37,7 +37,7 @@ import useQueryChatMessages from "@/components/custom/chat/UseQueryChatMessages"
 import { messagingApps } from "@/constants/MessagingApps";
 
 export default function ChatClothingloop() {
-  const { currentChain, authUser } = useStore(authStore);
+  const { currentChain, authUser, currentChainUsers } = useStore(authStore);
   const { isHost } = useStore(authStoreAuthUserRoles);
   const queryClient = useQueryClient();
   const authUserRoles = useStore(authStoreAuthUserRoles);
@@ -169,15 +169,24 @@ export default function ChatClothingloop() {
 
   const safeInsets = useSafeAreaInsets();
 
-  async function handleSendMessage(text: string) {
+  async function handleSendMessage(
+    notify_user_uids: string[],
+    text: string,
+    callbackReset: () => void,
+  ) {
     if (!authUser) throw "not logged in";
     if (!currentChain) throw "no loop selected";
     if (!selectedChannelId) throw "must select a chat channel";
+    if (!text) throw "empty message";
+
     await chatChannelMessageCreate({
       chain_uid: currentChain?.uid,
       message: text,
       chat_channel_id: selectedChannelId,
+      notify_user_uids,
     });
+
+    callbackReset();
 
     await queryChatHistory.resetToNow();
   }
@@ -295,8 +304,8 @@ export default function ChatClothingloop() {
             </Box>
           )}
           <ChatInput
-            isDisabled={!selectedChannelId}
-            onEnter={handleSendMessage}
+            allPossible={currentChainUsers || []}
+            onSubmit={handleSendMessage}
           />
         </VStack>
       </KeyboardAvoidingView>

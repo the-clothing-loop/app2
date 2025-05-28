@@ -65,7 +65,7 @@ export default function ChatInput<User extends GenericUser>(props: {
         const group1 = match[1];
         let i = 0;
         for (const { value, search } of allPossibleLowerCaseSearch) {
-          if (i > 3) break;
+          if (i > 5) break;
           // console.log("search", search);
           if (search.startsWith(group1.toLocaleLowerCase())) {
             suggested.push(value.uid);
@@ -176,14 +176,16 @@ export default function ChatInput<User extends GenericUser>(props: {
               variant="outline"
               size="sm"
             >
-              <ButtonText className="text-center">@</ButtonText>
+              <ButtonText className="text-center text-typography-700">
+                @
+              </ButtonText>
             </Button>
             {list.map((item) => {
               return item.selected ? (
                 <Button
                   key={item.uid}
                   onPress={() => onPressSelected(item.uid)}
-                  className="block !h-8 rounded-full border-blue-400 bg-blue-500 px-2.5 py-1 data-[active=true]:border-blue-300 data-[active=true]:bg-blue-800"
+                  className="block !h-8 rounded-full border-amber-400 bg-amber-500 px-2.5 py-1 data-[active=true]:border-amber-300 data-[active=true]:bg-amber-800"
                   size="sm"
                 >
                   <ButtonIcon as={CheckIcon} size="xs" />
@@ -201,8 +203,12 @@ export default function ChatInput<User extends GenericUser>(props: {
                   variant="outline"
                   size="sm"
                 >
-                  <ButtonText className="!w-3">@</ButtonText>
-                  <ButtonText>{item.name}</ButtonText>
+                  <ButtonText className="!w-3 text-typography-700">
+                    @
+                  </ButtonText>
+                  <ButtonText className="text-typography-700">
+                    {item.name}
+                  </ButtonText>
                 </Button>
               );
             })}
@@ -212,8 +218,8 @@ export default function ChatInput<User extends GenericUser>(props: {
           </View>
         </ScrollView>
       </View>
-      <View className="flex flex-row items-center gap-2 border-b border-gray-400 bg-white p-2">
-        <Input className="grow">
+      <View className="flex flex-row items-end gap-2 border-b border-gray-400 p-2">
+        <Input className="h-20 grow bg-white py-1">
           <InputField
             value={input}
             onChangeText={onChangeText}

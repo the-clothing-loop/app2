@@ -82,7 +82,7 @@ export default function RouteItem(props: Props) {
             size="sm"
             className="text-typography-600"
             style={{ width: 200 }}
-            numberOfLines={2}
+            numberOfLines={1}
           >
             {props.isPrivate ? "" : props.user.address}
           </Text>

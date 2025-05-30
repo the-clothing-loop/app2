@@ -1,4 +1,4 @@
-import { authStore, authStoreListRouteUsers } from "@/store/auth";
+import { authStore, RouteUser } from "@/store/auth";
 import { useStore } from "@tanstack/react-store";
 import ActionSheet, {
   ActionSheetRef,
@@ -9,23 +9,13 @@ import { HStack } from "../../ui/hstack";
 import { Button, ButtonText } from "../../ui/button";
 import { useTranslation } from "react-i18next";
 import { Text } from "../../ui/text";
-import { VStack } from "../../ui/vstack";
-import {
-  Radio,
-  RadioGroup,
-  RadioIcon,
-  RadioIndicator,
-  RadioLabel,
-} from "../../ui/radio";
+import { RadioGroup } from "../../ui/radio";
 import { useEffect, useRef } from "react";
-import { CircleIcon, Flag, Pause, Shield } from "lucide-react-native";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { bagPut } from "@/api/bag";
 import { UID } from "@/api/types";
 import { useForm } from "@tanstack/react-form";
 import { catchErrThrow401 } from "@/utils/handleRequests";
-import { Icon } from "../../ui/icon";
-import { Box } from "../../ui/box";
 import DatePickerSingleItem from "../DatePicker";
 import { ScrollView } from "react-native";
 import useFilteredRouteUsers from "@/hooks/useFilteredRouteUsers";
@@ -37,6 +27,7 @@ declare module "react-native-actions-sheet" {
       payload: {
         bagId: number;
         userUid: string;
+        listRouteUsers: RouteUser[];
       };
     }>;
   }
@@ -47,8 +38,6 @@ export default function BagsSheet() {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
   const { currentChain, authUser } = useStore(authStore);
-  const listRouteUsers = useStore(authStoreListRouteUsers);
-
   const payload = useSheetPayload("bags");
   const mutateBags = useMutation({
     async mutationFn(value: { userUid: UID; date: Date }) {
@@ -85,7 +74,7 @@ export default function BagsSheet() {
   }, [payload]);
 
   const sortedListRouteUsers = useFilteredRouteUsers(
-    listRouteUsers,
+    payload.listRouteUsers,
     {},
     "routeForMe",
     "",

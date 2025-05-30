@@ -29,6 +29,7 @@ import { Box } from "../../ui/box";
 import DatePickerSingleItem from "../DatePicker";
 import { ScrollView } from "react-native";
 import useFilteredRouteUsers from "@/hooks/useFilteredRouteUsers";
+import BagsSheetRadioItem from "./BagsSheetRadioItem";
 
 declare module "react-native-actions-sheet" {
   export interface Sheets {
@@ -135,70 +136,18 @@ export default function BagsSheet() {
               value={field.state.value}
               onChange={field.setValue}
             >
-              {sortedListRouteUsers.map((item) => {
-                const isMe = item.routeUser.user.uid == authUser?.uid;
-                return (
-                  <Radio
-                    value={item.routeUser.user.uid}
-                    key={item.routeUser.user.uid}
-                    isInvalid={Boolean(field.state.meta.errors.length)}
-                    size="md"
-                    className="justify-between px-5 py-2"
-                  >
-                    <HStack className="justify-center gap-3">
-                      <Box className="relative h-10 w-10 items-end justify-center">
-                        {item.routeUser.isPaused ? (
-                          <Icon
-                            as={Pause}
-                            className="fill-typography-700 text-transparent"
-                            size="lg"
-                          />
-                        ) : (
-                          <Text className="text-right font-bold text-typography-600">
-                            {"#" + (item.routeUser.routeIndex + 1)}
-                          </Text>
-                        )}
-                        <Box className="absolute -left-1 -top-1">
-                          {item.routeUser.isHost ? (
-                            <Icon
-                              as={Shield}
-                              size="md"
-                              className="fill-typography-700 text-transparent"
-                            />
-                          ) : item.routeUser.isWarden ? (
-                            <Icon
-                              as={Flag}
-                              size="md"
-                              className="fill-typography-700 text-transparent"
-                            />
-                          ) : undefined}
-                        </Box>
-                      </Box>
-                      <VStack>
-                        <RadioLabel
-                          className={`font-bold ${isMe ? "!text-primary-500" : ""}`}
-                        >
-                          {item.routeUser.user.name}
-                        </RadioLabel>
-                        <Text
-                          size="xs"
-                          className="break-words"
-                          style={{ width: 300 }}
-                          numberOfLines={2}
-                          ellipsizeMode="tail"
-                        >
-                          {item.routeUser.isPrivate
-                            ? ""
-                            : item.routeUser.user.address}
-                        </Text>
-                      </VStack>
-                    </HStack>
-                    <RadioIndicator>
-                      <RadioIcon as={CircleIcon} />
-                    </RadioIndicator>
-                  </Radio>
-                );
-              })}
+              {sortedListRouteUsers.map((item) => (
+                <BagsSheetRadioItem
+                  key={item.routeUser.routeIndex}
+                  user={item.routeUser.user}
+                  isPaused={item.routeUser.isPaused}
+                  isHost={item.routeUser.isHost}
+                  isMe={item.routeUser.isMe}
+                  isWarden={item.routeUser.isWarden}
+                  routeIndex={item.routeUser.routeIndex}
+                  isPrivate={item.routeUser.isPrivate}
+                />
+              ))}
             </RadioGroup>
           )}
         </form.Field>

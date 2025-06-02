@@ -12,12 +12,14 @@ import { UID } from "@/api/types";
 import { useForm } from "@tanstack/react-form";
 import { catchErrThrow401 } from "@/utils/handleRequests";
 import DatePickerSingleItem from "../../../../components/custom/DatePicker";
-import { FlatList, Pressable } from "react-native";
+import { FlatList, Pressable, SafeAreaView, View } from "react-native";
 import useFilteredRouteUsers from "@/hooks/useFilteredRouteUsers";
 import BagsSelectRadioItem from "../../../../components/custom/bags/BagsSelectRadioItem";
 import { Box } from "@/components/ui/box";
 import { Link, router, useNavigation } from "expo-router";
 import { selectedBagStore } from "@/store/selected-bag";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { SearchBar } from "react-native-screens";
 
 export default function BagsSheet() {
   const listRouteUsers = useStore(authStoreListRouteUsers);
@@ -89,8 +91,12 @@ export default function BagsSheet() {
     router.back();
   }
 
+  const safeInsets = useSafeAreaInsets();
   return (
-    <Box className="bg-background">
+    <View
+      className="bg-background flex-1"
+      style={{ paddingBottom: safeInsets.bottom }}
+    >
       <form.Field name="date">
         {(field) => (
           <DatePickerSingleItem
@@ -100,26 +106,29 @@ export default function BagsSheet() {
           />
         )}
       </form.Field>
-      <form.Field name="userUid">
-        {(field) => (
-          <RadioGroup
-            aria-labelledby="Select one item"
-            value={field.state.value}
-            onChange={field.setValue}
-          >
-            <FlatList
-              data={sortedListRouteUsers}
-              keyExtractor={(item) => String(item.routeUser.routeIndex)}
-              renderItem={({ item }) => (
-                <BagsSelectRadioItem
-                  key={item.routeUser.routeIndex}
-                  routeUser={item.routeUser}
-                />
-              )}
-            />
-          </RadioGroup>
-        )}
-      </form.Field>
-    </Box>
+      <Box className="h-full shrink">
+        <form.Field name="userUid">
+          {(field) => (
+            <RadioGroup
+              aria-labelledby="Select one item"
+              value={field.state.value}
+              onChange={field.setValue}
+            >
+              <FlatList
+                className="shrink"
+                data={sortedListRouteUsers}
+                keyExtractor={(item) => String(item.routeUser.routeIndex)}
+                renderItem={({ item }) => (
+                  <BagsSelectRadioItem
+                    key={item.routeUser.routeIndex}
+                    routeUser={item.routeUser}
+                  />
+                )}
+              />
+            </RadioGroup>
+          )}
+        </form.Field>
+      </Box>
+    </View>
   );
 }

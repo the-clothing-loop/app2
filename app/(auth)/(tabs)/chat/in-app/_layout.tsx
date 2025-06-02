@@ -1,8 +1,3 @@
-import { chatTypeGet } from "@/api/chat_type";
-import { authStore } from "@/store/auth";
-import { AppType, chatStore } from "@/store/chat";
-import { useQuery } from "@tanstack/react-query";
-import { useStore } from "@tanstack/react-store";
 import { Stack } from "expo-router";
 import { useTranslation } from "react-i18next";
 

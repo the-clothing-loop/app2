@@ -1,11 +1,9 @@
 import { chatChannelCreate, chatChannelEdit } from "@/api/chat";
 import { UID } from "@/api/types";
 import { ChatChannel } from "@/api/typex2";
-import { Button, ButtonText } from "@/components/ui/button";
-import { HStack } from "@/components/ui/hstack";
 import { Text } from "@/components/ui/text";
 import { useForm } from "@tanstack/react-form";
-import { RefObject, useEffect, useLayoutEffect } from "react";
+import { useEffect, useLayoutEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Pressable, ScrollView } from "react-native";
 import FormLabel from "../FormLabel";

@@ -1,6 +1,4 @@
-import { HStack } from "@/components/ui/hstack";
 import { useMemo } from "react";
-import { Dimensions, ScrollView } from "react-native";
 import ChatTypeEdit from "./ChatTypeEdit";
 import { useTranslation } from "react-i18next";
 import { useStore } from "@tanstack/react-store";
@@ -15,8 +13,6 @@ import { VStack } from "@/components/ui/vstack";
 import { Icon } from "@/components/ui/icon";
 import { MessageCircleQuestionIcon } from "lucide-react-native";
 import { Card } from "@/components/ui/card";
-
-const windowDimensions = Dimensions.get("window");
 
 export default function ChatTypeList(props: { onPressEnterInApp: () => void }) {
   const { t } = useTranslation();

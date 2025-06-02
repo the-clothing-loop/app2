@@ -8,7 +8,6 @@ import {
 import { ChatChannel, ChatMessage } from "@/api/typex2";
 import ChatInput from "@/components/custom/chat/ChatInput";
 import ChatMessages from "@/components/custom/chat/ChatMessages";
-import ChatChannelCreateSheet from "@/components/custom/chat/ChatChannelsCreateEdit";
 import ChatChannels from "@/components/custom/chat/ChatChannels";
 import { Box } from "@/components/ui/box";
 import { Icon } from "@/components/ui/icon";
@@ -19,7 +18,7 @@ import { chatStore } from "@/store/chat";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useStore } from "@tanstack/react-store";
 import { EllipsisIcon, MessageCircleQuestionIcon } from "lucide-react-native";
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   Alert,
@@ -29,12 +28,10 @@ import {
   Pressable,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import ChatTypeSheet from "@/app/(auth)/(tabs)/chat/in-app/types";
 import { Redirect, router, useNavigation } from "expo-router";
 import { useInterval } from "usehooks-ts";
 import useQueryChatMessages from "@/components/custom/chat/UseQueryChatMessages";
 import { messagingApps } from "@/constants/MessagingApps";
-import BottomSheet from "@gorhom/bottom-sheet";
 
 export default function ChatClothingloop() {
   const { currentChain, authUser, currentChainUsers } = useStore(authStore);
@@ -43,9 +40,6 @@ export default function ChatClothingloop() {
   const authUserRoles = useStore(authStoreAuthUserRoles);
   const { t } = useTranslation();
   const chat = useStore(chatStore);
-  const [editChannel, setEditChannel] = useState<ChatChannel | null>(null);
-  const refSheet = useRef<BottomSheet>(null);
-  const refTypeSheet = useRef<BottomSheet>(null);
   const navigation = useNavigation();
   const messagingIcon = useMemo(
     () => messagingApps.find((m) => m.key == chat.appType),

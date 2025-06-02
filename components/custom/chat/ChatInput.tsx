@@ -168,7 +168,11 @@ export default function ChatInput<User extends GenericUser>(props: {
   return (
     <View className="">
       <View className="border-y border-gray-400 bg-gray-50/70">
-        <ScrollView keyboardShouldPersistTaps horizontal className="w-full">
+        <ScrollView
+          keyboardShouldPersistTaps="always"
+          horizontal
+          className="w-full"
+        >
           <View className="flex flex-row items-center gap-1 p-1">
             <Button
               onPress={onPressAt}

@@ -47,14 +47,6 @@ export default function ChatStackLayout() {
           title: t("chat"),
         }}
       />
-      <Stack.Screen
-        name="create"
-        options={{
-          title: t("chat"),
-          presentation: "modal",
-          animation: "slide_from_bottom",
-        }}
-      />
     </Stack>
   );
 }

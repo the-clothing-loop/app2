@@ -51,7 +51,7 @@ export const messagingApps: MessagingApp[] = [
   },
 ];
 
-export const messageAppMattermost: MessagingApp = {
+export const messageInApp: MessagingApp = {
   key: "clothingloop",
   title: "Clothing Loop",
   link: (_: string) => "",

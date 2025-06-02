@@ -22,7 +22,7 @@ import { Icon } from "@/components/ui/icon";
 import { Input, InputField } from "@/components/ui/input";
 import { Textarea, TextareaInput } from "@/components/ui/textarea";
 import { VStack } from "@/components/ui/vstack";
-import { authStore, authStoreCurrentChainAdmin } from "@/store/auth";
+import { authStore } from "@/store/auth";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 import { useStore } from "@tanstack/react-store";
 import { router, useNavigation } from "expo-router";
@@ -120,7 +120,7 @@ export default function Change() {
 
   const tabBarHeight = useBottomTabBarHeight();
   return (
-    <VStack style={{ paddingBottom: tabBarHeight }}>
+    <ScrollView contentInsetAdjustmentBehavior="automatic" className="mb-4">
       {rulesCustom ? (
         <HStack className="items-center gap-2 bg-background-900 p-2">
           <Icon
@@ -139,7 +139,8 @@ export default function Change() {
           </Button>
         </HStack>
       ) : null}
-      <ScrollView contentInsetAdjustmentBehavior="automatic">
+
+      <VStack>
         <Accordion type="multiple" isCollapsible>
           {rules.map((r, i) => (
             <AccordionItem key={i} value={i + ""}>
@@ -195,7 +196,7 @@ export default function Change() {
             </Button>
           </VStack>
         </Accordion>
-      </ScrollView>
-    </VStack>
+      </VStack>
+    </ScrollView>
   );
 }

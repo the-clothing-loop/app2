@@ -12,8 +12,6 @@ import { userGetAllByChain } from "@/api/user";
 import { catchErrThrow401 } from "@/utils/handleRequests";
 import { bagGetAllByChain } from "@/api/bag";
 import { routeGetOrder } from "@/api/route";
-import { registerSheet } from "react-native-actions-sheet";
-import BagsSheet from "@/components/custom/bags/BagsSheet";
 import { Platform } from "react-native";
 import { OneSignal } from "react-native-onesignal";
 import { oneSignalStore } from "@/store/onesignal";
@@ -22,8 +20,6 @@ import { AuthStatus } from "@/types/auth_status";
 
 const isPlatformMobile = ["ios", "android"].includes(Platform.OS);
 const oneSignalKey = process.env.EXPO_PUBLIC_ONESIGNAL_APP_ID;
-
-registerSheet("bags", BagsSheet);
 
 export default function TabLayout() {
   const queryClient = useQueryClient();

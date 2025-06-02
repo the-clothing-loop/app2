@@ -8,7 +8,7 @@ import {
 import { ChatChannel, ChatMessage } from "@/api/typex2";
 import ChatInput from "@/components/custom/chat/ChatInput";
 import ChatMessages from "@/components/custom/chat/ChatMessages";
-import ChatChannelCreateSheet from "@/components/custom/chat/ChatChannelsCreateSheet";
+import ChatChannelCreateSheet from "@/components/custom/chat/ChatChannelsCreateEdit";
 import ChatChannels from "@/components/custom/chat/ChatChannels";
 import { Box } from "@/components/ui/box";
 import { Icon } from "@/components/ui/icon";
@@ -28,13 +28,13 @@ import {
   Platform,
   Pressable,
 } from "react-native";
-import { ActionSheetRef } from "react-native-actions-sheet";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import ChatTypeSheet from "@/components/custom/chat/ChatTypeSheet";
-import { Redirect, useNavigation } from "expo-router";
+import ChatTypeSheet from "@/app/(auth)/(tabs)/chat/in-app/types";
+import { Redirect, router, useNavigation } from "expo-router";
 import { useInterval } from "usehooks-ts";
 import useQueryChatMessages from "@/components/custom/chat/UseQueryChatMessages";
 import { messagingApps } from "@/constants/MessagingApps";
+import BottomSheet from "@gorhom/bottom-sheet";
 
 export default function ChatClothingloop() {
   const { currentChain, authUser, currentChainUsers } = useStore(authStore);
@@ -44,8 +44,8 @@ export default function ChatClothingloop() {
   const { t } = useTranslation();
   const chat = useStore(chatStore);
   const [editChannel, setEditChannel] = useState<ChatChannel | null>(null);
-  const refSheet = useRef<ActionSheetRef>(null);
-  const refTypeSheet = useRef<ActionSheetRef>(null);
+  const refSheet = useRef<BottomSheet>(null);
+  const refTypeSheet = useRef<BottomSheet>(null);
   const navigation = useNavigation();
   const messagingIcon = useMemo(
     () => messagingApps.find((m) => m.key == chat.appType),
@@ -56,7 +56,9 @@ export default function ChatClothingloop() {
       headerRight:
         isHost || chat.appType !== "off"
           ? () => (
-              <Pressable onPress={() => refTypeSheet.current?.show()}>
+              <Pressable
+                onPress={() => router.push("/(auth)/(tabs)/chat/in-app/types")}
+              >
                 {messagingIcon ? (
                   <messagingIcon.source
                     width={32}
@@ -136,10 +138,11 @@ export default function ChatClothingloop() {
   }
 
   function openEditChannel(channel: ChatChannel) {
-    setEditChannel(channel);
-    setTimeout(() => {
-      refSheet.current?.show();
-    });
+    chatStore.setState((s) => ({
+      ...s,
+      editChannel: { channel, fallbackChainUID: currentChain!.uid },
+    }));
+    router.push("/(auth)/(tabs)/chat/in-app/channel-edit");
   }
 
   function handleLongPressChannel(channel: ChatChannel) {
@@ -254,36 +257,32 @@ export default function ChatClothingloop() {
   }
 
   function handleCreateChannel() {
-    setEditChannel(null);
-    setTimeout(() => {
-      refSheet.current?.show();
-    });
+    chatStore.setState((s) => ({
+      ...s,
+      editChannel: { fallbackChainUID: currentChain!.uid, channel: null },
+    }));
+    router.push("/(auth)/(tabs)/chat/in-app/channel-create");
   }
   if (chat.chatInAppDisabled === true) {
     return <Redirect href="/(auth)/(tabs)/chat/types" withAnchor />;
   }
   return (
     <VStack className="flex-1 pb-4">
-      <KeyboardAvoidingView
-        keyboardVerticalOffset={64 + safeInsets.bottom}
-        behavior="padding"
-        className="flex-1"
-      >
-        <VStack className="flex-1">
-          <ChatChannelCreateSheet
-            currentChatChannel={editChannel}
-            fallbackChainUID={currentChain?.uid || ""}
-            refSheet={refSheet}
-          />
-          <ChatChannels
-            channels={queryChannelList.data || []}
-            selectedId={selectedChannelId}
-            showCreateChannel={authUserRoles.isHost}
-            onPressCreateChannel={handleCreateChannel}
-            onPressChannel={changeSelectedChannel}
-            onLongPressChannel={handleLongPressChannel}
-          />
-          {selectedChannelId ? (
+      <ChatChannels
+        channels={queryChannelList.data || []}
+        selectedId={selectedChannelId}
+        showCreateChannel={authUserRoles.isHost}
+        onPressCreateChannel={handleCreateChannel}
+        onPressChannel={changeSelectedChannel}
+        onLongPressChannel={handleLongPressChannel}
+      />
+      {selectedChannelId ? (
+        <KeyboardAvoidingView
+          keyboardVerticalOffset={64 + safeInsets.bottom}
+          behavior="padding"
+          className="flex-1"
+        >
+          <VStack className="flex-1">
             <ChatMessages
               onEndReached={() => queryChatHistory.addPagePrev()}
               messages={queryChatHistory.messages}
@@ -292,24 +291,25 @@ export default function ChatClothingloop() {
               onMessageOptions={handleMessageOptions}
               onRefresh={handleMessagesRefresh}
             />
-          ) : (
-            <Box className="flex-1 items-center justify-center gap-4">
-              <Icon
-                className="h-20 w-20 text-typography-600"
-                as={MessageCircleQuestionIcon}
-              />
-              <Text className="text-typography-600" size="xl" bold>
-                {t("Select a chat channel")}
-              </Text>
-            </Box>
-          )}
-          <ChatInput
-            allPossible={currentChainUsers || []}
-            onSubmit={handleSendMessage}
-          />
+            <ChatInput
+              allPossible={currentChainUsers || []}
+              onSubmit={handleSendMessage}
+            />
+          </VStack>
+        </KeyboardAvoidingView>
+      ) : (
+        <VStack className="flex-1">
+          <Box className="flex flex-grow items-center justify-center gap-4">
+            <Icon
+              className="h-20 w-20 text-typography-600"
+              as={MessageCircleQuestionIcon}
+            />
+            <Text className="text-typography-600" size="xl" bold>
+              {t("Select a chat channel")}
+            </Text>
+          </Box>
         </VStack>
-      </KeyboardAvoidingView>
-      <ChatTypeSheet refSheet={refTypeSheet} />
+      )}
     </VStack>
   );
 }

@@ -1,4 +1,3 @@
-import { User } from "@/api/typex2";
 import { Box } from "@/components/ui/box";
 import { HStack } from "@/components/ui/hstack";
 import { Icon } from "@/components/ui/icon";
@@ -10,6 +9,7 @@ import {
 } from "@/components/ui/radio";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
+import { RouteUser } from "@/store/auth";
 import {
   CircleIcon,
   FlagIcon,
@@ -17,26 +17,18 @@ import {
   ShieldIcon,
 } from "lucide-react-native";
 
-export default function BagsSheetRadioItem(props: {
-  user: User;
-  isPaused: boolean;
-  isHost: boolean;
-  isMe: boolean;
-  isWarden: boolean;
-  routeIndex: number;
-  isPrivate: boolean;
-}) {
+export default function BagsSelectRadioItem(props: { routeUser: RouteUser }) {
   return (
     <Radio
-      value={props.user.uid}
-      key={props.user.uid}
+      value={props.routeUser.user.uid}
+      key={props.routeUser.user.uid}
       //   isInvalid={Boolean(field.state.meta.errors.length)}
       size="md"
       className="justify-between px-5 py-2"
     >
       <HStack className="justify-center gap-3">
         <Box className="relative h-10 w-10 items-end justify-center">
-          {props.isPaused ? (
+          {props.routeUser.isPaused ? (
             <Icon
               as={PauseIcon}
               className="fill-typography-700 text-transparent"
@@ -44,17 +36,17 @@ export default function BagsSheetRadioItem(props: {
             />
           ) : (
             <Text className="text-right font-bold text-typography-600">
-              {"#" + (props.routeIndex + 1)}
+              {"#" + (props.routeUser.routeIndex + 1)}
             </Text>
           )}
           <Box className="absolute -left-1 -top-1">
-            {props.isHost ? (
+            {props.routeUser.isHost ? (
               <Icon
                 as={ShieldIcon}
                 size="md"
                 className="fill-typography-700 text-transparent"
               />
-            ) : props.isWarden ? (
+            ) : props.routeUser.isWarden ? (
               <Icon
                 as={FlagIcon}
                 size="md"
@@ -65,18 +57,18 @@ export default function BagsSheetRadioItem(props: {
         </Box>
         <VStack>
           <RadioLabel
-            className={`font-bold ${props.isMe ? "!text-primary-500" : ""}`}
+            className={`font-bold ${props.routeUser.isMe ? "!text-primary-500" : ""}`}
           >
-            {props.user.name}
+            {props.routeUser.user.name}
           </RadioLabel>
           <Text
             size="xs"
             className="break-words"
             style={{ width: 300 }}
-            numberOfLines={2}
+            numberOfLines={1}
             ellipsizeMode="tail"
           >
-            {props.isPrivate ? "" : props.user.address}
+            {props.routeUser.isPrivate ? "" : props.routeUser.user.address}
           </Text>
         </VStack>
       </HStack>

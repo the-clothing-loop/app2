@@ -6,7 +6,7 @@ import { useTranslation } from "react-i18next";
 import { useStore } from "@tanstack/react-store";
 import { authStoreAuthUserRoles } from "@/store/auth";
 import { chatStore } from "@/store/chat";
-import { messageAppMattermost, messagingApps } from "@/constants/MessagingApps";
+import { messageInApp, messagingApps } from "@/constants/MessagingApps";
 import { Box } from "@/components/ui/box";
 import { Text } from "@/components/ui/text";
 import { ExternalPathString, Link } from "expo-router";
@@ -85,10 +85,10 @@ export default function ChatTypeList(props: { onPressEnterInApp: () => void }) {
           ) : null}
           {chatInAppDisabled !== true ? (
             <HStack className="w-screen items-center gap-4 bg-background-0 px-3 py-4">
-              <messageAppMattermost.source
+              <messageInApp.source
                 width={48}
                 height={48}
-                color={messageAppMattermost.bgColor}
+                color={messageInApp.bgColor}
               />
               <Box className="flex-grow">
                 <Text
@@ -98,16 +98,16 @@ export default function ChatTypeList(props: { onPressEnterInApp: () => void }) {
                   isTruncated
                   ellipsizeMode="tail"
                 >
-                  {t("imChatMessage", { chat: messageAppMattermost.title })}
+                  {t("imChatMessage", { chat: messageInApp.title })}
                 </Text>
               </Box>
               <Button
                 onPress={props.onPressEnterInApp}
-                style={{ backgroundColor: messageAppMattermost.bgColor }}
+                style={{ backgroundColor: messageInApp.bgColor }}
                 className="rounded-pill"
                 size="xl"
               >
-                <ButtonText style={{ color: messageAppMattermost.fgColor }}>
+                <ButtonText style={{ color: messageInApp.fgColor }}>
                   {t("enter")}
                 </ButtonText>
               </Button>

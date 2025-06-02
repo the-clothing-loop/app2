@@ -36,15 +36,23 @@ export default function ChatStackLayout() {
         }}
       />
       <Stack.Screen
-        name="clothingloop"
+        name="in-app"
         options={{
-          title: t("chat"),
+          headerShown: false,
         }}
       />
       <Stack.Screen
         name="types"
         options={{
           title: t("chat"),
+        }}
+      />
+      <Stack.Screen
+        name="create"
+        options={{
+          title: t("chat"),
+          presentation: "modal",
+          animation: "slide_from_bottom",
         }}
       />
     </Stack>

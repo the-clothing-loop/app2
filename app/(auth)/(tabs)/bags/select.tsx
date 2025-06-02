@@ -1,25 +1,25 @@
 import { authStore, authStoreListRouteUsers } from "@/store/auth";
 import { useStore } from "@tanstack/react-store";
-import { HStack } from "../../../../components/ui/hstack";
-import { Button, ButtonText } from "../../../../components/ui/button";
 import { useTranslation } from "react-i18next";
 import { Text } from "../../../../components/ui/text";
 import { RadioGroup } from "../../../../components/ui/radio";
-import { useEffect, useLayoutEffect } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { bagPut } from "@/api/bag";
 import { UID } from "@/api/types";
 import { useForm } from "@tanstack/react-form";
 import { catchErrThrow401 } from "@/utils/handleRequests";
 import DatePickerSingleItem from "../../../../components/custom/DatePicker";
-import { FlatList, Pressable, SafeAreaView, View } from "react-native";
+import { FlatList, Pressable, View } from "react-native";
 import useFilteredRouteUsers from "@/hooks/useFilteredRouteUsers";
 import BagsSelectRadioItem from "../../../../components/custom/bags/BagsSelectRadioItem";
 import { Box } from "@/components/ui/box";
 import { Link, router, useNavigation } from "expo-router";
 import { selectedBagStore } from "@/store/selected-bag";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { SearchBar } from "react-native-screens";
+import { Input, InputField, InputIcon, InputSlot } from "@/components/ui/input";
+import { LucideCircleX, LucideSearch } from "lucide-react-native";
+import { useDebounce } from "@uidotdev/usehooks";
 
 export default function BagsSheet() {
   const listRouteUsers = useStore(authStoreListRouteUsers);
@@ -29,6 +29,7 @@ export default function BagsSheet() {
   const queryClient = useQueryClient();
   const { currentChain, authUser } = useStore(authStore);
   const navigation = useNavigation();
+  const [search, setSearch] = useState("");
 
   const mutateBags = useMutation({
     async mutationFn(value: { userUid: UID; date: Date }) {
@@ -80,11 +81,12 @@ export default function BagsSheet() {
     });
   }, [t]);
 
+  const debounceSearch = useDebounce(search, 700);
   const sortedListRouteUsers = useFilteredRouteUsers(
     listRouteUsers,
     {},
     "routeForMe",
-    "",
+    debounceSearch,
   );
 
   function handleClose() {
@@ -94,9 +96,25 @@ export default function BagsSheet() {
   const safeInsets = useSafeAreaInsets();
   return (
     <View
-      className="bg-background flex-1"
+      className="flex-1 bg-white"
       style={{ paddingBottom: safeInsets.bottom }}
     >
+      <Box className="p-3" style={{ backgroundColor: selectedBag?.bag.color }}>
+        <Input className="bg-white">
+          <InputField
+            value={search}
+            onChangeText={setSearch}
+            placeholder={t("search")}
+          />
+          <InputSlot className="pr-3" onPress={() => setSearch("")}>
+            {search ? (
+              <InputIcon as={LucideCircleX} className="text-error-600" />
+            ) : (
+              <InputIcon as={LucideSearch} />
+            )}
+          </InputSlot>
+        </Input>
+      </Box>
       <form.Field name="date">
         {(field) => (
           <DatePickerSingleItem

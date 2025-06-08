@@ -1,20 +1,18 @@
 import { chatChannelCreate, chatChannelEdit } from "@/api/chat";
 import { UID } from "@/api/types";
 import { ChatChannel } from "@/api/typex2";
-import { Button, ButtonText } from "@/components/ui/button";
-import { HStack } from "@/components/ui/hstack";
 import { Text } from "@/components/ui/text";
 import { useForm } from "@tanstack/react-form";
-import { RefObject, useEffect } from "react";
+import { useEffect, useLayoutEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { ScrollView } from "react-native";
-import ActionSheet, { ActionSheetRef } from "react-native-actions-sheet";
+import { Pressable, ScrollView } from "react-native";
 import FormLabel from "../FormLabel";
 import { Input, InputField } from "@/components/ui/input";
 import ColorSelect from "../ColorSelect";
 import { Box } from "@/components/ui/box";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { catchErrThrow401 } from "@/utils/handleRequests";
+import { router, useNavigation } from "expo-router";
 
 const channelColors = [
   "#C9843E",
@@ -39,10 +37,9 @@ const channelColors = [
 type FormValues = Parameters<typeof chatChannelCreate>[0] &
   Partial<ChatChannel>;
 
-export default function ChatChannelCreateSheet(props: {
+export default function ChatChannelCreateEdit(props: {
   currentChatChannel: ChatChannel | null;
   fallbackChainUID: UID;
-  refSheet: RefObject<ActionSheetRef>;
 }) {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
@@ -68,7 +65,7 @@ export default function ChatChannelCreateSheet(props: {
       }
     },
     onSuccess(data) {
-      queryClient.refetchQueries({
+      queryClient.invalidateQueries({
         predicate(query) {
           return query.queryKey.join(".").startsWith("auth.chat.channels");
         },
@@ -88,7 +85,7 @@ export default function ChatChannelCreateSheet(props: {
     } satisfies FormValues,
     async onSubmit({ value }) {
       await mutateChannel.mutateAsync(value);
-      props.refSheet.current?.hide();
+      handleClose();
     },
   });
   useEffect(() => {
@@ -105,66 +102,58 @@ export default function ChatChannelCreateSheet(props: {
     }
   }, [props.currentChatChannel]);
 
+  const navigation = useNavigation();
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerLeft: () => (
+        <Pressable onPress={handleClose}>
+          <Text className="text-error-600">{t("close")}</Text>
+        </Pressable>
+      ),
+      title: isEdit ? t("editChannel") : t("newChannel"),
+      headerRight: () => (
+        <Pressable onPress={form.handleSubmit}>
+          <Text className="text-primary-600">
+            {isEdit ? t("change") : t("publish")}
+          </Text>
+        </Pressable>
+      ),
+    });
+  }, [isEdit]);
+
   function handleClose() {
-    props.refSheet.current?.hide();
+    router.back();
   }
 
   return (
-    <ActionSheet
-      snapPoints={[100]}
-      gestureEnabled
-      ref={props.refSheet}
-      drawUnderStatusBar={false}
-      closeOnTouchBackdrop={false}
-    >
-      <HStack className="items-center justify-between gap-3 px-3">
-        <Button
-          action="negative"
-          onPress={handleClose}
-          className="bg-transparent"
-        >
-          <ButtonText className="text-error-600">{t("close")}</ButtonText>
-        </Button>
-        <Text>{isEdit ? t("editChannel") : t("newChannel")}</Text>
-        <Button
-          action="primary"
-          className="bg-transparent"
-          onPress={form.handleSubmit}
-        >
-          <ButtonText className="text-primary-600">
-            {isEdit ? t("change") : t("publish")}
-          </ButtonText>
-        </Button>
-      </HStack>
-      <ScrollView>
-        <Box className="flex flex-col gap-4 p-4 pb-8">
-          <FormLabel label={t("channelName")}>
-            <form.Field name="name">
-              {(field) => (
-                <>
-                  <Input>
-                    <InputField
-                      value={field.state.value}
-                      onChangeText={field.setValue}
-                    />
-                  </Input>
-                </>
-              )}
-            </form.Field>
-          </FormLabel>
-          <FormLabel label={t("channelColor")}>
-            <form.Field name="color">
-              {(field) => (
-                <ColorSelect
-                  colors={channelColors}
-                  value={field.state.value}
-                  setValue={field.setValue}
-                />
-              )}
-            </form.Field>
-          </FormLabel>
-        </Box>
-      </ScrollView>
-    </ActionSheet>
+    <ScrollView>
+      <Box className="flex flex-col gap-4 p-4 pb-8">
+        <FormLabel label={t("channelName")}>
+          <form.Field name="name">
+            {(field) => (
+              <>
+                <Input>
+                  <InputField
+                    value={field.state.value}
+                    onChangeText={field.setValue}
+                  />
+                </Input>
+              </>
+            )}
+          </form.Field>
+        </FormLabel>
+        <FormLabel label={t("channelColor")}>
+          <form.Field name="color">
+            {(field) => (
+              <ColorSelect
+                colors={channelColors}
+                value={field.state.value}
+                setValue={field.setValue}
+              />
+            )}
+          </form.Field>
+        </FormLabel>
+      </Box>
+    </ScrollView>
   );
 }

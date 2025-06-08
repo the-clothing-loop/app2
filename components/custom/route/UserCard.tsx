@@ -6,15 +6,17 @@ import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
 import { messagingApps } from "@/constants/MessagingApps";
 import IsPrivate from "@/utils/is_private";
-import { Flag, Shield } from "lucide-react-native";
+import { Flag, MailIcon, MapPinIcon, Shield } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
 import { Linking, Pressable, Share } from "react-native";
 import InterestedSizes, { Categories, Sizes } from "./InterestedSizes";
+import { Button, ButtonIcon } from "@/components/ui/button";
 
 export default function UserCard(props: {
   user: User;
   showMessengers?: boolean;
   showEmail?: boolean;
+  showAddress?: boolean;
   isUserPaused: boolean;
   isUserHost: boolean;
   isUserWarden: boolean;
@@ -71,7 +73,7 @@ export default function UserCard(props: {
         <Pressable onPress={handleSharePhoneNumber} key="phone">
           <VStack className="px-4 py-2">
             <Text bold size="sm">
-              {t("phone")}
+              {t("phoneNumber")}
             </Text>
             <Text>{props.user.phone_number}</Text>
           </VStack>
@@ -94,24 +96,41 @@ export default function UserCard(props: {
           })}
         </HStack>
       ) : null}
-      <Pressable onPress={handleShareEmail}>
-        <VStack className="items-start px-4 py-2">
-          <Text bold size="sm">
-            {t("email")}
-          </Text>
-          <Text>{props.user.email}</Text>
-        </VStack>
-      </Pressable>
-      {isAddressPrivate ? (
-        <Pressable onLongPress={handleShareAddress}>
+      <HStack className="items-center justify-between">
+        <Pressable onLongPress={handleShareEmail}>
           <VStack className="items-start px-4 py-2">
             <Text bold size="sm">
-              {t("address")}
+              {t("email")}
             </Text>
-            <Text>{props.user.address}</Text>
+            <Text>{props.user.email}</Text>
           </VStack>
         </Pressable>
-      ) : null}
+        <Button
+          className="me-3 h-12 w-12 rounded-full bg-blue-500 data-[active=true]:bg-blue-600"
+          onPress={handleShareEmail}
+        >
+          <ButtonIcon as={MailIcon} />
+        </Button>
+      </HStack>
+      {isAddressPrivate ? null : (
+        <HStack className="items-center justify-between">
+          <Pressable onLongPress={handleShareAddress}>
+            <VStack className="items-start px-4 py-2">
+              <Text bold size="sm">
+                {t("address")}
+              </Text>
+              <Text>{props.user.address}</Text>
+            </VStack>
+          </Pressable>
+          <Button
+            className="me-3 h-12 w-12 rounded-full"
+            action="negative"
+            onPress={handleShareAddress}
+          >
+            <ButtonIcon as={MapPinIcon} />
+          </Button>
+        </HStack>
+      )}
       <InterestedSizes
         categories={[] as Categories[]}
         sizes={props.user.sizes as Sizes[]}

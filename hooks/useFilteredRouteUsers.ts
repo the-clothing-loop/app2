@@ -11,13 +11,19 @@ export type FilteredRouteUsersSort =
   | "dateLastSwapped"
   | "dateLastSwappedRev";
 
+export interface FilteredRouteUser {
+  bags: Bag[];
+  routeUser: RouteUser;
+  latestBagUpdate: number;
+}
+
 export default function useFilteredRouteUsers(
   routeUsers: RouteUser[],
   bagsPerUser: Record<string, Bag[]>,
   sort: FilteredRouteUsersSort,
   search: string,
 ) {
-  return useMemo(() => {
+  return useMemo<FilteredRouteUser[]>(() => {
     let result = [...(routeUsers || [])].map((routeUser) => {
       const bags = bagsPerUser[routeUser.user.uid] || [];
       const latestBagUpdate = bags.reduce<number>((acc, value) => {

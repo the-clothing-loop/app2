@@ -1,9 +1,7 @@
 import { Redirect, Stack } from "expo-router";
 import React, { useEffect } from "react";
-
 // import { useColorScheme } from "@/hooks/useColorScheme";
 import { useTranslation } from "react-i18next";
-
 // import { LogLevel, OneSignal } from "react-native-onesignal";
 import { useStore } from "@tanstack/react-store";
 import { authStore } from "@/store/auth";
@@ -14,8 +12,6 @@ import { userGetAllByChain } from "@/api/user";
 import { catchErrThrow401 } from "@/utils/handleRequests";
 import { bagGetAllByChain } from "@/api/bag";
 import { routeGetOrder } from "@/api/route";
-import { registerSheet } from "react-native-actions-sheet";
-import BagsSheet from "@/components/custom/bags/BagsSheet";
 import { Platform } from "react-native";
 import { OneSignal } from "react-native-onesignal";
 import { oneSignalStore } from "@/store/onesignal";
@@ -24,8 +20,6 @@ import { AuthStatus } from "@/types/auth_status";
 
 const isPlatformMobile = ["ios", "android"].includes(Platform.OS);
 const oneSignalKey = process.env.EXPO_PUBLIC_ONESIGNAL_APP_ID;
-
-registerSheet("bags", BagsSheet);
 
 export default function TabLayout() {
   const queryClient = useQueryClient();
@@ -117,7 +111,7 @@ export default function TabLayout() {
   }, [auth.authUser]);
 
   if (auth.authStatus === AuthStatus.LoggedOut) {
-    console.log("back to onboarding");
+    console.info("back to onboarding");
     return <Redirect href="/onboarding/step1" />;
   }
 

@@ -1,10 +1,8 @@
 import OnboardingArrows from "@/components/custom/onboarding/Arrows";
-import { Button, ButtonIcon, ButtonText } from "@/components/ui/button";
 import { Image } from "@/components/ui/image";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
-import { MapPin } from "lucide-react-native";
-import { Link, router } from "expo-router";
+import { router } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { SafeAreaView } from "react-native";
 

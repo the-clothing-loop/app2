@@ -1,6 +1,7 @@
 import BagsList from "@/components/custom/bags/BagsList";
 import NoteEdit from "@/components/custom/route/NoteEdit";
 import UserCard from "@/components/custom/route/UserCard";
+import WardenEdit from "@/components/custom/route/WardenEdit";
 import { Box } from "@/components/ui/box";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
@@ -71,6 +72,12 @@ export default function RouteUser() {
             currentChainUid={currentChain?.uid}
             thisUserUid={routeItem.user?.uid}
             isNoteEditable={isNoteEditable}
+          />
+          <WardenEdit
+            currentChainUid={currentChain!.uid}
+            thisUserUid={routeItem.user.uid}
+            thisUserWarden={routeItem.isWarden}
+            isWardenEditable={authUserRoles.isHost && !routeItem.isHost}
           />
           {myBags.length ? (
             <VStack className="p-3">

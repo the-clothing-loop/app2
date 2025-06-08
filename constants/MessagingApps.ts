@@ -6,6 +6,7 @@ import ClothingLoopApp from "@/components/custom/im/clothingloop.svg";
 import React from "react";
 import { SvgProps } from "react-native-svg";
 import colors from "tailwindcss/colors";
+
 interface MessagingApp {
   key: string;
   title: string;
@@ -50,7 +51,7 @@ export const messagingApps: MessagingApp[] = [
   },
 ];
 
-export const messageAppMattermost: MessagingApp = {
+export const messageInApp: MessagingApp = {
   key: "clothingloop",
   title: "Clothing Loop",
   link: (_: string) => "",

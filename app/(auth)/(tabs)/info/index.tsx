@@ -5,6 +5,7 @@ import {
   Globe2,
   Lock,
   PauseCircleIcon,
+  StarIcon,
 } from "lucide-react-native";
 import { useStore } from "@tanstack/react-store";
 import { Link } from "expo-router";
@@ -24,8 +25,7 @@ import LogoutLink from "@/components/custom/LogoutLink";
 import LegalLinks from "@/components/custom/LegalLinks";
 import RefreshControl from "@/components/custom/RefreshControl";
 import { VStack } from "@/components/ui/vstack";
-import { Switch } from "@/components/ui/switch";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import usePauseDialog, { SetPause } from "@/components/custom/info/PauseDialog";
 import { IsPausedHow, SetPauseRequestBody } from "@/utils/user";
 import dayjs from "dayjs";
@@ -33,6 +33,8 @@ import { Badge, BadgeIcon, BadgeText } from "@/components/ui/badge";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { userUpdate } from "@/api/user";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
+import ReadOnlySwitch from "@/components/custom/ReadOnlySwitch";
+import ThemeBackground from "@/components/custom/ThemeBackground";
 
 export default function Info() {
   const { t } = useTranslation();
@@ -135,10 +137,11 @@ export default function Info() {
                   </Badge>
                 ) : null}
               </VStack>
-              <Switch
+              <ReadOnlySwitch
                 value={pauseState.isUserPausedHow.sum}
                 trackColor={{ true: "#EF4444", false: null }}
-              ></Switch>
+                thumbColor={"#ECECEC"}
+              />
             </HStack>
           </Pressable>
 
@@ -146,6 +149,16 @@ export default function Info() {
         </Box>
 
         <Box className="flex-col bg-background-0">
+          <ThemeBackground
+            theme={
+              currentChain?.theme == "rainbow"
+                ? "ts"
+                : currentChain?.theme || ""
+            }
+            className="z-10 flex w-full shrink-0"
+          >
+            <Box className="h-4"></Box>
+          </ThemeBackground>
           <Link asChild href="/(auth)/select-chain">
             <Pressable>
               <Box className="flex-col px-3 pb-4 pt-2">
@@ -193,14 +206,24 @@ export default function Info() {
             </Box>
           ) : null}
           {authUserRoles.isHost ? (
-            <Link asChild href="https://clothingloop.org/">
-              <Pressable>
-                <Box className="flex-row items-center gap-3 p-3">
-                  <Text className="flex-grow">{t("goToAdminPortal")}</Text>
-                  <Icon as={Globe2} />
-                </Box>
-              </Pressable>
-            </Link>
+            <>
+              <Link asChild href="https://clothingloop.org/">
+                <Pressable>
+                  <Box className="flex-row items-center gap-3 p-3">
+                    <Text className="flex-grow">{t("goToAdminPortal")}</Text>
+                    <Icon as={Globe2} />
+                  </Box>
+                </Pressable>
+              </Link>
+              <Link asChild href="/(auth)/(tabs)/info/select-theme">
+                <Pressable>
+                  <Box className="flex-row items-center gap-3 p-3">
+                    <Text className="flex-grow">{t("theme")}</Text>
+                    <Icon as={StarIcon} />
+                  </Box>
+                </Pressable>
+              </Link>
+            </>
           ) : null}
         </Box>
         <LogoutLink />

@@ -56,7 +56,7 @@ export default function BulkyPatch(props: { BulkyItem: BulkyItem | null }) {
         })
         .finally(() => {
           setAfterSubmit(true);
-          queryClient.refetchQueries({
+          queryClient.invalidateQueries({
             queryKey: ["auth", "chain-bags", currentChain!.uid],
             exact: true,
           });

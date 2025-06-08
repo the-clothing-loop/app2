@@ -52,6 +52,15 @@ export default function BagsStackLayout() {
           title: t("createBag"),
         }}
       />
+
+      <Stack.Screen
+        name="select"
+        options={{
+          title: t("changeBagHolder"),
+          presentation: "modal",
+          animation: "slide_from_bottom",
+        }}
+      />
     </Stack>
   );
 }

@@ -8,7 +8,6 @@ import {
 import { ChatChannel, ChatMessage } from "@/api/typex2";
 import ChatInput from "@/components/custom/chat/ChatInput";
 import ChatMessages from "@/components/custom/chat/ChatMessages";
-import ChatChannelCreateSheet from "@/components/custom/chat/ChatChannelsCreateSheet";
 import ChatChannels from "@/components/custom/chat/ChatChannels";
 import { Box } from "@/components/ui/box";
 import { Icon } from "@/components/ui/icon";
@@ -19,7 +18,7 @@ import { chatStore } from "@/store/chat";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useStore } from "@tanstack/react-store";
 import { EllipsisIcon, MessageCircleQuestionIcon } from "lucide-react-native";
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   Alert,
@@ -28,24 +27,19 @@ import {
   Platform,
   Pressable,
 } from "react-native";
-import { ActionSheetRef } from "react-native-actions-sheet";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import ChatTypeSheet from "@/components/custom/chat/ChatTypeSheet";
-import { Redirect, useNavigation } from "expo-router";
+import { Redirect, router, useNavigation } from "expo-router";
 import { useInterval } from "usehooks-ts";
 import useQueryChatMessages from "@/components/custom/chat/UseQueryChatMessages";
 import { messagingApps } from "@/constants/MessagingApps";
 
 export default function ChatClothingloop() {
-  const { currentChain, authUser } = useStore(authStore);
+  const { currentChain, authUser, currentChainUsers } = useStore(authStore);
   const { isHost } = useStore(authStoreAuthUserRoles);
   const queryClient = useQueryClient();
   const authUserRoles = useStore(authStoreAuthUserRoles);
   const { t } = useTranslation();
   const chat = useStore(chatStore);
-  const [editChannel, setEditChannel] = useState<ChatChannel | null>(null);
-  const refSheet = useRef<ActionSheetRef>(null);
-  const refTypeSheet = useRef<ActionSheetRef>(null);
   const navigation = useNavigation();
   const messagingIcon = useMemo(
     () => messagingApps.find((m) => m.key == chat.appType),
@@ -56,7 +50,9 @@ export default function ChatClothingloop() {
       headerRight:
         isHost || chat.appType !== "off"
           ? () => (
-              <Pressable onPress={() => refTypeSheet.current?.show()}>
+              <Pressable
+                onPress={() => router.push("/(auth)/(tabs)/chat/in-app/types")}
+              >
                 {messagingIcon ? (
                   <messagingIcon.source
                     width={32}
@@ -86,7 +82,7 @@ export default function ChatClothingloop() {
   const queryChannelList = useQuery({
     queryKey: ["auth", "chat", "channels", currentChain?.uid],
     queryFn() {
-      console.log("get chat channel list", currentChain?.uid);
+      // console.log("get chat channel list", currentChain?.uid);
       return chatChannelList(currentChain!.uid).then((res) => res.data.list);
     },
     enabled: Boolean(currentChain),
@@ -125,7 +121,7 @@ export default function ChatClothingloop() {
             chain_uid: currentChain!.uid,
             chat_channel_id: channel.id,
           }).finally(() => {
-            queryClient.refetchQueries({
+            queryClient.invalidateQueries({
               queryKey: ["auth", "chat"],
             });
           });
@@ -136,10 +132,11 @@ export default function ChatClothingloop() {
   }
 
   function openEditChannel(channel: ChatChannel) {
-    setEditChannel(channel);
-    setTimeout(() => {
-      refSheet.current?.show();
-    });
+    chatStore.setState((s) => ({
+      ...s,
+      editChannel: { channel, fallbackChainUID: currentChain!.uid },
+    }));
+    router.push("/(auth)/(tabs)/chat/in-app/channel-edit");
   }
 
   function handleLongPressChannel(channel: ChatChannel) {
@@ -169,15 +166,24 @@ export default function ChatClothingloop() {
 
   const safeInsets = useSafeAreaInsets();
 
-  async function handleSendMessage(text: string) {
+  async function handleSendMessage(
+    notify_user_uids: string[],
+    text: string,
+    callbackReset: () => void,
+  ) {
     if (!authUser) throw "not logged in";
     if (!currentChain) throw "no loop selected";
     if (!selectedChannelId) throw "must select a chat channel";
+    if (!text) throw "empty message";
+
     await chatChannelMessageCreate({
       chain_uid: currentChain?.uid,
       message: text,
       chat_channel_id: selectedChannelId,
+      notify_user_uids,
     });
+
+    callbackReset();
 
     await queryChatHistory.resetToNow();
   }
@@ -245,36 +251,32 @@ export default function ChatClothingloop() {
   }
 
   function handleCreateChannel() {
-    setEditChannel(null);
-    setTimeout(() => {
-      refSheet.current?.show();
-    });
+    chatStore.setState((s) => ({
+      ...s,
+      editChannel: { fallbackChainUID: currentChain!.uid, channel: null },
+    }));
+    router.push("/(auth)/(tabs)/chat/in-app/channel-create");
   }
   if (chat.chatInAppDisabled === true) {
     return <Redirect href="/(auth)/(tabs)/chat/types" withAnchor />;
   }
   return (
     <VStack className="flex-1 pb-4">
-      <KeyboardAvoidingView
-        keyboardVerticalOffset={64 + safeInsets.bottom}
-        behavior="padding"
-        className="flex-1"
-      >
-        <VStack className="flex-1">
-          <ChatChannelCreateSheet
-            currentChatChannel={editChannel}
-            fallbackChainUID={currentChain?.uid || ""}
-            refSheet={refSheet}
-          />
-          <ChatChannels
-            channels={queryChannelList.data || []}
-            selectedId={selectedChannelId}
-            showCreateChannel={authUserRoles.isHost}
-            onPressCreateChannel={handleCreateChannel}
-            onPressChannel={changeSelectedChannel}
-            onLongPressChannel={handleLongPressChannel}
-          />
-          {selectedChannelId ? (
+      <ChatChannels
+        channels={queryChannelList.data || []}
+        selectedId={selectedChannelId}
+        showCreateChannel={authUserRoles.isHost}
+        onPressCreateChannel={handleCreateChannel}
+        onPressChannel={changeSelectedChannel}
+        onLongPressChannel={handleLongPressChannel}
+      />
+      {selectedChannelId ? (
+        <KeyboardAvoidingView
+          keyboardVerticalOffset={64 + safeInsets.bottom}
+          behavior="padding"
+          className="flex-1"
+        >
+          <VStack className="flex-1">
             <ChatMessages
               onEndReached={() => queryChatHistory.addPagePrev()}
               messages={queryChatHistory.messages}
@@ -283,24 +285,25 @@ export default function ChatClothingloop() {
               onMessageOptions={handleMessageOptions}
               onRefresh={handleMessagesRefresh}
             />
-          ) : (
-            <Box className="flex-1 items-center justify-center gap-4">
-              <Icon
-                className="h-20 w-20 text-typography-600"
-                as={MessageCircleQuestionIcon}
-              />
-              <Text className="text-typography-600" size="xl" bold>
-                {t("Select a chat channel")}
-              </Text>
-            </Box>
-          )}
-          <ChatInput
-            isDisabled={!selectedChannelId}
-            onEnter={handleSendMessage}
-          />
+            <ChatInput
+              allPossible={currentChainUsers || []}
+              onSubmit={handleSendMessage}
+            />
+          </VStack>
+        </KeyboardAvoidingView>
+      ) : (
+        <VStack className="flex-1">
+          <Box className="flex flex-grow items-center justify-center gap-4">
+            <Icon
+              className="h-20 w-20 text-typography-600"
+              as={MessageCircleQuestionIcon}
+            />
+            <Text className="text-typography-600" size="xl" bold>
+              {t("Select a chat channel")}
+            </Text>
+          </Box>
         </VStack>
-      </KeyboardAvoidingView>
-      <ChatTypeSheet refSheet={refTypeSheet} />
+      )}
     </VStack>
   );
 }

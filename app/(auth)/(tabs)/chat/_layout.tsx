@@ -9,7 +9,6 @@ import { useTranslation } from "react-i18next";
 export default function ChatStackLayout() {
   const { t } = useTranslation();
   const { currentChain } = useStore(authStore);
-  const appType = useStore(chatStore, (s) => s.appType);
 
   useQuery({
     queryKey: ["auth", "chat-type", currentChain?.uid],
@@ -36,9 +35,9 @@ export default function ChatStackLayout() {
         }}
       />
       <Stack.Screen
-        name="clothingloop"
+        name="in-app"
         options={{
-          title: t("chat"),
+          headerShown: false,
         }}
       />
       <Stack.Screen

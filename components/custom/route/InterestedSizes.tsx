@@ -6,6 +6,7 @@ import { HStack } from "@/components/ui/hstack";
 import { useMemo } from "react";
 import { Image } from "@/components/ui/image";
 import { ImageSourcePropType } from "react-native";
+
 export enum Sizes {
   baby = "1",
   "1To4YearsOld" = "2",
@@ -62,10 +63,9 @@ const categories: ICategories = {
     Sizes["baby"],
     Sizes["1To4YearsOld"],
     Sizes["5To12YearsOld"],
-    Sizes["teenGirls"],
-    Sizes["teenBoys"],
   ],
   [Categories.women]: [
+    Sizes["teenGirls"],
     Sizes["womenSmall"],
     Sizes["womenMedium"],
     Sizes["womenLarge"],
@@ -73,6 +73,7 @@ const categories: ICategories = {
     Sizes["womenMaternity"],
   ],
   [Categories.men]: [
+    Sizes["teenBoys"],
     Sizes["menSmall"],
     Sizes["menMedium"],
     Sizes["menLarge"],

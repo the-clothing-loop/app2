@@ -4,13 +4,9 @@ import { useTranslation } from "react-i18next";
 
 import { useStore } from "@tanstack/react-store";
 import { authStore, authStoreListBags } from "@/store/auth";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { chainGet } from "@/api/chain";
 import { savedStore } from "@/store/saved";
-import { userGetAllByChain } from "@/api/user";
-import { catchErrThrow401 } from "@/utils/handleRequests";
-import { bagGetAllByChain } from "@/api/bag";
-import { routeGetOrder } from "@/api/route";
 import {
   BookOpen,
   MessageCircle,
@@ -18,18 +14,20 @@ import {
   ShoppingBag,
   UserCircle2,
 } from "lucide-react-native";
-import { useColorScheme } from "react-native";
+// import { useColorScheme } from "react-native";
 import { Box } from "@/components/ui/box";
 import { Text } from "@/components/ui/text";
 import { AuthStatus } from "@/types/auth_status";
+import ThemeBackground from "@/components/custom/ThemeBackground";
+import { basicThemeColors } from "@/constants/Colors";
 
 export default function TabLayout() {
-  const queryClient = useQueryClient();
+  // const queryClient = useQueryClient();
   const { t } = useTranslation();
   const auth = useStore(authStore);
   const listBags = useStore(authStoreListBags);
   const selectedChainUID = useStore(savedStore, (s) => s.chainUID);
-  const colorScheme = useColorScheme() ?? "light";
+  // const colorScheme = useColorScheme() ?? "light";
 
   useEffect(() => {
     if (auth.authUser) {
@@ -49,53 +47,6 @@ export default function TabLayout() {
     }
   }, [selectedChainUID, auth.authStatus]);
 
-  const { error } = useQuery({
-    queryKey: ["auth", "chain", selectedChainUID],
-    async queryFn() {
-      if (!selectedChainUID || !auth.authUser) return null;
-      // test with one request before asking for the rest
-      const resChain = await chainGet(selectedChainUID, {
-        addHeaders: true,
-        addIsAppDisabled: true,
-        addRoutePrivacy: true,
-        addRules: true,
-        addTheme: true,
-        addTotals: true,
-      })
-        .then((res) => res.data)
-        .catch(catchErrThrow401);
-      const [resChainUsers, resBags, resChainRoute] = await Promise.all([
-        userGetAllByChain(selectedChainUID)
-          .then((res) => res.data)
-          .catch(catchErrThrow401),
-        bagGetAllByChain(selectedChainUID, auth.authUser.uid)
-          .then((res) => res.data)
-          .catch(catchErrThrow401),
-        routeGetOrder(selectedChainUID)
-          .then((res) => res.data)
-          .catch(catchErrThrow401),
-      ]);
-      if (
-        typeof resChain === "string" ||
-        typeof resChainUsers === "string" ||
-        typeof resBags === "string" ||
-        typeof resChainRoute === "string"
-      )
-        throw "Server is responding incorrectly";
-      authStore.setState((s) => ({
-        ...s,
-        currentChain: resChain,
-        currentChainUsers: resChainUsers,
-        currentBags: resBags,
-        currentChainRoute: resChainRoute,
-      }));
-
-      return [resChain, resChainUsers];
-    },
-  });
-  useEffect(() => {
-    if (error) queryClient.clear();
-  }, [error]);
   useQuery({
     queryKey: [
       "auth",
@@ -125,20 +76,37 @@ export default function TabLayout() {
     }, 0);
   }, [auth.authUser?.uid, listBags]);
 
+  const themeColor = useMemo(() => {
+    const theme = auth.currentChain?.theme || "";
+    const color =
+      (basicThemeColors as Record<string, string>)[theme] || "#5f9c8a";
+    return color + "33";
+  }, [auth.currentChain?.theme]);
+
   return (
     <Tabs
       backBehavior="initialRoute"
       screenOptions={{
+        tabBarInactiveBackgroundColor: themeColor,
+        tabBarActiveBackgroundColor: themeColor,
+        tabBarActiveTintColor: "#353535",
+        tabBarInactiveTintColor: "#6b6b6b",
         tabBarBackground: () => (
           <Box className="absolute inset-0 bg-background-100">
-            <Box
-              className="absolute w-full bg-primary-100"
+            <ThemeBackground
+              theme={auth.currentChain?.theme || ""}
+              className="absolute w-full"
               style={{ top: -14, height: 14 }}
             >
-              <Text size="xs" className="text-center" numberOfLines={1}>
+              <Text
+                size="xs"
+                bold
+                className="text-center text-white"
+                numberOfLines={1}
+              >
                 {auth.currentChain?.name || t("selectALoop")}
               </Text>
-            </Box>
+            </ThemeBackground>
           </Box>
         ),
       }}
@@ -189,6 +157,7 @@ export default function TabLayout() {
         name="info"
         options={{
           title: t("info"),
+          headerShown: false,
           tabBarIcon: ({ color }) => (
             <UserCircle2 size={28} color={color as any} />
           ),

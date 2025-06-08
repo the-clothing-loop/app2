@@ -19,13 +19,12 @@ import {
   Platform,
   SafeAreaView,
   ScrollView,
-  TextInput,
   useColorScheme,
 } from "react-native";
 import { Input, InputField } from "@/components/ui/input";
 import { Box } from "@/components/ui/box";
 import LegalLinks from "@/components/custom/LegalLinks";
-import { createRef, LegacyRef, RefAttributes, useRef, useState } from "react";
+import { createRef, useState } from "react";
 import Sleep from "@/utils/sleep";
 
 export default function Step2() {
@@ -92,9 +91,9 @@ export default function Step2() {
         .mutateAsync(value.email)
         .then((res) => {
           Sleep(5000).then(() => setEmailSent(false));
-          setTimeout(() => {
-            console.log("refInputFieldPasscode", refInputFieldPasscode.current);
-          }, 200);
+          // setTimeout(() => {
+          //   console.log("refInputFieldPasscode", refInputFieldPasscode.current);
+          // }, 200);
           return res;
         })
         .catch((err) => {

@@ -86,9 +86,11 @@ export default function SelectChain() {
               }}
             >
               {listOfChains?.map((c) => {
+                const isDisabled = c.is_app_disabled || c.published == false;
                 return (
                   <Radio
                     value={c.uid}
+                    isDisabled={isDisabled}
                     key={c.uid}
                     size="md"
                     className="items-center justify-between px-4 py-2"

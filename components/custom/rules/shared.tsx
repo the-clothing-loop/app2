@@ -1,6 +1,6 @@
 import { authStore } from "@/store/auth";
 import { useStore } from "@tanstack/react-store";
-import { TFunction, TOptionsBase } from "i18next";
+import { TOptionsBase } from "i18next";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 

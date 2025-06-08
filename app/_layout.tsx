@@ -1,4 +1,4 @@
-import { NavigationContainer, ThemeProvider } from "@react-navigation/native";
+import { ThemeProvider } from "@react-navigation/native";
 import { ActionSheetProvider } from "@expo/react-native-action-sheet";
 import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
@@ -26,7 +26,6 @@ import { GluestackUIProvider } from "@/components/ui/gluestack-ui-provider";
 import { Colors } from "@/constants/Colors";
 import "@/global.css";
 import { SafeAreaProvider } from "react-native-safe-area-context";
-import { SheetProvider } from "react-native-actions-sheet";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 function onAppStateChange(status: AppStateStatus) {
@@ -71,53 +70,48 @@ export default function RootLayout() {
       <ActionSheetProvider>
         <GluestackUIProvider mode="light">
           <QueryClientProvider client={queryClient}>
-            <AuthProvider>
-              <SafeAreaProvider>
-                <GestureHandlerRootView
-                  style={{
-                    flex: 1,
-                  }}
-                >
-                  <SheetProvider context="global">
-                    <Stack
-                      screenOptions={{
+            <GestureHandlerRootView>
+              <AuthProvider>
+                <SafeAreaProvider>
+                  <Stack
+                    screenOptions={{
+                      headerShown: false,
+                    }}
+                  >
+                    <Stack.Screen
+                      name="(auth)"
+                      options={{ headerShown: false }}
+                    />
+                    <Stack.Screen
+                      name="onboarding"
+                      options={{
                         headerShown: false,
                       }}
-                    >
-                      <Stack.Screen
-                        name="(auth)"
-                        options={{ headerShown: false }}
-                      />
-                      <Stack.Screen
-                        name="onboarding"
-                        options={{
-                          headerShown: false,
-                        }}
-                      />
-                      <Stack.Screen
-                        name="loading"
-                        options={{
-                          title: t("loading"),
-                          headerShown: false,
-                        }}
-                      />
-                      <Stack.Screen
-                        name="open-source"
-                        options={{
-                          title: t("openSource"),
-                          headerShown: true,
-                          headerBackTitle: t("back"),
-                        }}
-                      />
-                      <Stack.Screen
-                        name="privacy-policy"
-                        options={{
-                          title: t("privacyPolicy"),
-                          headerShown: true,
-                          headerLargeTitle: true,
-                          headerBackTitle: t("back"),
-                        }}
-                      />
+                    />
+                    <Stack.Screen
+                      name="loading"
+                      options={{
+                        title: t("loading"),
+                        headerShown: false,
+                      }}
+                    />
+                    <Stack.Screen
+                      name="open-source"
+                      options={{
+                        title: t("openSource"),
+                        headerShown: true,
+                        headerBackTitle: t("back"),
+                      }}
+                    />
+                    <Stack.Screen
+                      name="privacy-policy"
+                      options={{
+                        title: t("privacyPolicy"),
+                        headerShown: true,
+                        headerLargeTitle: true,
+                        headerBackTitle: t("back"),
+                      }}
+                    />
                       <Stack.Screen
                         name="(modals)/bag-analytics"
                         options={({ navigation }) => ({
@@ -133,12 +127,11 @@ export default function RootLayout() {
                           ),
                         })}
                       />
-                      <Stack.Screen name="+not-found" />
-                    </Stack>
-                  </SheetProvider>
-                </GestureHandlerRootView>
-              </SafeAreaProvider>
-            </AuthProvider>
+                    <Stack.Screen name="+not-found" />
+                  </Stack>
+                </SafeAreaProvider>
+              </AuthProvider>
+            </GestureHandlerRootView>
           </QueryClientProvider>
           <StatusBar style="auto" />
         </GluestackUIProvider>

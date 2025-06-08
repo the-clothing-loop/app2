@@ -1,4 +1,3 @@
-import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Box } from "@/components/ui/box";
 import { Image } from "@/components/ui/image";
 import { Text } from "@/components/ui/text";

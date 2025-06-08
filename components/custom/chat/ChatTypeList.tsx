@@ -1,12 +1,10 @@
-import { HStack } from "@/components/ui/hstack";
 import { useMemo } from "react";
-import { Dimensions, ScrollView } from "react-native";
 import ChatTypeEdit from "./ChatTypeEdit";
 import { useTranslation } from "react-i18next";
 import { useStore } from "@tanstack/react-store";
 import { authStoreAuthUserRoles } from "@/store/auth";
 import { chatStore } from "@/store/chat";
-import { messageAppMattermost, messagingApps } from "@/constants/MessagingApps";
+import { messageInApp, messagingApps } from "@/constants/MessagingApps";
 import { Box } from "@/components/ui/box";
 import { Text } from "@/components/ui/text";
 import { ExternalPathString, Link } from "expo-router";
@@ -14,8 +12,7 @@ import { Button, ButtonText } from "@/components/ui/button";
 import { VStack } from "@/components/ui/vstack";
 import { Icon } from "@/components/ui/icon";
 import { MessageCircleQuestionIcon } from "lucide-react-native";
-
-const windowDimensions = Dimensions.get("window");
+import { Card } from "@/components/ui/card";
 
 export default function ChatTypeList(props: { onPressEnterInApp: () => void }) {
   const { t } = useTranslation();
@@ -51,25 +48,19 @@ export default function ChatTypeList(props: { onPressEnterInApp: () => void }) {
           </Text>
         </VStack>
       ) : (
-        <ScrollView className="mb-4 flex-col-reverse">
+        <Box
+          className={`mb-8 flex grow items-center justify-around gap-2 p-2 ${authUserRoles.isHost ? "flex-row" : ""}`}
+        >
           {currentChatApp ? (
-            <HStack className="w-screen items-center gap-4 bg-background-0 px-3 py-4">
+            <Card className="min-w-40 items-center gap-2 rounded-lg bg-background-0 px-3 py-4">
               <currentChatApp.source
                 width={48}
                 height={48}
                 color={currentChatApp.bgColor}
               />
-              <Box className="flex-grow">
-                <Text
-                  className="items-center"
-                  style={{ width: windowDimensions.width - 200 }}
-                  numberOfLines={2}
-                  isTruncated
-                  ellipsizeMode="tail"
-                >
-                  {t("imChatMessage", { chat: currentChatApp.title })}
-                </Text>
-              </Box>
+              <Text className="text-center text-lg">
+                {currentChatApp.title}
+              </Text>
               <Link href={chatUrl as ExternalPathString} asChild>
                 <Button
                   style={{ backgroundColor: currentChatApp.bgColor }}
@@ -81,39 +72,30 @@ export default function ChatTypeList(props: { onPressEnterInApp: () => void }) {
                   </ButtonText>
                 </Button>
               </Link>
-            </HStack>
+            </Card>
           ) : null}
           {chatInAppDisabled !== true ? (
-            <HStack className="w-screen items-center gap-4 bg-background-0 px-3 py-4">
-              <messageAppMattermost.source
+            <Card className="min-w-40 items-center gap-2 rounded-lg bg-background-0 px-3 py-4">
+              <messageInApp.source
                 width={48}
                 height={48}
-                color={messageAppMattermost.bgColor}
+                color={messageInApp.bgColor}
               />
-              <Box className="flex-grow">
-                <Text
-                  className="items-center"
-                  style={{ width: windowDimensions.width - 200 }}
-                  numberOfLines={2}
-                  isTruncated
-                  ellipsizeMode="tail"
+              <Text className="text-center text-lg">{messageInApp.title}</Text>
+              <Link href={chatUrl as ExternalPathString} asChild>
+                <Button
+                  style={{ backgroundColor: messageInApp.bgColor }}
+                  className="rounded-pill"
+                  size="xl"
                 >
-                  {t("imChatMessage", { chat: messageAppMattermost.title })}
-                </Text>
-              </Box>
-              <Button
-                onPress={props.onPressEnterInApp}
-                style={{ backgroundColor: messageAppMattermost.bgColor }}
-                className="rounded-pill"
-                size="xl"
-              >
-                <ButtonText style={{ color: messageAppMattermost.fgColor }}>
-                  {t("enter")}
-                </ButtonText>
-              </Button>
-            </HStack>
+                  <ButtonText style={{ color: messageInApp.fgColor }}>
+                    {t("enter")}
+                  </ButtonText>
+                </Button>
+              </Link>
+            </Card>
           ) : null}
-        </ScrollView>
+        </Box>
       )}
     </Box>
   );

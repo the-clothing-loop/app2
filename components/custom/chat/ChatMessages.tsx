@@ -4,22 +4,14 @@ import { Box } from "@/components/ui/box";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
 import dayjs from "@/utils/dayjs";
-import { Pressable, RefreshControl, VirtualizedList } from "react-native";
+import { Pressable, VirtualizedList } from "react-native";
 import { authStore } from "@/store/auth";
 import { useStore } from "@tanstack/react-store";
-import {
-  Dispatch,
-  SetStateAction,
-  useCallback,
-  useMemo,
-  useState,
-} from "react";
+import { useState } from "react";
 import { Icon } from "@/components/ui/icon";
 import { PinIcon } from "lucide-react-native";
 import { HStack } from "@/components/ui/hstack";
 import { useTranslation } from "react-i18next";
-import Sleep from "@/utils/sleep";
-import { useQueryClient } from "@tanstack/react-query";
 import { useDebounceCallback } from "usehooks-ts";
 
 export default function ChatMessages(props: {

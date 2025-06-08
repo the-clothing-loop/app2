@@ -29,7 +29,7 @@ export default function BagsStackLayout() {
           headerLeft: () =>
             authUserRoles.isHost ? (
               <Link
-                href="../../../../(modals)/bag-analytics"
+                href="../../../(modals)/bag-analytics"
                 className="px-2"
                 asChild
               >

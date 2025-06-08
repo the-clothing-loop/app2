@@ -17,6 +17,7 @@ import * as Network from "expo-network";
 import {
   AppState,
   AppStateStatus,
+  Button,
   Platform,
   useColorScheme,
 } from "react-native";
@@ -111,6 +112,21 @@ export default function RootLayout() {
                         headerBackTitle: t("back"),
                       }}
                     />
+                      <Stack.Screen
+                        name="(modals)/bag-analytics"
+                        options={({ navigation }) => ({
+                          presentation: "modal",
+                          title: t("bagAnalytics"),
+                          headerShown: true,
+                          headerLeft: () => (
+                            <Button
+                              title={t("close")}
+                              color="#5f9c8a"
+                              onPress={() => navigation.goBack()}
+                            />
+                          ),
+                        })}
+                      />
                     <Stack.Screen name="+not-found" />
                   </Stack>
                 </SafeAreaProvider>

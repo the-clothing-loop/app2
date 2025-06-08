@@ -26,6 +26,18 @@ export default function BagsStackLayout() {
                 </Text>
               </Link>
             ) : undefined,
+          headerLeft: () =>
+            authUserRoles.isHost ? (
+              <Link
+                href="../../../(modals)/bag-analytics"
+                className="px-2"
+                asChild
+              >
+                <Text size="xl" className="text-primary-500">
+                  {t("bagAnalytics")}
+                </Text>
+              </Link>
+            ) : undefined,
         }}
       />
       <Stack.Screen

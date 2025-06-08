@@ -1,32 +1,41 @@
 import { useTranslation } from "react-i18next";
 import { authStore } from "@/store/auth";
 import { useStore } from "@tanstack/react-store";
-import { ScrollView, View } from "react-native";
-import { bagHistory, BagHistoryItem } from "@/api/bag";
-import { useEffect, useState } from "react";
+import { ActivityIndicator, View } from "react-native";
+import { bagHistory } from "@/api/bag";
 import { Text } from "@/components/ui/text";
 import { Card } from "@/components/ui/card";
 import { FlatList } from "react-native-actions-sheet";
+import { useQuery } from "@tanstack/react-query";
+
 export default function BagAnalyticsModal() {
   const { t } = useTranslation();
   const { currentChain, currentChainRoute } = useStore(authStore);
-  const [data, setData] = useState<BagHistoryItem[] | undefined>();
 
-  useEffect(() => {
-    if (!currentChain) return;
-    bagHistory(currentChain.uid)
-      .then((res) => {
-        setData(res.data);
-      })
-      .catch((error) => {
-        console.error("Failed to fetch bag history", error);
-      });
-  }, []);
+  const { data, isLoading } = useQuery({
+    queryKey: ["bagHistory", currentChain?.uid],
+    queryFn: () => {
+      if (!currentChain) throw "Current chain is undefined";
+      return bagHistory(currentChain.uid);
+    },
+    enabled: !!currentChain,
+    select: (res) => res.data,
+  });
 
   return (
     <FlatList
       data={data}
       keyExtractor={(item, index) => `${item.id}-${index}`}
+      contentContainerClassName="flex-grow pb-10"
+      ListEmptyComponent={
+        isLoading ? (
+          <View className="flex-1 items-center justify-center">
+            <ActivityIndicator size="large" />
+          </View>
+        ) : (
+          <Text>{t("noBagHistory")}</Text>
+        )
+      }
       ItemSeparatorComponent={() => <View className="h-px bg-gray-300" />}
       renderItem={({ item }) => (
         <View className="p-5">
@@ -63,9 +72,7 @@ export default function BagAnalyticsModal() {
                       </View>
                     )}
                     {histItem.date ? (
-                      <Text className="">
-                        {date.toLocaleString().split(",")[0]}
-                      </Text>
+                      <Text>{date.toLocaleString().split(",")[0]}</Text>
                     ) : null}
                   </View>
                 );

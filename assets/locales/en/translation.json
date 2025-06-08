@@ -29,6 +29,7 @@
   "dpa": "Data Processing Agreement",
   "bagAnalytics": "Bag Analytics",
   "history": "History",
+  "noBagHistory": "No bag History",
   "dateReceived": "Date Received",
   "tryAgain": "Try Again",
   "readMore": "Read More",

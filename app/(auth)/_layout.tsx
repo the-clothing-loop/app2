@@ -116,7 +116,7 @@ export default function TabLayout() {
   }
 
   return (
-    <Stack screenOptions={{}}>
+    <Stack screenOptions={{ headerShown: false }}>
       {auth.currentChain !== null ? (
         <Stack.Screen
           name="(tabs)"

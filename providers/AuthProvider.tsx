@@ -6,6 +6,7 @@ import { savedStore } from "@/store/saved";
 import { AuthStatus } from "@/types/auth_status";
 import { supportedLngs } from "@/utils/i18n";
 import { useQuery } from "@tanstack/react-query";
+import { router } from "expo-router";
 import { PropsWithChildren, useEffect } from "react";
 import { getI18n } from "react-i18next";
 
@@ -55,6 +56,13 @@ export default function AuthProvider(props: PropsWithChildren) {
         });
     },
   });
+
+  useEffect(() => {
+    if (queryUser.fetchStatus === "paused") {
+      console.log("fetch status paused", authStore.state.authStatus);
+      router.push("/(auth)/offline-no-data");
+    }
+  }, [queryUser.fetchStatus]);
   useEffect(() => {
     if (queryUser.data?.uid) {
       authStore.setState((s) => ({

@@ -86,7 +86,9 @@ export default function SelectChain() {
               }}
             >
               {listOfChains?.map((c) => {
-                const isDisabled = c.is_app_disabled || c.published == false;
+                const isDisabled =
+                  (c.is_app_disabled || c.published == false) &&
+                  c.name != "Test Loop";
                 return (
                   <Radio
                     value={c.uid}

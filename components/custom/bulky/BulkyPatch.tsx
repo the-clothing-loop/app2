@@ -4,7 +4,7 @@ import { VStack } from "@/components/ui/vstack";
 import { useNavigation } from "expo-router";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { NativeStackNavigationOptions } from "@react-navigation/native-stack/src/types";
+import { NativeStackNavigationOptions } from "@react-navigation/native-stack";
 import {
   Pressable,
   ScrollView,

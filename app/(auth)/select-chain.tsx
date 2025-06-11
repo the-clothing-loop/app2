@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/radio";
 import { CircleIcon } from "lucide-react-native";
 import { router, useNavigation } from "expo-router";
-import { NativeStackNavigationOptions } from "@react-navigation/native-stack/src/types";
+import { NativeStackNavigationOptions } from "@react-navigation/native-stack";
 import { Button, ButtonText } from "@/components/ui/button";
 import LogoutLink from "@/components/custom/LogoutLink";
 import LegalLinks from "@/components/custom/LegalLinks";

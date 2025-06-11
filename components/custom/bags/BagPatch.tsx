@@ -5,7 +5,7 @@ import { useNavigation } from "expo-router";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 
-import { NativeStackNavigationOptions } from "@react-navigation/native-stack/src/types";
+import { NativeStackNavigationOptions } from "@react-navigation/native-stack";
 import { Pressable, ScrollView } from "react-native";
 import { useForm, useStore } from "@tanstack/react-form";
 import { authStore } from "@/store/auth";

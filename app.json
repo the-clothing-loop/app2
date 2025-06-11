@@ -4,13 +4,18 @@
     "slug": "my-clothing-loop",
     "version": "4.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/images/icons/ios_light.png",
     "scheme": "myclothingloop",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
       "bundleIdentifier": "org.clothingloop.app",
       "supportsTablet": true,
+      "icon": {
+        "light": "./assets/images/icons/ios_light.png",
+        "dark": "./assets/images/icons/ios_dark.png",
+        "tinted": "./assets/images/icons/ios_tinted.png"
+      },
       "infoPlist": {
         "NSLocationWhenInUseUsageDescription": "This app uses your location to show you where you are on the map",
         "ITSAppUsesNonExemptEncryption": false
@@ -18,15 +23,20 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/icon.png",
+        "foregroundImage": "./assets/images/icons/android_adaptive.png",
+        "monochromeImage": "./assets/images/icons/android_monochrome.png",
         "backgroundColor": "#ffffff"
       },
       "package": "org.clothingloop.app"
     },
+    "notification": {
+      "icon": "./assets/images/icons/notification_96.png",
+      "color": "#ffffff"
+    },
     "web": {
       "bundler": "metro",
       "output": "single",
-      "favicon": "./assets/images/favicon.png"
+      "favicon": "./assets/images/icons/web_favicon.png"
     },
     "plugins": [
       [
@@ -39,10 +49,13 @@
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/v2_logo_black.png",
+          "backgroundColor": "#ffffff",
+          "image": "./assets/images/icons/splash_fg.png",
           "imageWidth": 200,
-          "resizeMode": "contain",
-          "backgroundColor": "#ffffff"
+          "dark": {
+            "backgroundColor": "#272727",
+            "image": "./assets/images/icons/splash_fg_dark.png"
+          }
         }
       ],
       "expo-localization",
@@ -59,7 +72,9 @@
             "deploymentTarget": "16.0"
           }
         }
-      ]
+      ],
+      "expo-font",
+      "expo-web-browser"
     ],
     "experiments": {
       "typedRoutes": true

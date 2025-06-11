@@ -103,8 +103,8 @@ export default function Info() {
       refreshControl={RefreshControl()}
       style={{ paddingBottom: tabBarHeight }}
     >
-      <Box className="gap-3 p-3">
-        <Box className="mb-3 flex-col bg-background-0">
+      <Box className="pb-3">
+        <Box className="flex-col bg-background-0">
           <Text className="m-3 text-3xl text-black" bold>
             {t("account")}
           </Text>
@@ -146,87 +146,92 @@ export default function Info() {
           </Pressable>
 
           <PauseDateDialog />
-        </Box>
 
-        <Box className="flex-col bg-background-0">
-          <ThemeBackground
-            theme={
-              currentChain?.theme == "rainbow"
-                ? "ts"
-                : currentChain?.theme || ""
-            }
-            className="z-10 flex w-full shrink-0"
-          >
-            <Box className="h-4"></Box>
-          </ThemeBackground>
-          <Link asChild href="/(auth)/select-chain">
-            <Pressable>
-              <Box className="flex-col px-3 pb-4 pt-2">
-                <Text bold size="sm">
-                  {t("selectALoop")}
-                </Text>
-                <HStack className="items-center justify-between">
-                  <Text className="text-3xl text-black" bold>
-                    {currentChain?.name}
+          <Box className="p-3 pb-0">
+            <ThemeBackground
+              theme={
+                currentChain?.theme == "rainbow"
+                  ? "ts"
+                  : currentChain?.theme || ""
+              }
+              className="z-10 flex w-full shrink-0"
+            >
+              <Box className="h-4"></Box>
+            </ThemeBackground>
+            <Box className="flex-col border-2 border-t-0 border-background-400 bg-background-0">
+              <Link asChild href="/(auth)/select-chain">
+                <Pressable>
+                  <Box className="flex-col px-3 pb-4 pt-2">
+                    <Text bold size="sm">
+                      {t("selectALoop")}
+                    </Text>
+                    <HStack className="shrink items-center justify-between">
+                      <Text className="shrink text-3xl text-black" bold>
+                        {currentChain?.name}
+                      </Text>
+                      <Icon as={ChevronDown} size="xl" />
+                    </HStack>
+                  </Box>
+                </Pressable>
+              </Link>
+
+              {!currentChain?.open_to_new_members ||
+              !currentChain?.published ? (
+                <Box className="flex-row items-center bg-warning-200 p-3">
+                  {currentChain?.open_to_new_members ? null : (
+                    <>
+                      <Icon as={EyeOff} className="me-2" />
+                      <Text className="me-3">{t("locked")}</Text>
+                    </>
+                  )}
+                  {currentChain?.published ? null : (
+                    <>
+                      <Icon as={Lock} className="me-2" />
+                      <Text className="me-3">{t("closed")}</Text>
+                    </>
+                  )}
+                </Box>
+              ) : null}
+              {currentChain ? (
+                <InterestedSizes
+                  categories={currentChain.genders as Categories[]}
+                  sizes={currentChain.sizes as Sizes[]}
+                />
+              ) : null}
+              {currentChain?.description ? (
+                <Box className="p-3">
+                  <Text size="sm" bold>
+                    {t("description")}
                   </Text>
-                  <Icon as={ChevronDown} size="xl" />
-                </HStack>
-              </Box>
-            </Pressable>
-          </Link>
-
-          {!currentChain?.open_to_new_members || !currentChain?.published ? (
-            <Box className="flex-row items-center bg-warning-200 p-3">
-              {currentChain?.open_to_new_members ? null : (
+                  <FormattedText content={currentChain.description} />
+                </Box>
+              ) : null}
+              {authUserRoles.isHost ? (
                 <>
-                  <Icon as={EyeOff} className="me-2" />
-                  <Text className="me-3">{t("locked")}</Text>
+                  <Link asChild href="https://clothingloop.org/">
+                    <Pressable>
+                      <Box className="flex-row items-center gap-3 p-3">
+                        <Text className="flex-grow">
+                          {t("goToAdminPortal")}
+                        </Text>
+                        <Icon as={Globe2} />
+                      </Box>
+                    </Pressable>
+                  </Link>
+                  <Link asChild href="/(auth)/(tabs)/info/select-theme">
+                    <Pressable>
+                      <Box className="flex-row items-center gap-3 p-3">
+                        <Text className="flex-grow">{t("theme")}</Text>
+                        <Icon as={StarIcon} />
+                      </Box>
+                    </Pressable>
+                  </Link>
                 </>
-              )}
-              {currentChain?.published ? null : (
-                <>
-                  <Icon as={Lock} className="me-2" />
-                  <Text className="me-3">{t("closed")}</Text>
-                </>
-              )}
+              ) : null}
             </Box>
-          ) : null}
-          {currentChain ? (
-            <InterestedSizes
-              categories={currentChain.genders as Categories[]}
-              sizes={currentChain.sizes as Sizes[]}
-            />
-          ) : null}
-          {currentChain?.description ? (
-            <Box className="p-3">
-              <Text size="sm" bold>
-                {t("description")}
-              </Text>
-              <FormattedText content={currentChain.description} />
-            </Box>
-          ) : null}
-          {authUserRoles.isHost ? (
-            <>
-              <Link asChild href="https://clothingloop.org/">
-                <Pressable>
-                  <Box className="flex-row items-center gap-3 p-3">
-                    <Text className="flex-grow">{t("goToAdminPortal")}</Text>
-                    <Icon as={Globe2} />
-                  </Box>
-                </Pressable>
-              </Link>
-              <Link asChild href="/(auth)/(tabs)/info/select-theme">
-                <Pressable>
-                  <Box className="flex-row items-center gap-3 p-3">
-                    <Text className="flex-grow">{t("theme")}</Text>
-                    <Icon as={StarIcon} />
-                  </Box>
-                </Pressable>
-              </Link>
-            </>
-          ) : null}
+          </Box>
+          <LogoutLink />
         </Box>
-        <LogoutLink />
         <LegalLinks />
       </Box>
     </ScrollView>

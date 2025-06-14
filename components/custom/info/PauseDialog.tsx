@@ -18,6 +18,7 @@ import { IsPausedHowResult } from "@/utils/user";
 import { Alert } from "react-native";
 import { useActionSheet } from "@expo/react-native-action-sheet";
 import dayjs from "dayjs";
+import { router } from "expo-router";
 
 export interface SetPause {
   isPausedOrUntil: boolean | Date;
@@ -28,7 +29,10 @@ const minDate = dayjs().add(1, "day").toDate();
 export default function usePauseDialog(props: {
   onSubmit: (o: SetPause) => Promise<void>;
 }): {
-  handleOpenPause: (isPauseHow: IsPausedHowResult) => void;
+  handleOpenPause: (
+    isPauseHow: IsPausedHowResult,
+    isUserHoldingBag: boolean,
+  ) => void;
   PauseDateDialog: FC;
 } {
   const [openPauseDuration, setOpenPauseDuration] = useState(false);
@@ -80,7 +84,10 @@ export default function usePauseDialog(props: {
   const { t } = useTranslation();
   const defaultStyles = useDefaultStyles();
 
-  function handleOpenPause(isPausedHow: IsPausedHowResult) {
+  function handleOpenPause(
+    isPausedHow: IsPausedHowResult,
+    isUserHoldingBag: boolean,
+  ) {
     if (isPausedHow.sum) {
       Alert.alert(t("unPause"), t("areYouSureUnPause"), [
         {
@@ -95,36 +102,60 @@ export default function usePauseDialog(props: {
           style: "cancel",
         },
       ]);
-    } else {
+    } else if (isUserHoldingBag) {
       showActionSheetWithOptions(
         {
-          title: t("pauseUntil"),
-          options: [
-            t("selectPauseDuration"),
-            t("pauseOnlyLoop"),
-            t("untilITurnItBackOn"),
-            t("cancel"),
-          ],
-          cancelButtonIndex: 3,
+          title: t("youAreHoldingABag"),
+          options: [t("yesPause"), t("noGoToBags"), t("cancel")],
+          cancelButtonIndex: 2,
         },
         (selectedIndex) => {
           switch (selectedIndex) {
             case 0:
-              // selectPauseDuration
-              setOpenPauseDuration((s) => !s);
+              // go to bags
+              HandleShowPauseDurations();
               break;
             case 1:
-              // pauseOnlyLoop
-              form.handleSubmit("on_loop");
-              break;
-            case 2:
-              // untilITurnItBackOn
-              form.handleSubmit("on_user");
+              // go to pause options
+              router.push(`/(auth)/(tabs)/bags`);
               break;
           }
         },
       );
+    } else {
+      HandleShowPauseDurations();
     }
+  }
+
+  function HandleShowPauseDurations() {
+    showActionSheetWithOptions(
+      {
+        title: t("pauseUntil"),
+        options: [
+          t("selectPauseDuration"),
+          t("pauseOnlyLoop"),
+          t("untilITurnItBackOn"),
+          t("cancel"),
+        ],
+        cancelButtonIndex: 3,
+      },
+      (selectedIndex) => {
+        switch (selectedIndex) {
+          case 0:
+            // selectPauseDuration
+            setOpenPauseDuration((s) => !s);
+            break;
+          case 1:
+            // pauseOnlyLoop
+            form.handleSubmit("on_loop");
+            break;
+          case 2:
+            // untilITurnItBackOn
+            form.handleSubmit("on_user");
+            break;
+        }
+      },
+    );
   }
 
   const PauseDateDialog = useCallback(

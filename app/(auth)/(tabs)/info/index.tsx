@@ -25,7 +25,7 @@ import LogoutLink from "@/components/custom/LogoutLink";
 import LegalLinks from "@/components/custom/LegalLinks";
 import RefreshControl from "@/components/custom/RefreshControl";
 import { VStack } from "@/components/ui/vstack";
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import usePauseDialog, { SetPause } from "@/components/custom/info/PauseDialog";
 import { IsPausedHow, SetPauseRequestBody } from "@/utils/user";
 import dayjs from "dayjs";
@@ -35,6 +35,7 @@ import { userUpdate } from "@/api/user";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 import ReadOnlySwitch from "@/components/custom/ReadOnlySwitch";
 import ThemeBackground from "@/components/custom/ThemeBackground";
+import { bagGetAllByChain } from "@/api/bag";
 
 export default function Info() {
   const { t } = useTranslation();
@@ -43,6 +44,19 @@ export default function Info() {
   const { authUser, currentChain } = useStore(authStore);
   const authUserRoles = useStore(authStoreAuthUserRoles);
   const queryClient = useQueryClient();
+  const [isUserHoldingBag, setIsUserHoldingBag] = useState(false);
+
+  useEffect(() => {
+    if (!currentChain || !authUser) {
+      setIsUserHoldingBag(false);
+      return;
+    }
+    (async () => {
+      const userBags = (await bagGetAllByChain(currentChain.uid, authUser.uid))
+        .data;
+      setIsUserHoldingBag(userBags.length > 0);
+    })();
+  }, [authUser, currentChain?.uid]);
 
   const pauseState = useMemo(() => {
     let pausedFromNow = "";
@@ -70,7 +84,7 @@ export default function Info() {
         }
       }
     }
-    return { pausedFromNow, isUserPausedHow, isUserPaused };
+    return { pausedFromNow, isUserPausedHow, isUserPaused, isUserHoldingBag };
   }, [authUser, currentChain?.uid, t]);
 
   const mutationPause = useMutation({
@@ -118,7 +132,7 @@ export default function Info() {
           ) : null}
 
           <Pressable
-            onPress={() => handleOpenPause(pauseState.isUserPausedHow)}
+            onPress={() => handleOpenPause(pauseState.isUserPausedHow, isUserHoldingBag)}
           >
             <HStack className="items-center gap-3 px-4 py-2">
               <VStack className="shrink flex-grow items-start">

@@ -101,9 +101,9 @@ export default function HomeScreen(props: {}) {
                 }}
               </AccordionTrigger>
             </AccordionHeader>
-            <AccordionContent>
+            <AccordionContent >
               {r.content.map((p, ii) => (
-                <AccordionContentText key={r.key + ii}>
+                <AccordionContentText key={r.key + ii} className="text-left">
                   {p}
                 </AccordionContentText>
               ))}

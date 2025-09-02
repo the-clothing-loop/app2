@@ -1,7 +1,6 @@
 import { Text } from "@/components/ui/text";
-import { $authStoreAuthUserRoles, AuthStoreContext } from "@/store/auth";
+import { AuthStoreContext } from "@/store/auth";
 import { Link, Stack } from "expo-router";
-import { useStore } from "@nanostores/react";
 import { useTranslation } from "react-i18next";
 import { useCallback, useContext } from "react";
 

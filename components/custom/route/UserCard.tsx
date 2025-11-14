@@ -115,7 +115,7 @@ export default function UserCard(props: {
       {isAddressPrivate ? null : (
         <HStack className="items-center justify-between">
           <Pressable onLongPress={handleShareAddress}>
-            <VStack className="items-start px-4 py-2">
+            <VStack className="w-[75%] items-start px-4 py-2">
               <Text bold size="sm">
                 {t("address")}
               </Text>

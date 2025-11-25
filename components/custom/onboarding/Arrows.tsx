@@ -33,7 +33,7 @@ export default function OnboardingArrows(props: {
         {props.showNextLoginOrSignup ? (
           <>
             <Link asChild href="https://www.clothingloop.org/loops/find">
-              <Button className="h-20 rounded-full" size="xl">
+              <Button className="h-20 w-40 rounded-full" size="xl">
                 <ButtonText>{t("signup")}</ButtonText>
                 <ButtonIcon
                   //@ts-expect-error
@@ -43,7 +43,7 @@ export default function OnboardingArrows(props: {
               </Button>
             </Link>
             <Button
-              className="h-20 rounded-full"
+              className="h-20 w-40 rounded-full"
               onPress={() => router.push("./login")}
               size="xl"
             >
